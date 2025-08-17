@@ -66,7 +66,7 @@ const ContactPage: React.FC = () => {
               onChange={handleChange}
               disabled={isSubmitting}
               required
-              placeholder="qalearning101@gmail.com"
+              placeholder="james@qalearningweb.com"
             />
             <FormInput
               label="Subject"
