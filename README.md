@@ -1,4 +1,4 @@
-# QA Learning App - Frontend
+# QA Learning Web - Frontend
 
 React + TypeScript 기반의 QA 학습 애플리케이션 프론트엔드입니다.
 
