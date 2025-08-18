@@ -18,7 +18,12 @@ const SignupPage: React.FC = () => {
       await register(data);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to create account. Please try again.');
+      // Check for 409 conflict (duplicate user)
+      if (err.response?.status === 409) {
+        setError('An account with this email already exists. Please use a different email or sign in.');
+      } else {
+        setError(err.response?.data?.detail || err.message || 'Failed to create account. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
