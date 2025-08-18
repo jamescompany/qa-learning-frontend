@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
+import { useAuthStore } from './store/authStore'
 import MainLayout from './components/layout/MainLayout'
 import ScrollToTop from './components/common/ScrollToTop'
 import HomePage from './pages/HomePage'
@@ -32,36 +34,54 @@ const queryClient = new QueryClient({
   },
 })
 
-function App() {
+function AppContent() {
+  const { checkAuth } = useAuthStore();
+  
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+  
   return (
-    <QueryClientProvider client={queryClient}>
       <Router>
         <ScrollToTop />
-        <MainLayout>
-          <Routes>
+        <Routes>
+          {/* Routes with MainLayout */}
+          <Route element={<MainLayout />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/posts" element={<PostListPage />} />
-            <Route path="/posts/:id" element={<PostDetailPage />} />
-            <Route path="/posts/create" element={<PostCreatePage />} />
-            <Route path="/todos" element={<TodoPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/kanban" element={<KanbanPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfServicePage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </MainLayout>
+          </Route>
+          
+          {/* Routes without layout (have their own layout) */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          
+          {/* Dashboard and related routes (already have DashboardLayout) */}
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/posts" element={<PostListPage />} />
+          <Route path="/posts/:id" element={<PostDetailPage />} />
+          <Route path="/posts/create" element={<PostCreatePage />} />
+          <Route path="/todos" element={<TodoPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/kanban" element={<KanbanPage />} />
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
         <Toaster position="top-right" />
       </Router>
+  )
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
     </QueryClientProvider>
   )
 }

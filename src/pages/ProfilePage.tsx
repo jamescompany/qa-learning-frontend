@@ -1,18 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import MainLayout from '../components/layout/MainLayout';
 import FormInput from '../components/forms/FormInput';
+import Modal from '../components/common/Modal';
 import { useAuthStore } from '../store/authStore';
 
 const ProfilePage: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState({ title: '', message: '', type: 'success' as 'success' | 'error' });
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    bio: user?.bio || '',
-    location: user?.location || '',
-    website: user?.website || '',
+    name: '',
+    email: '',
+    bio: '',
+    location: '',
+    website: '',
   });
+  const [originalData, setOriginalData] = useState({
+    name: '',
+    email: '',
+    bio: '',
+    location: '',
+    website: '',
+  });
+
+  useEffect(() => {
+    if (user) {
+      const userData = {
+        name: user.full_name || user.name || user.username || '',
+        email: user.email || '',
+        bio: user.bio || '',
+        location: user.location || '',
+        website: user.website || '',
+      };
+      setFormData(userData);
+      setOriginalData(userData);
+    }
+  }, [user]);
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
@@ -24,14 +49,42 @@ const ProfilePage: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    // Save profile changes
-    console.log('Saving profile:', formData);
-    setIsEditing(false);
+  const hasChanges = () => {
+    return JSON.stringify(formData) !== JSON.stringify(originalData);
+  };
+
+  const handleSave = async () => {
+    try {
+      // Call updateProfile from authStore
+      const { updateProfile } = useAuthStore.getState();
+      await updateProfile({
+        name: formData.name,
+        bio: formData.bio,
+        location: formData.location,
+        website: formData.website
+      });
+      setIsEditing(false);
+      // Show success modal
+      setModalMessage({
+        title: 'Success',
+        message: 'Profile updated successfully!',
+        type: 'success'
+      });
+      setShowModal(true);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      setModalMessage({
+        title: 'Error',
+        message: 'Failed to update profile. Please try again.',
+        type: 'error'
+      });
+      setShowModal(true);
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <MainLayout>
+      <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow">
         {/* Profile Header */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-lg p-8">
@@ -61,12 +114,20 @@ const ProfilePage: React.FC = () => {
               <div className="space-x-2">
                 <button
                   onClick={handleSave}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  disabled={!hasChanges()}
+                  className={`px-4 py-2 text-white rounded-lg transition-colors ${
+                    hasChanges() 
+                      ? 'bg-green-600 hover:bg-green-700 cursor-pointer' 
+                      : 'bg-gray-400 cursor-not-allowed'
+                  }`}
                 >
                   Save Changes
                 </button>
                 <button
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    setFormData(originalData);
+                    setIsEditing(false);
+                  }}
                   className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
                 >
                   Cancel
@@ -181,7 +242,16 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={modalMessage.title}
+        message={modalMessage.message}
+        type={modalMessage.type}
+      />
     </div>
+    </MainLayout>
   );
 };
 

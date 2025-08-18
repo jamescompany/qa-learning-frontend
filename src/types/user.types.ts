@@ -1,16 +1,24 @@
 export interface User {
   id: string;
   email: string;
-  name: string;
+  username: string;
+  full_name?: string;
+  name?: string; // Alias for backward compatibility
   avatar?: string;
+  avatar_url?: string;
   bio?: string;
   location?: string;
   website?: string;
   role: UserRole;
-  isEmailVerified: boolean;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  is_verified?: boolean;
+  isEmailVerified?: boolean;
+  is_active?: boolean;
+  isActive?: boolean;
+  created_at?: string;
+  createdAt?: string;
+  updated_at?: string;
+  updatedAt?: string;
+  last_login?: string;
   lastLoginAt?: string;
   preferences?: UserPreferences;
   stats?: UserStats;

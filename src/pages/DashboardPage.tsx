@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 import { useAuthStore } from '../store/authStore';
@@ -12,7 +12,7 @@ interface DashboardStats {
 }
 
 const DashboardPage: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
     totalTodos: 0,
@@ -20,6 +20,11 @@ const DashboardPage: React.FC = () => {
     recentActivity: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   useEffect(() => {
     // Simulate fetching dashboard stats
@@ -37,7 +42,7 @@ const DashboardPage: React.FC = () => {
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex justify-center items-center h-64">
+        <div className="flex justify-center items-center min-h-[60vh]">
           <Loading size="large" />
         </div>
       </DashboardLayout>
@@ -50,7 +55,7 @@ const DashboardPage: React.FC = () => {
         {/* Welcome Section */}
         <div className="bg-white rounded-lg shadow p-6">
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {user?.name || 'User'}!
+            Welcome back, {user?.full_name || user?.username || 'User'}!
           </h1>
           <p className="mt-2 text-gray-600">
             Here's what's happening with your account today.

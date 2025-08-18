@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import DashboardLayout from '../components/layout/DashboardLayout';
 import TodoForm from '../components/forms/TodoForm';
 import Loading from '../components/common/Loading';
 
@@ -104,12 +105,17 @@ const TodoPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Loading size="large" text="Loading todos..." />
+      <DashboardLayout>
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <Loading size="large" text="Loading todos..." />
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <DashboardLayout>
+      <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">My Todos</h1>
           <button
@@ -230,6 +236,7 @@ const TodoPage: React.FC = () => {
           )}
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 

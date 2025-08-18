@@ -61,11 +61,14 @@ export const useAuthStore = create<AuthState>()(
               error: null,
             });
           } catch (error: any) {
+            const errorMessage = error.response?.data?.detail || 
+                                error.response?.data?.message || 
+                                (error.response?.status === 409 ? 'This email is already registered' : 'Signup failed');
             set({
               user: null,
               isAuthenticated: false,
               isLoading: false,
-              error: error.response?.data?.message || 'Signup failed',
+              error: errorMessage,
             });
             throw error;
           }

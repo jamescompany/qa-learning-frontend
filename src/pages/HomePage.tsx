@@ -11,11 +11,11 @@ const HomePage: React.FC = () => {
       <section className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Master Quality Assurance
+            Master Quality Assurance <br />
             <span className="text-blue-600"> Through Practice</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            Interactive learning platform for QA professionals. 
+            Interactive learning platform for QA professionals. <br />
             Learn testing methodologies, automation tools, and best practices.
           </p>
           <div className="flex gap-4 justify-center">

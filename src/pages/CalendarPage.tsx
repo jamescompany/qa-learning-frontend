@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 interface Event {
   id: string;
@@ -78,7 +79,8 @@ const CalendarPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto">
       <div className="bg-white rounded-lg shadow">
           {/* Calendar Header */}
           <div className="flex justify-between items-center p-6 border-b">
@@ -144,6 +146,7 @@ const CalendarPage: React.FC = () => {
           </div>
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 

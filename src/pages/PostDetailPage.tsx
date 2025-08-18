@@ -103,7 +103,9 @@ const PostDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Loading size="large" text="Loading post..." />
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <Loading size="large" text="Loading post..." />
+      </div>
     );
   }
 
