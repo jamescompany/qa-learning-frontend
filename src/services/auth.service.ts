@@ -34,7 +34,14 @@ class AuthService {
   }
 
   async signup(data: SignupData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', data);
+    // Transform frontend data to backend format
+    const registerData = {
+      email: data.email,
+      username: data.email.split('@')[0], // Generate username from email
+      password: data.password,
+      full_name: data.name
+    };
+    const response = await api.post<AuthResponse>('/auth/register', registerData);
     const { accessToken, refreshToken } = response.data;
     
     // Store tokens
