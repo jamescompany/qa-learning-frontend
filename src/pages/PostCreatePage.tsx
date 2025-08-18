@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DashboardLayout from '../components/layout/DashboardLayout';
 import PostForm from '../components/forms/PostForm';
 
 const PostCreatePage: React.FC = () => {
@@ -21,13 +22,15 @@ const PostCreatePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Create New Post</h1>
-      
-      <div className="bg-white rounded-lg shadow p-6">
-        <PostForm onSubmit={handleSubmit} isLoading={isLoading} />
+    <DashboardLayout>
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Create New Post</h1>
+        
+        <div className="bg-white rounded-lg shadow p-6">
+          <PostForm onSubmit={handleSubmit} isLoading={isLoading} />
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

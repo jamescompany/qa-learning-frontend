@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import Header from '../common/Header';
+import { useAuthStore } from '../../store/authStore';
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -9,29 +10,40 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   const menuItems = [
     { path: '/dashboard', label: 'Overview', icon: '📊' },
-    { path: '/dashboard/posts', label: 'Posts', icon: '📝' },
-    { path: '/dashboard/todos', label: 'Todos', icon: '✅' },
-    { path: '/dashboard/calendar', label: 'Calendar', icon: '📅' },
-    { path: '/dashboard/kanban', label: 'Kanban Board', icon: '📋' },
-    { path: '/dashboard/chat', label: 'Chat', icon: '💬' },
-    { path: '/dashboard/settings', label: 'Settings', icon: '⚙️' },
+    { path: '/posts', label: 'Posts', icon: '📝' },
+    { path: '/todos', label: 'Todos', icon: '✅' },
+    { path: '/calendar', label: 'Calendar', icon: '📅' },
+    { path: '/kanban', label: 'Kanban Board', icon: '📋' },
+    { path: '/chat', label: 'Chat', icon: '💬' },
+    { path: '/settings', label: 'Settings', icon: '⚙️' },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    // Check for exact match or if current path starts with menu path (for nested routes)
+    if (path === '/dashboard') {
+      return location.pathname === path;
+    }
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
+    <div className="h-screen flex flex-col bg-gray-100">
+      <Header 
+        isAuthenticated={isAuthenticated}
+        userName={user?.full_name || user?.username || user?.email}
+        onLogout={logout}
+      />
       
-      <div className="flex">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
           className={`${
             isSidebarOpen ? 'w-64' : 'w-16'
-          } bg-white shadow-md transition-all duration-300`}
+          } bg-white shadow-md transition-all duration-300 flex flex-col h-full`}
         >
           <div className="p-4">
             <button
@@ -42,7 +54,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             </button>
           </div>
           
-          <nav className="mt-4">
+          <nav className="flex-1 overflow-y-auto">
             {menuItems.map((item) => (
               <Link
                 key={item.path}
@@ -67,7 +79,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </aside>
         
         {/* Main Content */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 overflow-y-auto p-8">
           <div className="max-w-7xl mx-auto">
             {children || <Outlet />}
           </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 
 interface Post {
@@ -68,11 +69,18 @@ const PostListPage: React.FC = () => {
   const allTags = Array.from(new Set(posts.flatMap(post => post.tags)));
 
   if (isLoading) {
-    return <Loading size="large" text="Loading posts..." />;
+    return (
+      <DashboardLayout>
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <Loading size="large" text="Loading posts..." />
+        </div>
+      </DashboardLayout>
+    );
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">QA Learning Posts</h1>
           <Link
@@ -181,6 +189,7 @@ const PostListPage: React.FC = () => {
           )}
         </div>
       </div>
+    </DashboardLayout>
   );
 };
 

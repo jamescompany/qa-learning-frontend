@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 interface Message {
   id: string;
@@ -57,7 +58,8 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto h-[calc(100vh-200px)]">
+    <DashboardLayout>
+      <div className="max-w-4xl mx-auto h-[calc(100vh-200px)]">
       <div className="bg-white rounded-lg shadow h-full flex flex-col">
           {/* Chat Header */}
           <div className="p-4 border-b">
@@ -128,6 +130,7 @@ const ChatPage: React.FC = () => {
           </form>
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 

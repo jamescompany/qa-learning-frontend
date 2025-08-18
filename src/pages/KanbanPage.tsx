@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import DashboardLayout from '../components/layout/DashboardLayout';
 
 interface Task {
   id: string;
@@ -54,7 +55,8 @@ const KanbanPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <DashboardLayout>
+      <div className="max-w-7xl mx-auto">
       <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Kanban Board</h1>
           <p className="text-gray-600 mt-2">Drag and drop tasks to update their status</p>
@@ -111,6 +113,7 @@ const KanbanPage: React.FC = () => {
           ))}
       </div>
     </div>
+    </DashboardLayout>
   );
 };
 
