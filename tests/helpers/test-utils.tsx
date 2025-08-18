@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import { vi, expect } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 
 // Create a custom render function that includes providers
 interface AllTheProvidersProps {
