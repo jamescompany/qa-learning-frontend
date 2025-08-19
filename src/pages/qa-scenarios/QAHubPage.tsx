@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Header from '../../components/common/Header';
+import Navigation from '../../components/common/Navigation';
 import { useAuthStore } from '../../store/authStore';
 
 const QAHubPage = () => {
@@ -78,6 +79,9 @@ const QAHubPage = () => {
         userName={user?.full_name || user?.username || user?.email}
         onLogout={logout}
       />
+      
+      {/* Navigation Menu */}
+      <Navigation isAuthenticated={isAuthenticated} />
       
       {/* Page Title Section */}
       <div className="bg-white shadow-sm border-b">

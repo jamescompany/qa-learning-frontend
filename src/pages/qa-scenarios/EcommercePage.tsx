@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import Header from '../../components/common/Header';
+import { useAuthStore } from '../../store/authStore';
+import { placeholderImages } from '../../utils/placeholderImage';
 
 interface Review {
   id: number;
@@ -14,6 +17,7 @@ interface Review {
 
 const EcommercePage = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
@@ -37,10 +41,10 @@ const EcommercePage = () => {
     inStock: true,
     stockCount: 15,
     images: [
-      '/api/placeholder/600/600',
-      '/api/placeholder/600/601',
-      '/api/placeholder/600/602',
-      '/api/placeholder/600/603',
+      placeholderImages.product1,
+      placeholderImages.product2,
+      placeholderImages.product3,
+      placeholderImages.product4,
     ],
     sizes: ['Small', 'Medium', 'Large', 'X-Large'],
     colors: ['Black', 'White', 'Blue', 'Red'],
@@ -85,10 +89,10 @@ const EcommercePage = () => {
   ];
 
   const relatedProducts = [
-    { id: 1, name: 'Wireless Earbuds Pro', price: 149.99, image: '/api/placeholder/200/200' },
-    { id: 2, name: 'Portable Speaker Max', price: 199.99, image: '/api/placeholder/200/201' },
-    { id: 3, name: 'Gaming Headset Ultra', price: 249.99, image: '/api/placeholder/200/202' },
-    { id: 4, name: 'Studio Monitor Headphones', price: 399.99, image: '/api/placeholder/200/203' },
+    { id: 1, name: 'Wireless Earbuds Pro', price: 149.99, image: placeholderImages.earbuds },
+    { id: 2, name: 'Portable Speaker Max', price: 199.99, image: placeholderImages.speaker },
+    { id: 3, name: 'Gaming Headset Ultra', price: 249.99, image: placeholderImages.gaming },
+    { id: 4, name: 'Studio Monitor Headphones', price: 399.99, image: placeholderImages.studio },
   ];
 
   const handleAddToCart = () => {
@@ -141,6 +145,13 @@ const EcommercePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Common Header */}
+      <Header 
+        isAuthenticated={isAuthenticated}
+        userName={user?.full_name || user?.username || user?.email}
+        onLogout={logout}
+      />
+      
       {/* Breadcrumb */}
       <nav className="bg-white border-b" data-testid="breadcrumb">
         <div className="max-w-7xl mx-auto px-4 py-3">
@@ -157,6 +168,17 @@ const EcommercePage = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/qa')}
+          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          data-testid="back-to-qa-hub"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to QA Hub
+        </button>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">

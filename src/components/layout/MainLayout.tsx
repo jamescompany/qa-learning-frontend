@@ -19,7 +19,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         userName={user?.full_name || user?.username || user?.email}
         onLogout={logout}
       />
-      <Navigation />
+      <Navigation isAuthenticated={isAuthenticated} />
       
       <main className="flex-1 container mx-auto px-4 py-8">
         {children || <Outlet />}

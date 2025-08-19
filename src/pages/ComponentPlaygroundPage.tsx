@@ -1,7 +1,12 @@
 import { useState, useRef } from 'react';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/common/Header';
+import { useAuthStore } from '../store/authStore';
 
 const ComponentPlaygroundPage = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [textInput, setTextInput] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,8 +69,27 @@ const ComponentPlaygroundPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Common Header */}
+      <Header 
+        isAuthenticated={isAuthenticated}
+        userName={user?.full_name || user?.username || user?.email}
+        onLogout={logout}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/qa')}
+          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          data-testid="back-to-qa-hub"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to QA Hub
+        </button>
+        
         <h1 className="text-4xl font-bold text-gray-900 mb-8" data-testid="playground-title">
           QA Component Playground
         </h1>

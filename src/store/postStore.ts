@@ -76,67 +76,109 @@ export const usePostStore = create<PostState>()(
         try {
           const { filters, pageSize } = get();
           
-          try {
-            // Try API first
-            const response = await postService.getPosts({
-              ...filters,
-              page,
-              limit: pageSize,
-            });
-            
-            set({
-              posts: response.posts,
-              totalPosts: response.total,
-              currentPage: page,
-              isLoading: false,
-            });
-          } catch (apiError: any) {
-            // Fallback to local storage
-            console.warn('API call failed, using local storage fallback:', apiError.message);
-            
-            // Load from local storage
-            const storedPosts = JSON.parse(localStorage.getItem('localPosts') || '[]');
-            
-            // Add some default posts if none exist
-            if (storedPosts.length === 0) {
-              const defaultPosts = [
-                {
-                  id: '1',
-                  title: 'Best Practices for API Testing',
-                  content: 'Learn the essential techniques for effective API testing. This comprehensive guide covers everything from request validation to response verification.',
-                  author: { id: '1', name: 'James Kang', username: 'james' },
-                  tags: ['API', 'Testing', 'Automation'],
-                  published: true,
-                  createdAt: new Date('2024-01-15').toISOString(),
-                  updatedAt: new Date('2024-01-15').toISOString(),
-                  likes: 24,
-                  comments: [],
-                },
-                {
-                  id: '2',
-                  title: 'Introduction to Selenium WebDriver',
-                  content: 'A comprehensive guide to getting started with Selenium WebDriver for web automation testing.',
-                  author: { id: '2', name: 'Sarah Kim', username: 'sarah' },
-                  tags: ['Selenium', 'Automation', 'Tutorial'],
-                  published: true,
-                  createdAt: new Date('2024-01-14').toISOString(),
-                  updatedAt: new Date('2024-01-14').toISOString(),
-                  likes: 18,
-                  comments: [],
-                },
-              ];
-              localStorage.setItem('localPosts', JSON.stringify(defaultPosts));
-              storedPosts.push(...defaultPosts);
-            }
-            
-            set({
-              posts: storedPosts,
-              totalPosts: storedPosts.length,
-              currentPage: page,
-              isLoading: false,
-            });
+          // Always use local storage for now (since API is not available)
+          console.log('Loading posts from local storage');
+          
+          // Load from local storage
+          let storedPosts = JSON.parse(localStorage.getItem('localPosts') || '[]');
+          
+          // Validate stored posts have correct structure
+          const validPosts = storedPosts.filter((post: any) => 
+            post && post.id && post.title && post.content
+          );
+          
+          // Add some default posts if none exist or invalid
+          if (validPosts.length === 0) {
+            const defaultPosts: Post[] = [
+              {
+                id: '1',
+                title: 'Best Practices for API Testing',
+                content: 'Learn the essential techniques for effective API testing. This comprehensive guide covers everything from request validation to response verification.',
+                slug: 'best-practices-for-api-testing',
+                author: { id: '1', name: 'James Kang' },
+                tags: ['API', 'Testing', 'Automation'],
+                categories: ['Tutorial'],
+                published: true,
+                featured: true,
+                likes: 24,
+                views: 156,
+                readTime: 3,
+                comments: [],
+                createdAt: new Date('2024-01-15').toISOString(),
+                updatedAt: new Date('2024-01-15').toISOString(),
+              },
+              {
+                id: '2',
+                title: 'Introduction to Selenium WebDriver',
+                content: 'A comprehensive guide to getting started with Selenium WebDriver for web automation testing.',
+                slug: 'introduction-to-selenium-webdriver',
+                author: { id: '2', name: 'Sarah Kim' },
+                tags: ['Selenium', 'Automation', 'Tutorial'],
+                categories: ['Tutorial'],
+                published: true,
+                featured: false,
+                likes: 18,
+                views: 89,
+                readTime: 2,
+                comments: [],
+                createdAt: new Date('2024-01-14').toISOString(),
+                updatedAt: new Date('2024-01-14').toISOString(),
+              },
+              {
+                id: '3',
+                title: 'Understanding Test Automation Frameworks',
+                content: 'Explore different test automation frameworks and choose the right one for your project. Compare popular frameworks like Cypress, Playwright, and WebDriverIO.',
+                slug: 'understanding-test-automation-frameworks',
+                author: { id: '1', name: 'James Kang' },
+                tags: ['Frameworks', 'Testing', 'Comparison'],
+                categories: ['Guide'],
+                published: true,
+                featured: true,
+                likes: 31,
+                views: 234,
+                readTime: 4,
+                comments: [],
+                createdAt: new Date('2024-01-13').toISOString(),
+                updatedAt: new Date('2024-01-13').toISOString(),
+              },
+            ];
+            localStorage.setItem('localPosts', JSON.stringify(defaultPosts));
+            storedPosts = defaultPosts;
+          } else {
+            storedPosts = validPosts;
           }
+          
+          // Apply filters if any
+          let filteredPosts = [...storedPosts];
+          
+          if (filters.search) {
+            filteredPosts = filteredPosts.filter(post => 
+              post.title.toLowerCase().includes(filters.search!.toLowerCase()) ||
+              post.content.toLowerCase().includes(filters.search!.toLowerCase())
+            );
+          }
+          
+          if (filters.tags && filters.tags.length > 0) {
+            filteredPosts = filteredPosts.filter(post =>
+              filters.tags!.some(tag => post.tags.includes(tag))
+            );
+          }
+          
+          // Sort posts
+          filteredPosts.sort((a, b) => {
+            const dateA = new Date(b.createdAt).getTime();
+            const dateB = new Date(a.createdAt).getTime();
+            return dateA - dateB; // Newest first
+          });
+          
+          set({
+            posts: filteredPosts,
+            totalPosts: filteredPosts.length,
+            currentPage: page,
+            isLoading: false,
+          });
         } catch (error: any) {
+          console.error('Failed to fetch posts:', error);
           set({
             isLoading: false,
             error: error.message || 'Failed to fetch posts',
@@ -165,48 +207,71 @@ export const usePostStore = create<PostState>()(
       createPost: async (data) => {
         set({ isCreating: true, error: null });
         try {
-          // Try API first
-          let newPost;
-          try {
-            newPost = await postService.createPost(data);
-          } catch (apiError: any) {
-            // Fallback to local storage for development
-            console.warn('API call failed, using local storage fallback:', apiError.message);
-            
-            // Create a mock post
-            newPost = {
-              id: Date.now().toString(),
-              title: data.title,
-              content: data.content,
-              tags: data.tags || [],
-              published: data.published || false,
-              author: {
-                id: '1',
-                name: 'Current User',
-                username: 'currentuser',
-              },
-              likes: 0,
-              comments: [],
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            };
-            
-            // Save to local storage
-            const storedPosts = JSON.parse(localStorage.getItem('localPosts') || '[]');
-            storedPosts.unshift(newPost);
-            localStorage.setItem('localPosts', JSON.stringify(storedPosts));
+          // Always use local storage for now
+          console.log('Creating post in local storage');
+          
+          // Get current user from auth store or localStorage
+          const mockUser = localStorage.getItem('mockUser');
+          const authStorage = localStorage.getItem('auth-storage');
+          let currentUser = null;
+          
+          if (mockUser) {
+            currentUser = JSON.parse(mockUser);
+          } else if (authStorage) {
+            try {
+              const authData = JSON.parse(authStorage);
+              currentUser = authData.state?.user;
+            } catch (e) {
+              console.error('Failed to parse auth storage', e);
+            }
           }
+          
+          // Determine user display name
+          const userName = currentUser?.full_name || 
+                          currentUser?.name || 
+                          currentUser?.username || 
+                          currentUser?.email?.split('@')[0] || 
+                          'Anonymous';
+          
+          // Create a new post
+          const newPost: Post = {
+            id: Date.now().toString(),
+            title: data.title,
+            content: data.content,
+            slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+            tags: data.tags || [],
+            categories: data.categories || [],
+            published: data.published !== false, // Default to true
+            featured: false,
+            author: {
+              id: currentUser?.id || Date.now().toString(),
+              name: userName,
+            },
+            likes: 0,
+            views: 0,
+            readTime: Math.ceil(data.content.split(' ').length / 200), // Estimate reading time
+            comments: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          
+          // Save to local storage
+          const storedPosts = JSON.parse(localStorage.getItem('localPosts') || '[]');
+          storedPosts.unshift(newPost); // Add to beginning
+          localStorage.setItem('localPosts', JSON.stringify(storedPosts));
           
           set((state) => ({
             posts: [newPost, ...state.posts],
             totalPosts: state.totalPosts + 1,
             isCreating: false,
           }));
+          
           return newPost;
         } catch (error: any) {
+          console.error('Failed to create post:', error);
           set({
             isCreating: false,
-            error: error.response?.data?.message || 'Failed to create post',
+            error: error.message || 'Failed to create post',
           });
           throw error;
         }

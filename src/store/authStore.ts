@@ -88,14 +88,17 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           
-          // Clear persisted state from localStorage
+          // Clear ALL auth-related data from localStorage
           localStorage.removeItem('auth-storage');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('mockUser');
           
           // Clear storage and auth synchronously
           authService.logout().catch(console.error);
           
-          // Force page reload to clear all state
-          window.location.href = '/';
+          // Force complete page reload to clear all state
+          window.location.replace('/');
         },
 
         updateProfile: async (data) => {
@@ -169,6 +172,7 @@ export const useAuthStore = create<AuthState>()(
           user: state.user,
           isAuthenticated: state.isAuthenticated,
         }),
+        version: 1,
       }
     )
   )

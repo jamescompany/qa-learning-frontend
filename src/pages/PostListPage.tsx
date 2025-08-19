@@ -10,6 +10,28 @@ const PostListPage: React.FC = () => {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
+    // Clear and reset localStorage if there's corrupted data
+    const checkAndResetPosts = () => {
+      const stored = localStorage.getItem('localPosts');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          // Check if data is corrupted
+          const isValid = Array.isArray(parsed) && parsed.every((post: any) => 
+            post && typeof post === 'object' && post.id && post.title && post.content
+          );
+          if (!isValid) {
+            console.log('Resetting corrupted posts data');
+            localStorage.removeItem('localPosts');
+          }
+        } catch {
+          console.log('Invalid JSON in localPosts, resetting');
+          localStorage.removeItem('localPosts');
+        }
+      }
+    };
+    
+    checkAndResetPosts();
     fetchPosts();
   }, [fetchPosts]);
 
