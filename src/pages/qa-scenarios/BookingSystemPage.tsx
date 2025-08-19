@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import Header from '../../components/common/Header';
+import { useAuthStore } from '../../store/authStore';
 
 interface TimeSlot {
   time: string;
@@ -16,6 +19,8 @@ interface Service {
 }
 
 const BookingSystemPage = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [selectedService, setSelectedService] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -159,7 +164,14 @@ const BookingSystemPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Common Header */}
+      <Header 
+        isAuthenticated={isAuthenticated}
+        userName={user?.full_name || user?.username || user?.email}
+        onLogout={logout}
+      />
+      
+      {/* Booking Header */}
       <header className="bg-white shadow-sm border-b" data-testid="booking-header">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -180,6 +192,18 @@ const BookingSystemPage = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/qa')}
+          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          data-testid="back-to-qa-hub"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to QA Hub
+        </button>
+        
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-center">

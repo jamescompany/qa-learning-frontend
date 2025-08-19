@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import Header from '../common/Header';
+import Navigation from '../common/Navigation';
 import { useAuthStore } from '../../store/authStore';
 
 interface DashboardLayoutProps {
@@ -37,6 +38,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         userName={user?.full_name || user?.username || user?.email}
         onLogout={logout}
       />
+      
+      <Navigation isAuthenticated={isAuthenticated} />
       
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}

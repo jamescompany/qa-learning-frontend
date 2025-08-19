@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import Header from '../../components/common/Header';
+import { useAuthStore } from '../../store/authStore';
+import { placeholderImages } from '../../utils/placeholderImage';
 
 interface Post {
   id: string;
@@ -27,17 +31,19 @@ interface Story {
 }
 
 const SocialFeedPage = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([
     {
       id: '1',
       author: {
         name: 'Sarah Johnson',
         username: '@sarahj',
-        avatar: '/api/placeholder/40/40',
+        avatar: placeholderImages.avatarSJ,
         verified: true,
       },
       content: 'Just launched my new project! Excited to share it with everyone. Check it out and let me know what you think! 🚀 #launch #startup #tech',
-      image: '/api/placeholder/600/400',
+      image: placeholderImages.projectLaunch,
       timestamp: '2 hours ago',
       likes: 234,
       comments: 45,
@@ -50,7 +56,7 @@ const SocialFeedPage = () => {
       author: {
         name: 'Tech News Daily',
         username: '@technews',
-        avatar: '/api/placeholder/40/41',
+        avatar: placeholderImages.avatarTN,
         verified: true,
       },
       content: 'Breaking: Major tech company announces revolutionary AI breakthrough that could change everything we know about machine learning.',
@@ -66,11 +72,11 @@ const SocialFeedPage = () => {
       author: {
         name: 'Mike Chen',
         username: '@mikechen',
-        avatar: '/api/placeholder/40/42',
+        avatar: placeholderImages.avatarMC,
         verified: false,
       },
       content: 'Beautiful sunset from my evening run today! Sometimes you just need to disconnect and enjoy nature. 🌅',
-      image: '/api/placeholder/600/401',
+      image: placeholderImages.sunsetRun,
       timestamp: '5 hours ago',
       likes: 89,
       comments: 12,
@@ -92,12 +98,12 @@ const SocialFeedPage = () => {
   const [showFollowSuggestions, setShowFollowSuggestions] = useState(true);
 
   const stories: Story[] = [
-    { id: '1', username: 'Your Story', avatar: '/api/placeholder/60/60', hasNewStory: false },
-    { id: '2', username: 'alexm', avatar: '/api/placeholder/60/61', hasNewStory: true },
-    { id: '3', username: 'emilyr', avatar: '/api/placeholder/60/62', hasNewStory: true },
-    { id: '4', username: 'davidk', avatar: '/api/placeholder/60/63', hasNewStory: false },
-    { id: '5', username: 'lisap', avatar: '/api/placeholder/60/64', hasNewStory: true },
-    { id: '6', username: 'jamesw', avatar: '/api/placeholder/60/65', hasNewStory: false },
+    { id: '1', username: 'Your Story', avatar: placeholderImages.storyYou, hasNewStory: false },
+    { id: '2', username: 'alexm', avatar: placeholderImages.storyAM, hasNewStory: true },
+    { id: '3', username: 'emilyr', avatar: placeholderImages.storyER, hasNewStory: true },
+    { id: '4', username: 'davidk', avatar: placeholderImages.storyDK, hasNewStory: false },
+    { id: '5', username: 'lisap', avatar: placeholderImages.storyLP, hasNewStory: true },
+    { id: '6', username: 'jamesw', avatar: placeholderImages.storyJW, hasNewStory: false },
   ];
 
   const trendingTopics = [
@@ -109,9 +115,9 @@ const SocialFeedPage = () => {
   ];
 
   const suggestedFollows = [
-    { name: 'Alex Morgan', username: '@alexm', followers: '23.5K', avatar: '/api/placeholder/50/50' },
-    { name: 'Emily Ross', username: '@emilyr', followers: '18.2K', avatar: '/api/placeholder/50/51' },
-    { name: 'David Kim', username: '@davidk', followers: '45.8K', avatar: '/api/placeholder/50/52' },
+    { name: 'Alex Morgan', username: '@alexm', followers: '23.5K', avatar: placeholderImages.followAM },
+    { name: 'Emily Ross', username: '@emilyr', followers: '18.2K', avatar: placeholderImages.followER },
+    { name: 'David Kim', username: '@davidk', followers: '45.8K', avatar: placeholderImages.followDK },
   ];
 
   const handleLike = (postId: string) => {
@@ -152,7 +158,7 @@ const SocialFeedPage = () => {
       author: {
         name: 'You',
         username: '@you',
-        avatar: '/api/placeholder/40/40',
+        avatar: placeholderImages.avatarYou,
         verified: false,
       },
       content: newPostContent,
@@ -192,8 +198,15 @@ const SocialFeedPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-40" data-testid="social-header">
+      {/* Common Header */}
+      <Header 
+        isAuthenticated={isAuthenticated}
+        userName={user?.full_name || user?.username || user?.email}
+        onLogout={logout}
+      />
+      
+      {/* Social Feed Header */}
+      <header className="bg-white border-b sticky top-16 z-30" data-testid="social-header">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-blue-600">SocialHub</h1>
@@ -246,6 +259,17 @@ const SocialFeedPage = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/qa')}
+          className="mb-4 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          data-testid="back-to-qa-hub"
+        >
+          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to QA Hub
+        </button>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Sidebar */}
           <div className="lg:col-span-1">

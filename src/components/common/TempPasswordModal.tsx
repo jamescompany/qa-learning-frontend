@@ -1,4 +1,5 @@
 import React from 'react';
+import toast from 'react-hot-toast';
 
 interface TempPasswordModalProps {
   isOpen: boolean;
@@ -16,8 +17,13 @@ const TempPasswordModal: React.FC<TempPasswordModalProps> = ({
   if (!isOpen) return null;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(tempPassword);
-    // You could add a toast notification here
+    navigator.clipboard.writeText(tempPassword)
+      .then(() => {
+        toast.success('임시 비밀번호가 클립보드에 복사되었습니다!');
+      })
+      .catch(() => {
+        toast.error('복사 실패. 수동으로 복사해주세요.');
+      });
   };
 
   return (
