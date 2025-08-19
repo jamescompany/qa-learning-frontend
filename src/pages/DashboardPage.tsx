@@ -3,6 +3,8 @@ import { Link, Navigate } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 import { useAuthStore } from '../store/authStore';
+import { useTodoStore } from '../store/todoStore';
+import { usePostStore } from '../store/postStore';
 
 interface DashboardStats {
   totalPosts: number;
@@ -13,13 +15,15 @@ interface DashboardStats {
 
 const DashboardPage: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
+  const todoStats = useTodoStore((state) => state.getTodoStats());
+  const { posts, fetchPosts, isLoading: postsLoading } = usePostStore();
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
     totalTodos: 0,
     completedTodos: 0,
     recentActivity: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
@@ -27,19 +31,25 @@ const DashboardPage: React.FC = () => {
   }
 
   useEffect(() => {
-    // Simulate fetching dashboard stats
-    setTimeout(() => {
-      setStats({
-        totalPosts: 12,
-        totalTodos: 25,
-        completedTodos: 18,
-        recentActivity: 7,
-      });
-      setIsLoading(false);
-    }, 1000);
+    // Always fetch posts on mount to ensure we have the latest data
+    const loadData = async () => {
+      await fetchPosts();
+      setIsInitialized(true);
+    };
+    loadData();
   }, []);
 
-  if (isLoading) {
+  useEffect(() => {
+    // Use real data from stores
+    setStats({
+      totalPosts: posts.length,
+      totalTodos: todoStats.total,
+      completedTodos: todoStats.completed,
+      recentActivity: posts.length + todoStats.total,
+    });
+  }, [posts.length, todoStats.total, todoStats.completed]);
+
+  if (!isInitialized || postsLoading) {
     return (
       <DashboardLayout>
         <div className="flex justify-center items-center min-h-[60vh]">
@@ -119,11 +129,11 @@ const DashboardPage: React.FC = () => {
                 <div className="flex-1 bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-purple-500 h-2 rounded-full" 
-                    style={{ width: `${(stats.completedTodos / stats.totalTodos) * 100}%` }}
+                    style={{ width: stats.totalTodos > 0 ? `${(stats.completedTodos / stats.totalTodos) * 100}%` : '0%' }}
                   />
                 </div>
                 <span className="ml-2 text-sm text-gray-600">
-                  {Math.round((stats.completedTodos / stats.totalTodos) * 100)}%
+                  {stats.totalTodos > 0 ? Math.round((stats.completedTodos / stats.totalTodos) * 100) : 0}%
                 </span>
               </div>
             </div>

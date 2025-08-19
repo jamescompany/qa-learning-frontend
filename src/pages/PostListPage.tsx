@@ -5,9 +5,10 @@ import Loading from '../components/common/Loading';
 import { usePostStore } from '../store/postStore';
 
 const PostListPage: React.FC = () => {
-  const { posts, isLoading, fetchPosts } = usePostStore();
+  const { posts, isLoading, fetchPosts, likePost } = usePostStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Clear and reset localStorage if there's corrupted data
@@ -151,9 +152,21 @@ const PostListPage: React.FC = () => {
                     </div>
                     
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span className="flex items-center">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (!likedPosts.has(post.id)) {
+                            likePost(post.id);
+                            setLikedPosts(new Set([...likedPosts, post.id]));
+                          }
+                        }}
+                        className={`flex items-center hover:scale-110 transition-transform ${
+                          likedPosts.has(post.id) ? 'text-red-500' : ''
+                        }`}
+                        title="Like this post"
+                      >
                         ❤️ {post.likes || 0}
-                      </span>
+                      </button>
                       <span className="flex items-center">
                         💬 {post.comments?.length || 0}
                       </span>

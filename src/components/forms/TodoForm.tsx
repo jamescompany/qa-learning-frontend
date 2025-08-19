@@ -27,6 +27,9 @@ const TodoForm: React.FC<TodoFormProps> = ({
     dueDate: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  
+  // Check if form is valid (title is required)
+  const isFormValid = formData.title.trim().length >= 3;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -56,13 +59,13 @@ const TodoForm: React.FC<TodoFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormInput
-        label="Title"
+        label="Title *"
         type="text"
         name="title"
         value={formData.title}
         onChange={handleChange}
-        error={errors.title}
-        placeholder="Enter todo title"
+        error={errors.title || (!formData.title && 'Title is required')}
+        placeholder="Enter todo title (min 3 characters)"
         required
         disabled={isLoading}
       />
@@ -109,8 +112,9 @@ const TodoForm: React.FC<TodoFormProps> = ({
       
       <button
         type="submit"
-        disabled={isLoading}
+        disabled={isLoading || !isFormValid}
         className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+        title={!isFormValid ? 'Please enter a title with at least 3 characters' : ''}
       >
         {isLoading ? 'Saving...' : initialData ? 'Update Todo' : 'Create Todo'}
       </button>

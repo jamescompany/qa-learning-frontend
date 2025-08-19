@@ -86,12 +86,23 @@ const KanbanPage: React.FC = () => {
                       <div
                         key={task.id}
                         draggable
-                        onDragStart={() => handleDragStart(task)}
-                        className="bg-white rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow"
+                        onDragStart={() => handleDragStart(task.id)}
+                        className="bg-white rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group"
                       >
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="font-medium text-gray-900">{task.title}</h3>
-                          <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
+                            <button
+                              onClick={() => deleteTask(task.id)}
+                              className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 transition-opacity"
+                              title="Delete task"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                         <p className="text-sm text-gray-600 mb-3">{task.description}</p>
                         <div className="flex items-center justify-between">

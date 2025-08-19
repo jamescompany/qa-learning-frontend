@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/authStore'
+import { initGA } from './utils/analytics'
 import MainLayout from './components/layout/MainLayout'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import ScrollToTop from './components/common/ScrollToTop'
+import GoogleAnalytics from './components/common/GoogleAnalytics'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
@@ -47,11 +49,13 @@ function AppContent() {
   
   useEffect(() => {
     checkAuth();
+    initGA();
   }, [checkAuth]);
   
   return (
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToTop />
+        <GoogleAnalytics />
         <Routes>
           {/* Public routes with MainLayout */}
           <Route element={<MainLayout />}>
