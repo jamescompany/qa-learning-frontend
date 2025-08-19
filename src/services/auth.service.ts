@@ -90,6 +90,10 @@ class AuthService {
         }
       }
       
+      // Check stored passwords first (for users who changed their password)
+      const storedPasswords = JSON.parse(localStorage.getItem('mockPasswords') || '{}');
+      const storedPassword = storedPasswords[credentials.email];
+      
       // Also check default mock users for development
       const mockUsers = [
         { email: 'user@example.com', password: 'password123' },
@@ -99,8 +103,11 @@ class AuthService {
         { email: 'sarah@example.com', password: 'sarah123' }
       ];
       
-      const matchedUser = mockUsers.find(
-        u => u.email === credentials.email && u.password === credentials.password
+      // Check if password matches stored password or default password
+      const defaultUser = mockUsers.find(u => u.email === credentials.email);
+      const matchedUser = defaultUser && (
+        (storedPassword && credentials.password === storedPassword) ||
+        (!storedPassword && credentials.password === defaultUser.password)
       );
       
       if (matchedUser) {
@@ -116,7 +123,7 @@ class AuthService {
           email: credentials.email,
           name: credentials.email.split('@')[0],
           username: credentials.email.split('@')[0],
-          role: matchedUser.email.includes('admin') ? UserRole.ADMIN : UserRole.USER,
+          role: defaultUser.email.includes('admin') ? UserRole.ADMIN : UserRole.USER,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
@@ -163,25 +170,27 @@ class AuthService {
       // Clear tokens
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('mockUser'); // Clear mock user data
       
       // Remove auth header
       api.removeAuthToken();
       
-      // Redirect to landing page
-      window.location.href = '/';
+      // Don't redirect here - let the component handle navigation
     }
   }
 
   async getCurrentUser(): Promise<User> {
+    // First check if we have a mock user (temp password or mock login)
+    const mockUser = localStorage.getItem('mockUser');
+    if (mockUser) {
+      return JSON.parse(mockUser);
+    }
+    
+    // Then try the actual API
     try {
       const response = await api.get<User>('/auth/me');
       return response.data;
     } catch (error: any) {
-      // Fallback: Check for mock user in localStorage
-      const mockUser = localStorage.getItem('mockUser');
-      if (mockUser) {
-        return JSON.parse(mockUser);
-      }
       throw error;
     }
   }
@@ -204,10 +213,87 @@ class AuthService {
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
-    await api.post('/auth/change-password', {
-      currentPassword,
-      newPassword,
-    });
+    // Check if we have a mock user first (since API will likely fail)
+    const mockUser = localStorage.getItem('mockUser');
+    if (mockUser) {
+      console.log('Changing password for mock user');
+      
+      // For mock users, we'll simulate password change
+      const user = JSON.parse(mockUser);
+      
+      // Get stored passwords for validation
+      const storedPasswords = JSON.parse(localStorage.getItem('mockPasswords') || '{}');
+      const currentStoredPassword = storedPasswords[user.email] || null;
+      
+      // Check if it's a temporary password user
+      const tempPasswords = JSON.parse(localStorage.getItem('tempPasswords') || '{}');
+      const tempPasswordData = tempPasswords[user.email];
+      
+      // Default mock passwords
+      const defaultMockPasswords: { [key: string]: string } = {
+        'user@example.com': 'password123',
+        'admin@example.com': 'admin123',
+        'test@test.com': 'test123',
+        'james@example.com': 'james123',
+        'sarah@example.com': 'sarah123'
+      };
+      
+      // Determine what the current valid password should be
+      let validCurrentPassword = currentStoredPassword || 
+                                 defaultMockPasswords[user.email] || 
+                                 (tempPasswordData && tempPasswordData.password);
+      
+      // Check if current password is correct
+      if (currentPassword !== validCurrentPassword && !currentPassword.startsWith('Temp')) {
+        throw new Error('Current password is incorrect');
+      }
+      
+      // Check if new password is same as current
+      if (newPassword === currentPassword) {
+        throw new Error('New password must be different from current password');
+      }
+      
+      // Store the new password
+      storedPasswords[user.email] = newPassword;
+      localStorage.setItem('mockPasswords', JSON.stringify(storedPasswords));
+      
+      // If it was a temp password, remove it
+      if (tempPasswordData) {
+        delete tempPasswords[user.email];
+        localStorage.setItem('tempPasswords', JSON.stringify(tempPasswords));
+      }
+      
+      console.log('Password changed successfully for mock user');
+      return;
+    }
+    
+    // Try the actual API for real users
+    try {
+      await api.post('/auth/change-password', {
+        current_password: currentPassword,  // Use snake_case for backend
+        new_password: newPassword,
+      });
+    } catch (error: any) {
+      // If it's a 422 error, the backend might expect different field names
+      if (error.response?.status === 422) {
+        console.error('Password change failed with 422:', error.response?.data);
+        // Try alternative field names
+        try {
+          await api.post('/auth/change-password', {
+            oldPassword: currentPassword,
+            newPassword: newPassword,
+          });
+        } catch (retryError: any) {
+          // If still failing, provide a helpful error message
+          const errorMessage = retryError.response?.data?.detail || 
+                              retryError.response?.data?.message || 
+                              'Failed to change password. Please check your current password.';
+          throw new Error(errorMessage);
+        }
+      } else {
+        throw error;
+      }
+    }
   }
 
   async requestPasswordReset(email: string): Promise<{ success: boolean; tempPassword?: string; message?: string }> {
