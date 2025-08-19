@@ -3,23 +3,21 @@ import { useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TodoForm from '../components/forms/TodoForm';
 import Loading from '../components/common/Loading';
+import { useTodoStore } from '../store/todoStore';
 
-interface Todo {
-  id: string;
+interface TodoFormData {
   title: string;
   description: string;
   priority: 'low' | 'medium' | 'high';
-  completed: boolean;
   dueDate?: string;
-  createdAt: string;
 }
 
 const TodoPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { todos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
+  const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
   useEffect(() => {
@@ -32,61 +30,21 @@ const TodoPage: React.FC = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  useEffect(() => {
-    // Simulate fetching todos
-    setTimeout(() => {
-      setTodos([
-        {
-          id: '1',
-          title: 'Review test cases',
-          description: 'Review and update test cases for the new feature',
-          priority: 'high',
-          completed: false,
-          dueDate: '2024-01-20',
-          createdAt: '2024-01-15',
-        },
-        {
-          id: '2',
-          title: 'Write automation scripts',
-          description: 'Create Selenium scripts for login flow',
-          priority: 'medium',
-          completed: true,
-          createdAt: '2024-01-14',
-        },
-      ]);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+  const editingTodo = todos.find(t => t.id === editingTodoId) || null;
 
-  const handleSubmit = (data: any) => {
-    if (editingTodo) {
-      setTodos(todos.map(todo => 
-        todo.id === editingTodo.id 
-          ? { ...todo, ...data }
-          : todo
-      ));
+  const handleSubmit = (data: TodoFormData) => {
+    if (editingTodoId) {
+      updateTodo(editingTodoId, {
+        title: data.title,
+        description: data.description,
+      });
     } else {
-      const newTodo: Todo = {
-        id: Date.now().toString(),
-        ...data,
-        completed: false,
-        createdAt: new Date().toISOString(),
-      };
-      setTodos([newTodo, ...todos]);
+      addTodo(data.title, data.description);
     }
     setShowForm(false);
-    setEditingTodo(null);
+    setEditingTodoId(null);
   };
 
-  const toggleComplete = (id: string) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
-  };
-
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
 
   const filteredTodos = todos.filter(todo => {
     if (filter === 'active') return !todo.completed;
@@ -94,14 +52,6 @@ const TodoPage: React.FC = () => {
     return true;
   });
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'text-red-600 bg-red-50';
-      case 'medium': return 'text-yellow-600 bg-yellow-50';
-      case 'low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
-    }
-  };
 
   if (isLoading) {
     return (
@@ -159,12 +109,17 @@ const TodoPage: React.FC = () => {
               </h2>
               <TodoForm
                 onSubmit={handleSubmit}
-                initialData={editingTodo || undefined}
+                initialData={editingTodo ? {
+                  title: editingTodo.title,
+                  description: editingTodo.description || '',
+                  priority: 'medium' as const,
+                  dueDate: ''
+                } : undefined}
               />
               <button
                 onClick={() => {
                   setShowForm(false);
-                  setEditingTodo(null);
+                  setEditingTodoId(null);
                 }}
                 className="mt-4 w-full py-2 text-gray-600 hover:text-gray-800"
               >
@@ -190,7 +145,7 @@ const TodoPage: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={todo.completed}
-                    onChange={() => toggleComplete(todo.id)}
+                    onChange={() => toggleTodo(todo.id)}
                     className="mt-1 mr-3"
                   />
                   <div className="flex-1">
@@ -203,20 +158,15 @@ const TodoPage: React.FC = () => {
                       <p className="text-gray-600 text-sm mt-1">{todo.description}</p>
                     )}
                     <div className="flex items-center gap-4 mt-2">
-                      <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(todo.priority)}`}>
-                        {todo.priority}
+                      <span className="text-xs text-gray-500">
+                        Created: {new Date(todo.createdAt).toLocaleDateString()}
                       </span>
-                      {todo.dueDate && (
-                        <span className="text-xs text-gray-500">
-                          Due: {new Date(todo.dueDate).toLocaleDateString()}
-                        </span>
-                      )}
                     </div>
                   </div>
                   <div className="flex space-x-2">
                     <button
                       onClick={() => {
-                        setEditingTodo(todo);
+                        setEditingTodoId(todo.id);
                         setShowForm(true);
                       }}
                       className="text-blue-600 hover:text-blue-800"

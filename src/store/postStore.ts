@@ -321,7 +321,18 @@ export const usePostStore = create<PostState>()(
       // Like post
       likePost: async (id) => {
         try {
-          const updatedPost = await postService.likePost(id);
+          // For local storage, just increment the like count
+          const storedPosts = JSON.parse(localStorage.getItem('localPosts') || '[]');
+          const updatedPosts = storedPosts.map((post: Post) => {
+            if (post.id === id) {
+              return { ...post, likes: (post.likes || 0) + 1 };
+            }
+            return post;
+          });
+          localStorage.setItem('localPosts', JSON.stringify(updatedPosts));
+          
+          const updatedPost = updatedPosts.find((p: Post) => p.id === id);
+          
           set((state) => ({
             posts: state.posts.map((post) =>
               post.id === id ? updatedPost : post
@@ -338,7 +349,18 @@ export const usePostStore = create<PostState>()(
       // Unlike post
       unlikePost: async (id) => {
         try {
-          const updatedPost = await postService.unlikePost(id);
+          // For local storage, just decrement the like count
+          const storedPosts = JSON.parse(localStorage.getItem('localPosts') || '[]');
+          const updatedPosts = storedPosts.map((post: Post) => {
+            if (post.id === id) {
+              return { ...post, likes: Math.max((post.likes || 0) - 1, 0) };
+            }
+            return post;
+          });
+          localStorage.setItem('localPosts', JSON.stringify(updatedPosts));
+          
+          const updatedPost = updatedPosts.find((p: Post) => p.id === id);
+          
           set((state) => ({
             posts: state.posts.map((post) =>
               post.id === id ? updatedPost : post

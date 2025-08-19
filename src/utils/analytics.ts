@@ -1,0 +1,49 @@
+import ReactGA from 'react-ga4';
+
+const MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-BY4672YR48';
+
+export const initGA = () => {
+  ReactGA.initialize(MEASUREMENT_ID, {
+    gaOptions: {
+      debug_mode: false,
+    },
+    gtagOptions: {
+      debug_mode: false,
+      send_page_view: false,
+    },
+  });
+};
+
+export const logPageView = (path: string) => {
+  ReactGA.send({ hitType: 'pageview', page: path });
+};
+
+export const logEvent = (category: string, action: string, label?: string, value?: number) => {
+  ReactGA.event({
+    category,
+    action,
+    label,
+    value,
+  });
+};
+
+export const logUserInteraction = (action: string, label?: string) => {
+  logEvent('User Interaction', action, label);
+};
+
+export const logFormSubmission = (formName: string, success: boolean) => {
+  logEvent('Form', success ? 'Submit Success' : 'Submit Error', formName);
+};
+
+export const logSearch = (searchTerm: string, resultsCount?: number) => {
+  logEvent('Search', 'Search Performed', searchTerm, resultsCount);
+};
+
+export const logTiming = (category: string, variable: string, value: number, label?: string) => {
+  ReactGA.gtag('event', 'timing_complete', {
+    name: variable,
+    value,
+    event_category: category,
+    event_label: label,
+  });
+};
