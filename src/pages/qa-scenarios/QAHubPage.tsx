@@ -239,7 +239,7 @@ const QAHubPage = () => {
         </section>
 
         {/* Quick Start Guide */}
-        <section>
+        <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Quick Start Guide</h2>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <div className="flex items-start">
@@ -255,6 +255,34 @@ const QAHubPage = () => {
                   <li>Use browser DevTools to inspect elements and selectors</li>
                   <li>Practice writing automated tests using Playwright, Cypress, or Selenium</li>
                 </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Learning Support */}
+        <section>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Learning Support</h2>
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6">
+            <div className="flex items-start">
+              <svg className="w-6 h-6 text-purple-600 mr-3 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              <div>
+                <p className="text-gray-800 mb-3">
+                  Need additional learning resources? Please let us know.
+                </p>
+                <a 
+                  href="mailto:support@qalearningweb.com"
+                  className="inline-flex items-center text-purple-700 hover:text-purple-900 font-medium transition-colors"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                  support@qalearningweb.com
+                </a>
               </div>
             </div>
           </div>
