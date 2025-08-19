@@ -12,7 +12,7 @@ interface AuthState {
   // Actions
   login: (email: string, password: string) => Promise<void>;
   signup: (data: { name: string; email: string; password: string }) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
   register: (data: { name: string; email: string; password: string }) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -79,22 +79,23 @@ export const useAuthStore = create<AuthState>()(
           return get().signup(data);
         },
 
-        logout: async () => {
-          set({ isLoading: true });
-          try {
-            await authService.logout();
-            set({
-              user: null,
-              isAuthenticated: false,
-              isLoading: false,
-              error: null,
-            });
-          } catch (error: any) {
-            set({
-              isLoading: false,
-              error: error.response?.data?.message || 'Logout failed',
-            });
-          }
+        logout: () => {
+          // Clear state immediately
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          });
+          
+          // Clear persisted state from localStorage
+          localStorage.removeItem('auth-storage');
+          
+          // Clear storage and auth synchronously
+          authService.logout().catch(console.error);
+          
+          // Force page reload to clear all state
+          window.location.href = '/';
         },
 
         updateProfile: async (data) => {
@@ -136,8 +137,12 @@ export const useAuthStore = create<AuthState>()(
               error: null,
             });
           } catch (error) {
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('refreshToken');
+            // Only clear tokens if it's not a mock session
+            const mockUser = localStorage.getItem('mockUser');
+            if (!mockUser) {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+            }
             set({
               user: null,
               isAuthenticated: false,

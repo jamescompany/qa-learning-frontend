@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -12,13 +12,11 @@ const Header: React.FC<HeaderProps> = ({
   userName = 'Guest',
   onLogout 
 }) => {
-  const navigate = useNavigate();
-
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
     }
-    navigate('/login');
+    // Don't navigate here - let the logout service handle it
   };
 
   return (

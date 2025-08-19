@@ -4,12 +4,25 @@ import MainLayout from '../components/layout/MainLayout';
 import FormInput from '../components/forms/FormInput';
 import Modal from '../components/common/Modal';
 import { useAuthStore } from '../store/authStore';
+import authService from '../services/auth.service';
+import toast from 'react-hot-toast';
 
 const ProfilePage: React.FC = () => {
   const { user, isAuthenticated } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState({ title: '', message: '', type: 'success' as 'success' | 'error' });
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [passwordErrors, setPasswordErrors] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -79,6 +92,90 @@ const ProfilePage: React.FC = () => {
         type: 'error'
       });
       setShowModal(true);
+    }
+  };
+
+  const validatePassword = () => {
+    const errors = {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    };
+    let isValid = true;
+
+    if (!passwordData.currentPassword) {
+      errors.currentPassword = 'Current password is required';
+      isValid = false;
+    }
+
+    if (!passwordData.newPassword) {
+      errors.newPassword = 'New password is required';
+      isValid = false;
+    } else if (passwordData.newPassword.length < 8) {
+      errors.newPassword = 'Password must be at least 8 characters';
+      isValid = false;
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordData.newPassword)) {
+      errors.newPassword = 'Password must contain uppercase, lowercase, and number';
+      isValid = false;
+    } else if (passwordData.currentPassword && passwordData.newPassword === passwordData.currentPassword) {
+      errors.newPassword = 'New password must be different from current password';
+      isValid = false;
+    }
+
+    if (!passwordData.confirmPassword) {
+      errors.confirmPassword = 'Please confirm your new password';
+      isValid = false;
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+      isValid = false;
+    }
+
+    setPasswordErrors(errors);
+    return isValid;
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setPasswordData(prev => ({ ...prev, [name]: value }));
+    // Clear error for this field when user starts typing
+    setPasswordErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validatePassword()) {
+      return;
+    }
+
+    try {
+      await authService.changePassword(passwordData.currentPassword, passwordData.newPassword);
+      toast.success('Password changed successfully! Please log in with your new password.');
+      
+      // Clear form
+      setShowPasswordSection(false);
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      setPasswordErrors({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      
+      // Logout after password change
+      setTimeout(() => {
+        // Clear auth state and navigate
+        useAuthStore.getState().logout();
+      }, 1500); // Give user time to see the success message
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to change password';
+      toast.error(errorMessage);
+      if (errorMessage.toLowerCase().includes('current password')) {
+        setPasswordErrors(prev => ({ ...prev, currentPassword: 'Current password is incorrect' }));
+      }
     }
   };
 
@@ -240,6 +337,130 @@ const ProfilePage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Password Change Section */}
+      <div className="bg-white rounded-lg shadow mt-6">
+        <div className="p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Security Settings</h2>
+            {!showPasswordSection && (
+              <button
+                onClick={() => setShowPasswordSection(true)}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
+              >
+                Change Password
+              </button>
+            )}
+          </div>
+
+          {showPasswordSection ? (
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  id="currentPassword"
+                  name="currentPassword"
+                  value={passwordData.currentPassword}
+                  onChange={handlePasswordChange}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    passwordErrors.currentPassword ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter current password"
+                />
+                {passwordErrors.currentPassword && (
+                  <p className="mt-1 text-sm text-red-600">{passwordErrors.currentPassword}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  value={passwordData.newPassword}
+                  onChange={handlePasswordChange}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    passwordErrors.newPassword ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Enter new password"
+                />
+                {passwordErrors.newPassword && (
+                  <p className="mt-1 text-sm text-red-600">{passwordErrors.newPassword}</p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">
+                  Password must be at least 8 characters with uppercase, lowercase, and numbers
+                </p>
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={passwordData.confirmPassword}
+                  onChange={handlePasswordChange}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    passwordErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Confirm new password"
+                />
+                {passwordErrors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">{passwordErrors.confirmPassword}</p>
+                )}
+              </div>
+
+              <div className="flex space-x-2 pt-4">
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Update Password
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordSection(false);
+                    setPasswordData({
+                      currentPassword: '',
+                      newPassword: '',
+                      confirmPassword: '',
+                    });
+                    setPasswordErrors({
+                      currentPassword: '',
+                      newPassword: '',
+                      confirmPassword: '',
+                    });
+                  }}
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-600">
+                <strong>Password Security Tips:</strong>
+              </p>
+              <ul className="mt-2 space-y-1 text-sm text-gray-500 list-disc list-inside">
+                <li>Use a strong password with at least 8 characters</li>
+                <li>Include uppercase, lowercase letters, numbers, and symbols</li>
+                <li>Don't use the same password for multiple accounts</li>
+                <li>Change your password regularly</li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
       

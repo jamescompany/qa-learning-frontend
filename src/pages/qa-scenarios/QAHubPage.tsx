@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import Header from '../../components/common/Header';
+import { useAuthStore } from '../../store/authStore';
 
 const QAHubPage = () => {
+  const { user, isAuthenticated, logout } = useAuthStore();
   const scenarios = [
     {
       title: 'Component Playground',
@@ -69,8 +72,15 @@ const QAHubPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      {/* Common Header */}
+      <Header 
+        isAuthenticated={isAuthenticated}
+        userName={user?.full_name || user?.username || user?.email}
+        onLogout={logout}
+      />
+      
+      {/* Page Title Section */}
+      <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -81,7 +91,7 @@ const QAHubPage = () => {
             </p>
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Test Scenarios */}
