@@ -1,41 +1,57 @@
 import ReactGA from 'react-ga4';
 
 const MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-BY4672YR48';
-const isGAEnabled = import.meta.env.VITE_ENABLE_GA === 'true';
-const isDevelopment = import.meta.env.DEV;
+const isProduction = import.meta.env.PROD;
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 export const initGA = () => {
-  // Only initialize GA if explicitly enabled and not in local development
-  if (!isGAEnabled || isLocalhost || isDevelopment) {
-    console.log('Google Analytics disabled');
-    return;
-  }
+  // Show debug logs in development, hide in production
+  const enableDebug = !isProduction;
   
-  // Disable all debug logs in production
-  window.gtag = window.gtag || function() {
-    (window.dataLayer = window.dataLayer || []).push(arguments);
-  };
+  console.log('Google Analytics initializing', {
+    isProduction,
+    isLocalhost,
+    enableDebug,
+    hostname: window.location.hostname
+  });
   
   ReactGA.initialize(MEASUREMENT_ID, {
     gaOptions: {
-      debug_mode: false,
+      debug_mode: enableDebug,  // true in development, false in production
       anonymize_ip: true,
     },
     gtagOptions: {
-      debug_mode: false,
+      debug_mode: enableDebug,  // true in development, false in production
       send_page_view: false,
     },
   });
+  
+  // In production, suppress console logs
+  if (isProduction) {
+    // Override console methods for gtag
+    const originalLog = console.log;
+    console.log = function(...args: any[]) {
+      // Filter out Google Tag Manager logs in production
+      if (args[0] && typeof args[0] === 'string' && 
+          (args[0].includes('Google Tag') || 
+           args[0].includes('Processing') || 
+           args[0].includes('Tag fired') ||
+           args[0].includes('GTAG') ||
+           args[0].includes('____'))) {
+        return;
+      }
+      originalLog.apply(console, args);
+    };
+  }
 };
 
 export const logPageView = (path: string) => {
-  if (!isGAEnabled || isLocalhost || isDevelopment) return;
+  // Always track page views but suppress logs in production
   ReactGA.send({ hitType: 'pageview', page: path });
 };
 
 export const logEvent = (category: string, action: string, label?: string, value?: number) => {
-  if (!isGAEnabled || isLocalhost || isDevelopment) return;
+  // Always track events but suppress logs in production
   ReactGA.event({
     category,
     action,
@@ -57,7 +73,7 @@ export const logSearch = (searchTerm: string, resultsCount?: number) => {
 };
 
 export const logTiming = (category: string, variable: string, value: number, label?: string) => {
-  if (!isGAEnabled || isLocalhost || isDevelopment) return;
+  // Always track timing but suppress logs in production
   ReactGA.gtag('event', 'timing_complete', {
     name: variable,
     value,
