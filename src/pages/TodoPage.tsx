@@ -15,7 +15,7 @@ interface TodoFormData {
 const TodoPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { todos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
@@ -109,7 +109,12 @@ const TodoPage: React.FC = () => {
               </h2>
               <TodoForm
                 onSubmit={handleSubmit}
-                initialData={editingTodo || undefined}
+                initialData={editingTodo ? {
+                  title: editingTodo.title,
+                  description: editingTodo.description || '',
+                  priority: 'medium' as const,
+                  dueDate: ''
+                } : undefined}
               />
               <button
                 onClick={() => {
