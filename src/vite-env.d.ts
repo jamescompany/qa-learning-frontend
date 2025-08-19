@@ -41,6 +41,9 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_LOGGER: string;
   readonly VITE_LOG_LEVEL: string;
   
+  // Vercel
+  readonly VITE_VERCEL_ENV?: string;
+  
   // Test
   readonly VITE_TEST_USER_EMAIL?: string;
   readonly VITE_TEST_USER_PASSWORD?: string;
