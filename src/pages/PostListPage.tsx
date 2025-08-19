@@ -2,62 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  author: string;
-  tags: string[];
-  createdAt: string;
-  likes: number;
-  comments: number;
-}
+import { usePostStore } from '../store/postStore';
 
 const PostListPage: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { posts, isLoading, fetchPosts } = usePostStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate fetching posts
-    setTimeout(() => {
-      setPosts([
-        {
-          id: '1',
-          title: 'Best Practices for API Testing',
-          content: 'Learn the essential techniques for effective API testing...',
-          author: 'James Kang',
-          tags: ['API', 'Testing', 'Automation'],
-          createdAt: '2024-01-15',
-          likes: 24,
-          comments: 5,
-        },
-        {
-          id: '2',
-          title: 'Introduction to Selenium WebDriver',
-          content: 'A comprehensive guide to getting started with Selenium...',
-          author: 'Sarah Kim',
-          tags: ['Selenium', 'Automation', 'Tutorial'],
-          createdAt: '2024-01-14',
-          likes: 18,
-          comments: 3,
-        },
-        {
-          id: '3',
-          title: 'Mobile App Testing Strategies',
-          content: 'Explore different approaches to testing mobile applications...',
-          author: 'Michael Park',
-          tags: ['Mobile', 'Testing', 'Strategy'],
-          createdAt: '2024-01-13',
-          likes: 15,
-          comments: 7,
-        },
-      ]);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    fetchPosts();
+  }, [fetchPosts]);
 
   const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -160,7 +114,7 @@ const PostListPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <span className="text-sm text-gray-500">
-                        By {post.author}
+                        By {post.author?.name || 'Unknown'}
                       </span>
                       <div className="flex gap-2">
                         {post.tags.map(tag => (
@@ -176,10 +130,10 @@ const PostListPage: React.FC = () => {
                     
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span className="flex items-center">
-                        ❤️ {post.likes}
+                        ❤️ {post.likes || 0}
                       </span>
                       <span className="flex items-center">
-                        💬 {post.comments}
+                        💬 {post.comments?.length || 0}
                       </span>
                     </div>
                   </div>

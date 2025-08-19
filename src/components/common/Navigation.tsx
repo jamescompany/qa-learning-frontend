@@ -9,6 +9,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated = false }) => {
   const publicNavItems = [
     { path: '/', label: 'Home' },
     { path: '/posts', label: 'Posts' },
+    { path: '/qa', label: 'QA Testing Hub' },
     { path: '/about', label: 'About' },
   ];
 
@@ -18,6 +19,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated = false }) => {
     { path: '/posts', label: 'Posts' },
     { path: '/calendar', label: 'Calendar' },
     { path: '/kanban', label: 'Kanban' },
+    { path: '/qa', label: 'QA Testing Hub' },
   ];
 
   const navItems = isAuthenticated ? privateNavItems : publicNavItems;

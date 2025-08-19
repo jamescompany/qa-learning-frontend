@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import LoginForm from '../components/forms/LoginForm';
 import { useAuthStore } from '../store/authStore';
 import AuthLayout from '../components/layout/AuthLayout';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleLogin = async (email: string, password: string) => {
     setIsLoading(true);
@@ -17,7 +20,7 @@ const LoginPage: React.FC = () => {
     try {
       // Call login service here
       await login(email, password);
-      navigate('/dashboard');
+      navigate(from, { replace: true });
     } catch (err) {
       setError('Invalid email or password. Please try again.');
     } finally {

@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import PostForm from '../components/forms/PostForm';
+import { usePostStore } from '../store/postStore';
 
 const PostCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const { createPost } = usePostStore();
 
   const handleSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Creating post:', data);
+      await createPost(data);
+      toast.success('Post created successfully!');
       navigate('/posts');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create post:', error);
+      toast.error(error.message || 'Failed to create post. Please try again.');
     } finally {
       setIsLoading(false);
     }

@@ -143,9 +143,12 @@ const PostForm: React.FC<PostFormProps> = ({
                 type="button"
                 onClick={() => handleRemoveTag(tag)}
                 disabled={isLoading}
-                className="ml-2 text-blue-600 hover:text-blue-800"
+                className="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
+                aria-label={`Remove ${tag} tag`}
               >
-                ×
+                <svg className="w-4 h-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
               </button>
             </span>
           ))}
