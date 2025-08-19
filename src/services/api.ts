@@ -12,6 +12,9 @@ class ApiService {
       headers: {
         'Content-Type': 'application/json',
       },
+      // Bypass SSL verification issues with Fortinet
+      httpsAgent: typeof window === 'undefined' ? undefined : false,
+      proxy: false,
     });
 
     // Request interceptor
