@@ -1,18 +1,29 @@
 import ReactGA from 'react-ga4';
 
 const MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-BY4672YR48';
-const isProduction = import.meta.env.PROD;
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const hostname = window.location.hostname;
+const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+
+// Simple domain-based detection
+const isDevDomain = hostname.includes('dev.qalearningweb.com');
+const isProdDomain = hostname.includes('www.qalearningweb.com') || hostname === 'qalearningweb.com';
+const isVercelPreview = hostname.includes('vercel.app');
+
+// True production = only the production domain
+const isRealProduction = isProdDomain && !isDevDomain && !isVercelPreview;
 
 export const initGA = () => {
-  // Show debug logs in development, hide in production
-  const enableDebug = !isProduction;
+  // Show debug logs everywhere except production domain
+  const enableDebug = !isRealProduction;
   
   console.log('Google Analytics initializing', {
-    isProduction,
+    hostname,
     isLocalhost,
-    enableDebug,
-    hostname: window.location.hostname
+    isDevDomain,
+    isProdDomain,
+    isVercelPreview,
+    isRealProduction,
+    enableDebug
   });
   
   ReactGA.initialize(MEASUREMENT_ID, {
@@ -26,8 +37,8 @@ export const initGA = () => {
     },
   });
   
-  // In production, suppress console logs
-  if (isProduction) {
+  // In production domain only, suppress console logs
+  if (isRealProduction) {
     // Override console methods for gtag
     const originalLog = console.log;
     console.log = function(...args: any[]) {
@@ -37,7 +48,9 @@ export const initGA = () => {
            args[0].includes('Processing') || 
            args[0].includes('Tag fired') ||
            args[0].includes('GTAG') ||
-           args[0].includes('____'))) {
+           args[0].includes('____') ||
+           args[0].includes('gtm.') ||
+           args[0].includes('js?id='))) {
         return;
       }
       originalLog.apply(console, args);
