@@ -27,7 +27,8 @@ interface ImportMetaEnv {
   readonly VITE_ALLOWED_FILE_TYPES: string;
   
   // Analytics
-  readonly VITE_GA_TRACKING_ID?: string;
+  readonly VITE_GA_MEASUREMENT_ID?: string;
+  readonly VITE_ENABLE_GA?: string;
   readonly VITE_SENTRY_DSN?: string;
   
   // Social login
@@ -56,6 +57,7 @@ declare global {
     __REDUX_DEVTOOLS_EXTENSION__?: any;
     __REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
     gtag?: (...args: any[]) => void;
+    dataLayer?: any[];
     fbq?: (...args: any[]) => void;
   }
 }
