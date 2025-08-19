@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 import { usePostStore } from '../store/postStore';
-import { Post } from '../types/post.types';
 
 const PostListPage: React.FC = () => {
   const { posts, isLoading, fetchPosts } = usePostStore();
@@ -115,7 +114,7 @@ const PostListPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <span className="text-sm text-gray-500">
-                        By {post.author?.name || post.author?.username || 'Unknown'}
+                        By {post.author?.name || 'Unknown'}
                       </span>
                       <div className="flex gap-2">
                         {post.tags.map(tag => (

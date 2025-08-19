@@ -110,13 +110,13 @@ const BankingDashboardPage = () => {
         setShowPayBillModal(true);
         break;
       case 'deposit':
-        toast.info('Opening camera for mobile deposit...');
+        toast('Opening camera for mobile deposit...');
         break;
       case 'send-money':
-        toast.info('Send money feature coming soon!');
+        toast('Send money feature coming soon!');
         break;
       case 'cards':
-        toast.info('Card management feature coming soon!');
+        toast('Card management feature coming soon!');
         break;
       case 'statements':
         setShowStatementModal(true);

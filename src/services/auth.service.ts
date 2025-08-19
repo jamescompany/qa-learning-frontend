@@ -1,5 +1,5 @@
 import api from './api';
-import { User } from '../types/user.types';
+import { User, UserRole } from '../types/user.types';
 
 interface LoginCredentials {
   email: string;
@@ -74,7 +74,7 @@ class AuthService {
             email: credentials.email,
             name: credentials.email.split('@')[0],
             username: credentials.email.split('@')[0],
-            role: 'user',
+            role: UserRole.USER,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           };
@@ -116,7 +116,7 @@ class AuthService {
           email: credentials.email,
           name: credentials.email.split('@')[0],
           username: credentials.email.split('@')[0],
-          role: matchedUser.email.includes('admin') ? 'admin' : 'user',
+          role: matchedUser.email.includes('admin') ? UserRole.ADMIN : UserRole.USER,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
