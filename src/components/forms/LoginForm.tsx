@@ -3,11 +3,12 @@ import FormInput from './FormInput';
 import { validateForm, emailValidation } from './FormValidation';
 
 interface LoginFormProps {
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string, password: string) => void | Promise<void>;
   isLoading?: boolean;
+  error?: string | null;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, error }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -23,8 +24,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false }) =>
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     const validationErrors = validateForm(formData, {
       email: emailValidation,
@@ -36,7 +38,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false }) =>
       return;
     }
 
-    onSubmit(formData.email, formData.password);
+    // Call onSubmit but don't reset form data
+    await onSubmit(formData.email, formData.password);
   };
 
   return (

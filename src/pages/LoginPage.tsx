@@ -27,9 +27,15 @@ const LoginPage: React.FC = () => {
     try {
       // Call login service here
       await login(email, password);
+      // Only navigate if login was successful
       navigate(from, { replace: true });
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
+    } catch (err: any) {
+      // Set error message and keep it visible
+      const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.detail || 
+                          'Invalid email or password. Please try again.';
+      setError(errorMessage);
+      // Don't throw the error to prevent any parent handlers
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +54,7 @@ const LoginPage: React.FC = () => {
           </div>
         )}
         
-        <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
+        <LoginForm onSubmit={handleLogin} isLoading={isLoading} error={error} />
         
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
