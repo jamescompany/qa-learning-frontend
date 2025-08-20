@@ -7,19 +7,21 @@ const LoginPageKo: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     try {
       await login(email, password);
       toast.success('로그인 성공!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error('로그인 실패. 이메일과 비밀번호를 확인해주세요.');
+      setErrorMessage('로그인 실패. 이메일과 비밀번호를 확인해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -41,6 +43,11 @@ const LoginPageKo: React.FC = () => {
         </div>
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {errorMessage && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+              {errorMessage}
+            </div>
+          )}
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
               <label htmlFor="email" className="sr-only">

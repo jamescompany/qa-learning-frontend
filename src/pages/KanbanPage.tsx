@@ -5,7 +5,8 @@ import { useKanbanStore } from '../store/kanbanStore';
 
 const KanbanPage: React.FC = () => {
   const { t } = useTranslation();
-  const { tasks, moveTask, addTask, deleteTask, updateTask } = useKanbanStore();
+  const { getUserTasks, moveTask, addTask, deleteTask, updateTask } = useKanbanStore();
+  const tasks = getUserTasks(); // 현재 사용자의 작업만 가져오기
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<'todo' | 'inProgress' | 'review' | 'done'>('todo');
