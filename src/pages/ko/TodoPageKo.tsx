@@ -154,11 +154,16 @@ const TodoPageKo: React.FC = () => {
                   dueDate: editingTodo.dueDate,
                 } : undefined}
                 onSubmit={handleSubmit}
-                onCancel={() => {
+              />
+              <button
+                onClick={() => {
                   setShowForm(false);
                   setEditingTodoId(null);
                 }}
-              />
+                className="mt-4 w-full py-2 text-gray-600 hover:text-gray-800"
+              >
+                취소
+              </button>
             </div>
           </div>
         )}
