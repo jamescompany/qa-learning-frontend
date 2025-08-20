@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 
 interface Message {
@@ -10,10 +11,11 @@ interface Message {
 }
 
 const ChatPage: React.FC = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', text: 'Hey team, how is the testing going?', sender: 'John', timestamp: new Date('2024-01-15T10:00:00'), isOwn: false },
-    { id: '2', text: 'Good! Found 3 critical bugs in the payment flow', sender: 'You', timestamp: new Date('2024-01-15T10:05:00'), isOwn: true },
-    { id: '3', text: 'Great catch! Can you document them?', sender: 'John', timestamp: new Date('2024-01-15T10:06:00'), isOwn: false },
+    { id: '1', text: t('chat.messages.initial1'), sender: 'John', timestamp: new Date('2024-01-15T10:00:00'), isOwn: false },
+    { id: '2', text: t('chat.messages.initial2'), sender: t('chat.you'), timestamp: new Date('2024-01-15T10:05:00'), isOwn: true },
+    { id: '3', text: t('chat.messages.initial3'), sender: 'John', timestamp: new Date('2024-01-15T10:06:00'), isOwn: false },
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -33,7 +35,7 @@ const ChatPage: React.FC = () => {
       const message: Message = {
         id: Date.now().toString(),
         text: newMessage,
-        sender: 'You',
+        sender: t('chat.you'),
         timestamp: new Date(),
         isOwn: true,
       };
@@ -47,7 +49,7 @@ const ChatPage: React.FC = () => {
         // Simulate response
         const response: Message = {
           id: (Date.now() + 1).toString(),
-          text: 'Thanks for the update! I\'ll review them shortly.',
+          text: t('chat.messages.response'),
           sender: 'John',
           timestamp: new Date(),
           isOwn: false,
@@ -63,8 +65,8 @@ const ChatPage: React.FC = () => {
       <div className="bg-white rounded-lg shadow h-full flex flex-col">
           {/* Chat Header */}
           <div className="p-4 border-b">
-            <h1 className="text-xl font-semibold text-gray-900">QA Team Chat</h1>
-            <p className="text-sm text-gray-500">3 members online</p>
+            <h1 className="text-xl font-semibold text-gray-900">{t('chat.title')}</h1>
+            <p className="text-sm text-gray-500">{t('chat.membersOnline', { count: 3 })}</p>
           </div>
 
           {/* Messages Area */}
@@ -116,7 +118,7 @@ const ChatPage: React.FC = () => {
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
+                placeholder={t('chat.typeMessage')}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
@@ -124,7 +126,7 @@ const ChatPage: React.FC = () => {
                 disabled={!newMessage.trim()}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
-                Send
+                {t('chat.send')}
               </button>
             </div>
           </form>

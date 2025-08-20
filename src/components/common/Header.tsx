@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import LanguageSelector from './LanguageSelector';
 
 interface HeaderProps {
   isAuthenticated?: boolean;
@@ -12,11 +14,15 @@ const Header: React.FC<HeaderProps> = ({
   userName = 'Guest',
   onLogout 
 }) => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  
   const handleLogout = () => {
     if (onLogout) {
       onLogout();
     }
-    // Don't navigate here - let the logout service handle it
+    // Navigate to home page after logout
+    navigate('/');
   };
 
   return (
@@ -31,13 +37,14 @@ const Header: React.FC<HeaderProps> = ({
           
           {/* User Menu */}
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
             {isAuthenticated ? (
               <>
                 <Link
                   to="/dashboard"
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Dashboard
+                  {t('navigation.dashboard')}
                 </Link>
                 <Link
                   to="/profile"
@@ -49,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
                   onClick={handleLogout}
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Logout
+                  {t('navigation.logout')}
                 </button>
               </>
             ) : (
@@ -58,13 +65,13 @@ const Header: React.FC<HeaderProps> = ({
                   to="/login"
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Login
+                  {t('navigation.login')}
                 </Link>
                 <Link
                   to="/signup"
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  Sign Up
+                  {t('navigation.signup')}
                 </Link>
               </>
             )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 
@@ -23,6 +24,7 @@ interface Comment {
 }
 
 const PostDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [post, setPost] = useState<Post | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -112,7 +114,7 @@ const PostDetailPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="flex justify-center items-center min-h-[60vh]">
-          <Loading size="large" text="Loading post..." />
+          <Loading size="large" text={t('posts.detail.loading')} />
         </div>
       </DashboardLayout>
     );
@@ -122,9 +124,9 @@ const PostDetailPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <p className="text-gray-500">Post not found</p>
+          <p className="text-gray-500">{t('posts.detail.notFound')}</p>
           <Link to="/posts" className="text-blue-600 hover:text-blue-800 mt-4 inline-block">
-            Back to Posts
+            {t('posts.detail.backToPosts')}
           </Link>
         </div>
       </DashboardLayout>
@@ -140,7 +142,7 @@ const PostDetailPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.title}</h1>
             <div className="flex items-center justify-between text-sm text-gray-500">
               <div className="flex items-center space-x-4">
-                <span>By {post.author}</span>
+                <span>{t('posts.detail.by')} {post.author}</span>
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-2">
@@ -174,7 +176,7 @@ const PostDetailPage: React.FC = () => {
           {/* Comments Section */}
           <div className="border-t pt-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Comments ({post.comments.length})
+              {t('posts.detail.comments')} ({post.comments.length})
             </h2>
 
             {/* Comment Form */}
@@ -182,7 +184,7 @@ const PostDetailPage: React.FC = () => {
               <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Add a comment..."
+                placeholder={t('posts.detail.addComment')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={3}
               />
@@ -191,7 +193,7 @@ const PostDetailPage: React.FC = () => {
                 disabled={!commentText.trim()}
                 className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
-                Post Comment
+                {t('posts.detail.postComment')}
               </button>
             </div>
 
@@ -218,7 +220,7 @@ const PostDetailPage: React.FC = () => {
             to="/posts"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
-            ← Back to Posts
+            ← {t('posts.detail.backToPosts')}
           </Link>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import TodoForm from '../components/forms/TodoForm';
 import Loading from '../components/common/Loading';
@@ -13,12 +14,14 @@ interface TodoFormData {
 }
 
 const TodoPage: React.FC = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { todos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
   const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [deletingTodoId, setDeletingTodoId] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if we should open the form automatically
@@ -37,12 +40,28 @@ const TodoPage: React.FC = () => {
       updateTodo(editingTodoId, {
         title: data.title,
         description: data.description,
+        priority: data.priority,
+        dueDate: data.dueDate,
       });
     } else {
-      addTodo(data.title, data.description);
+      addTodo(data.title, data.description, data.priority, data.dueDate);
     }
     setShowForm(false);
     setEditingTodoId(null);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteTodo(id);
+    setDeletingTodoId(null);
+  };
+
+  const getPriorityColor = (priority: 'low' | 'medium' | 'high') => {
+    switch (priority) {
+      case 'high': return 'text-red-600 bg-red-50';
+      case 'medium': return 'text-yellow-600 bg-yellow-50';
+      case 'low': return 'text-green-600 bg-green-50';
+      default: return 'text-gray-600 bg-gray-50';
+    }
   };
 
 
@@ -57,7 +76,7 @@ const TodoPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="flex justify-center items-center min-h-[60vh]">
-          <Loading size="large" text="Loading todos..." />
+          <Loading size="large" text={t('todos.loadingTodos')} />
         </div>
       </DashboardLayout>
     );
@@ -67,12 +86,12 @@ const TodoPage: React.FC = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">My Todos</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('todos.title')}</h1>
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Add Todo
+            {t('todos.addTodo')}
           </button>
         </div>
 
@@ -88,7 +107,7 @@ const TodoPage: React.FC = () => {
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {status}
+              {t(`todos.filter.${status}`)}
               <span className="ml-2 text-sm">
                 ({todos.filter(todo => {
                   if (status === 'active') return !todo.completed;
@@ -105,15 +124,15 @@ const TodoPage: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full">
               <h2 className="text-xl font-semibold mb-4">
-                {editingTodo ? 'Edit Todo' : 'Create New Todo'}
+                {editingTodo ? t('todos.form.editTitle') : t('todos.form.title')}
               </h2>
               <TodoForm
                 onSubmit={handleSubmit}
                 initialData={editingTodo ? {
                   title: editingTodo.title,
                   description: editingTodo.description || '',
-                  priority: 'medium' as const,
-                  dueDate: ''
+                  priority: editingTodo.priority || 'medium',
+                  dueDate: editingTodo.dueDate || ''
                 } : undefined}
               />
               <button
@@ -123,7 +142,7 @@ const TodoPage: React.FC = () => {
                 }}
                 className="mt-4 w-full py-2 text-gray-600 hover:text-gray-800"
               >
-                Cancel
+                {t('todos.form.cancel')}
               </button>
             </div>
           </div>
@@ -133,7 +152,7 @@ const TodoPage: React.FC = () => {
         <div className="space-y-4">
           {filteredTodos.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">No todos found</p>
+              <p className="text-gray-500">{t('todos.noTodos')}</p>
             </div>
           ) : (
             filteredTodos.map(todo => (
@@ -158,8 +177,18 @@ const TodoPage: React.FC = () => {
                       <p className="text-gray-600 text-sm mt-1">{todo.description}</p>
                     )}
                     <div className="flex items-center gap-4 mt-2">
+                      {todo.priority && (
+                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(todo.priority)}`}>
+                          {t(`todos.priority.${todo.priority}`)}
+                        </span>
+                      )}
+                      {todo.dueDate && (
+                        <span className="text-xs text-gray-600">
+                          📅 {new Date(todo.dueDate).toLocaleDateString()}
+                        </span>
+                      )}
                       <span className="text-xs text-gray-500">
-                        Created: {new Date(todo.createdAt).toLocaleDateString()}
+                        {t('todos.created')}: {new Date(todo.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
@@ -171,13 +200,13 @@ const TodoPage: React.FC = () => {
                       }}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      Edit
+                      {t('todos.edit')}
                     </button>
                     <button
-                      onClick={() => deleteTodo(todo.id)}
+                      onClick={() => setDeletingTodoId(todo.id)}
                       className="text-red-600 hover:text-red-800"
                     >
-                      Delete
+                      {t('todos.delete')}
                     </button>
                   </div>
                 </div>
@@ -185,6 +214,40 @@ const TodoPage: React.FC = () => {
             ))
           )}
       </div>
+
+        {/* Delete Confirmation Modal */}
+        {deletingTodoId && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+              <div className="flex items-center mb-4">
+                <div className="flex-shrink-0 bg-red-100 rounded-full p-2 mr-3">
+                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{t('todos.deleteConfirm.title')}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{t('todos.deleteConfirm.message')}</p>
+                </div>
+              </div>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => handleDelete(deletingTodoId)}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                  {t('todos.deleteConfirm.confirmButton')}
+                </button>
+                <button
+                  onClick={() => setDeletingTodoId(null)}
+                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                >
+                  {t('todos.deleteConfirm.cancelButton')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
     </DashboardLayout>
   );

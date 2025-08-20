@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FormInput from './FormInput';
 import { validateForm, emailValidation } from './FormValidation';
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string) => void | Promise<void>;
   isLoading?: boolean;
-  error?: string | null;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, error }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,9 +25,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    const isDevelopment = import.meta.env.DEV;
+    
+    if (isDevelopment) {
+      console.log('📝 Form submission:', { email: formData.email, password: '***' });
+    }
     
     const validationErrors = validateForm(formData, {
       email: emailValidation,
@@ -34,37 +41,47 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
     });
 
     if (Object.keys(validationErrors).length > 0) {
+      if (isDevelopment) {
+        console.log('⚠️ Validation errors:', validationErrors);
+      }
       setErrors(validationErrors);
       return;
     }
 
-    // Call onSubmit but don't reset form data
-    await onSubmit(formData.email, formData.password);
+    if (isDevelopment) {
+      console.log('✅ Form valid, submitting...');
+    }
+    
+    onSubmit(formData.email, formData.password);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form 
+      onSubmit={handleSubmit} 
+      className="space-y-4"
+      noValidate
+      action="#"
+      method="POST"
+    >
       <FormInput
-        label="Email"
+        label={t('auth.login.email')}
         type="email"
         name="email"
         value={formData.email}
         onChange={handleChange}
         error={errors.email}
-        placeholder="Enter your email"
-        required
+        placeholder={t('auth.login.emailPlaceholder')}
         disabled={isLoading}
       />
       
       <FormInput
-        label="Password"
+        label={t('auth.login.password')}
         type="password"
         name="password"
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
-        placeholder="Enter your password"
-        required
+        placeholder={t('auth.login.passwordPlaceholder')}
         disabled={isLoading}
       />
       
@@ -73,7 +90,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading = false, erro
         disabled={isLoading}
         className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
       >
-        {isLoading ? 'Logging in...' : 'Login'}
+        {isLoading ? 'Logging in...' : t('auth.login.button')}
       </button>
     </form>
   );

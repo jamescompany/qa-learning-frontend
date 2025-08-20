@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../common/Header';
 import Navigation from '../common/Navigation';
 import { useAuthStore } from '../../store/authStore';
@@ -12,15 +13,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { t } = useTranslation();
 
   const menuItems = [
-    { path: '/dashboard', label: 'Overview', icon: '📊' },
-    { path: '/posts', label: 'Posts', icon: '📝' },
-    { path: '/todos', label: 'Todos', icon: '✅' },
-    { path: '/calendar', label: 'Calendar', icon: '📅' },
-    { path: '/kanban', label: 'Kanban Board', icon: '📋' },
-    { path: '/chat', label: 'Chat', icon: '💬' },
-    { path: '/settings', label: 'Settings', icon: '⚙️' },
+    { path: '/dashboard', label: t('sidebar.overview'), icon: '📊' },
+    { path: '/posts', label: t('sidebar.posts'), icon: '📝' },
+    { path: '/todos', label: t('sidebar.todos'), icon: '✅' },
+    { path: '/calendar', label: t('sidebar.calendar'), icon: '📅' },
+    { path: '/kanban', label: t('sidebar.kanbanBoard'), icon: '📋' },
+    { path: '/chat', label: t('sidebar.chat'), icon: '💬' },
+    { path: '/settings', label: t('sidebar.settings'), icon: '⚙️' },
   ];
 
   const isActive = (path: string) => {
@@ -45,15 +47,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         {/* Sidebar */}
         <aside
           className={`${
-            isSidebarOpen ? 'w-64' : 'w-16'
+            isSidebarOpen ? 'w-64' : 'w-20'
           } bg-white shadow-md transition-all duration-300 flex flex-col h-full`}
         >
           <div className="p-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="w-full text-left text-gray-600 hover:text-gray-900"
+              className={`w-full text-gray-600 hover:text-gray-900 ${
+                isSidebarOpen ? 'text-left' : 'text-center'
+              }`}
             >
-              {isSidebarOpen ? '◀️ Collapse' : '▶️'}
+              {isSidebarOpen ? (
+                <span className="flex items-center">
+                  <span>◀️</span>
+                  <span className="ml-2">{t('sidebar.collapse')}</span>
+                </span>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <span>▶️</span>
+                  <span className="text-xs mt-1">{t('sidebar.expand')}</span>
+                </div>
+              )}
             </button>
           </div>
           
@@ -65,6 +79,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 className={`
                   flex items-center px-4 py-3 text-sm
                   transition-colors duration-200
+                  ${isSidebarOpen ? '' : 'justify-center'}
                   ${
                     isActive(item.path)
                       ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600'

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/common/Header';
+import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
 import { placeholderImages } from '../../utils/placeholderImage';
 
@@ -168,6 +169,119 @@ const EcommercePage = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Testing Guide */}
+        <TestingGuide
+          title="E-commerce Testing Guide"
+          description="Learn to test a complete e-commerce product page with shopping cart, reviews, and checkout flow"
+          scenarios={[
+            {
+              id: 'cart-validation',
+              title: 'Add to Cart Validation',
+              description: 'Test that products cannot be added to cart without selecting required options',
+              steps: [
+                'Try adding to cart without selecting size',
+                'Verify error message appears',
+                'Select size but not color',
+                'Verify error message for color',
+                'Select both size and color',
+                'Verify successful add to cart'
+              ],
+              expectedResult: 'Product only adds to cart when all required options are selected',
+              difficulty: 'easy'
+            },
+            {
+              id: 'price-calculation',
+              title: 'Price Calculation with Coupon',
+              description: 'Verify price updates correctly with quantity changes and coupon codes',
+              steps: [
+                'Change quantity to 3',
+                'Verify total price updates',
+                'Enter coupon code "SAVE20"',
+                'Apply coupon',
+                'Verify 20% discount is applied',
+                'Change quantity again',
+                'Verify discount persists'
+              ],
+              expectedResult: 'Price calculations are accurate with quantity and discount',
+              difficulty: 'medium'
+            },
+            {
+              id: 'image-gallery',
+              title: 'Product Image Gallery',
+              description: 'Test image gallery navigation and zoom functionality',
+              steps: [
+                'Click on thumbnail images',
+                'Verify main image changes',
+                'Test image zoom on hover',
+                'Navigate through all product images',
+                'Verify image loading states'
+              ],
+              expectedResult: 'All images load and navigate correctly',
+              difficulty: 'easy'
+            },
+            {
+              id: 'review-filtering',
+              title: 'Review Filtering and Sorting',
+              description: 'Test review section filtering and sorting capabilities',
+              steps: [
+                'Sort reviews by "Most Recent"',
+                'Verify order changes',
+                'Filter by 5-star reviews only',
+                'Verify only 5-star reviews show',
+                'Mark a review as helpful',
+                'Verify count increases'
+              ],
+              expectedResult: 'Reviews filter and sort correctly',
+              difficulty: 'medium'
+            },
+            {
+              id: 'stock-validation',
+              title: 'Stock Availability Check',
+              description: 'Verify stock limits and out-of-stock behavior',
+              steps: [
+                'Set quantity to maximum stock (15)',
+                'Try to increase beyond stock',
+                'Verify limitation message',
+                'Check low stock warning',
+                'Verify buy now functionality'
+              ],
+              expectedResult: 'Stock limits are enforced correctly',
+              difficulty: 'hard'
+            },
+            {
+              id: 'wishlist-flow',
+              title: 'Wishlist Functionality',
+              description: 'Test adding/removing items from wishlist',
+              steps: [
+                'Click wishlist heart icon',
+                'Verify item is added to wishlist',
+                'Click again to remove',
+                'Verify removal confirmation',
+                'Check wishlist persistence'
+              ],
+              expectedResult: 'Wishlist add/remove works correctly',
+              difficulty: 'easy'
+            }
+          ]}
+          tips={[
+            'Use browser DevTools to verify API calls when adding to cart',
+            'Test with different screen sizes for responsive design',
+            'Check keyboard navigation for accessibility',
+            'Verify all form validations show appropriate error messages',
+            'Test edge cases like negative quantities or special characters in coupon codes'
+          ]}
+          dataTestIds={[
+            { element: 'product-image', description: 'Main product image' },
+            { element: 'add-to-cart', description: 'Add to cart button' },
+            { element: 'quantity-input', description: 'Quantity selector' },
+            { element: 'size-selector', description: 'Size options' },
+            { element: 'color-selector', description: 'Color options' },
+            { element: 'coupon-input', description: 'Coupon code field' },
+            { element: 'price-display', description: 'Current price' },
+            { element: 'review-sort', description: 'Review sort dropdown' }
+          ]}
+        />
+        
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}

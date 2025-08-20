@@ -5,6 +5,8 @@ export interface Todo {
   id: string;
   title: string;
   description?: string;
+  priority: 'low' | 'medium' | 'high';
+  dueDate?: string;
   completed: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -12,7 +14,7 @@ export interface Todo {
 
 interface TodoStore {
   todos: Todo[];
-  addTodo: (title: string, description?: string) => void;
+  addTodo: (title: string, description?: string, priority?: 'low' | 'medium' | 'high', dueDate?: string) => void;
   toggleTodo: (id: string) => void;
   deleteTodo: (id: string) => void;
   updateTodo: (id: string, updates: Partial<Todo>) => void;
@@ -24,11 +26,13 @@ export const useTodoStore = create<TodoStore>()(
     (set, get) => ({
       todos: [],
       
-      addTodo: (title: string, description?: string) => {
+      addTodo: (title: string, description?: string, priority: 'low' | 'medium' | 'high' = 'medium', dueDate?: string) => {
         const newTodo: Todo = {
           id: Date.now().toString(),
           title,
           description,
+          priority,
+          dueDate,
           completed: false,
           createdAt: new Date(),
           updatedAt: new Date(),

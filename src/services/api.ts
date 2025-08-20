@@ -50,10 +50,16 @@ class ApiService {
             
             return this.axiosInstance(originalRequest);
           } catch (refreshError) {
-            // Refresh failed, redirect to login
+            // Refresh failed, only redirect if not on login page
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
-            window.location.href = '/login';
+            
+            // Don't redirect if we're already on the login page
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/forgot-password') {
+              window.location.href = '/login';
+            }
+            
             return Promise.reject(refreshError);
           }
         }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/common/Header';
+import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
 
 interface Transaction {
@@ -189,6 +190,124 @@ const BankingDashboardPage = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Testing Guide */}
+        <TestingGuide
+          title="Banking Dashboard Testing Guide"
+          description="Learn to test critical banking features including transfers, security, and transaction management"
+          scenarios={[
+            {
+              id: 'security-validation',
+              title: 'PIN Security Validation',
+              description: 'Test security measures for sensitive transactions',
+              steps: [
+                'Click "Transfer Money" quick action',
+                'Fill in transfer details',
+                'Click transfer button',
+                'Enter incorrect PIN (anything except 1234)',
+                'Verify error message',
+                'Enter correct PIN (1234)',
+                'Verify successful transfer'
+              ],
+              expectedResult: 'Transfer only completes with correct PIN',
+              difficulty: 'hard'
+            },
+            {
+              id: 'account-switching',
+              title: 'Account Balance Display',
+              description: 'Verify account switching updates balance and transactions',
+              steps: [
+                'Note current account balance',
+                'Switch to Savings Account',
+                'Verify balance changes to $12,000.50',
+                'Switch to Credit Card',
+                'Verify negative balance display',
+                'Check transaction list updates'
+              ],
+              expectedResult: 'Account data updates correctly when switching',
+              difficulty: 'easy'
+            },
+            {
+              id: 'transaction-filtering',
+              title: 'Transaction Search and Filter',
+              description: 'Test transaction filtering by category and date',
+              steps: [
+                'Select "Shopping" from category filter',
+                'Verify only shopping transactions show',
+                'Search for "Amazon"',
+                'Verify search results',
+                'Set date range filter',
+                'Verify transactions within date range'
+              ],
+              expectedResult: 'Transactions filter correctly by all criteria',
+              difficulty: 'medium'
+            },
+            {
+              id: 'bill-payment',
+              title: 'Bill Payment Flow',
+              description: 'Test the complete bill payment process',
+              steps: [
+                'Click "Pay Bills" quick action',
+                'Select "Electric Company" from billers',
+                'Enter amount $98.50',
+                'Submit payment',
+                'Verify confirmation message',
+                'Check account balance updated'
+              ],
+              expectedResult: 'Bill payment completes and balance updates',
+              difficulty: 'medium'
+            },
+            {
+              id: 'transfer-validation',
+              title: 'Money Transfer Validation',
+              description: 'Test transfer form validations and limits',
+              steps: [
+                'Open transfer modal',
+                'Try to submit empty form',
+                'Verify validation errors',
+                'Enter amount exceeding balance',
+                'Verify insufficient funds error',
+                'Enter valid transfer details',
+                'Complete transfer with PIN'
+              ],
+              expectedResult: 'All validations work correctly',
+              difficulty: 'hard'
+            },
+            {
+              id: 'statement-download',
+              title: 'Statement Generation',
+              description: 'Test account statement download functionality',
+              steps: [
+                'Click "Statements" quick action',
+                'Select date range',
+                'Choose PDF format',
+                'Click download',
+                'Verify download initiates',
+                'Check statement preview'
+              ],
+              expectedResult: 'Statement downloads successfully',
+              difficulty: 'easy'
+            }
+          ]}
+          tips={[
+            'Test PIN: 1234 for security validations',
+            'Verify all monetary calculations are accurate to 2 decimal places',
+            'Check that pending transactions are clearly marked',
+            'Test with keyboard navigation for accessibility',
+            'Verify session timeout for security features',
+            'Check responsive design on mobile devices'
+          ]}
+          dataTestIds={[
+            { element: 'account-selector', description: 'Account dropdown' },
+            { element: 'balance-display', description: 'Current balance' },
+            { element: 'transfer-button', description: 'Transfer money button' },
+            { element: 'pin-input', description: 'PIN entry field' },
+            { element: 'transaction-search', description: 'Search transactions' },
+            { element: 'category-filter', description: 'Category dropdown' },
+            { element: 'quick-action-*', description: 'Quick action buttons' },
+            { element: 'transaction-row', description: 'Transaction items' }
+          ]}
+        />
+        
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}

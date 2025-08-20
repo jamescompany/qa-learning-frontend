@@ -1,12 +1,15 @@
 import { useState, useRef } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../components/common/Header';
 import { useAuthStore } from '../store/authStore';
 
 const ComponentPlaygroundPage = () => {
+  const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
+  const [showGuide, setShowGuide] = useState(true);
   const [textInput, setTextInput] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -78,6 +81,60 @@ const ComponentPlaygroundPage = () => {
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Learning Guide */}
+        {showGuide && (
+          <div className="mb-8 bg-blue-50 border-2 border-blue-200 rounded-lg p-6 relative">
+            <button
+              onClick={() => setShowGuide(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              aria-label="Close guide"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <h2 className="text-2xl font-bold text-blue-900 mb-4">🎯 {t('componentPlayground.guide.title')}</h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-semibold text-blue-800 mb-2">{t('componentPlayground.guide.scenarios')}</h3>
+                <ol className="space-y-2 text-sm text-blue-700">
+                  <li>✅ <strong>{t('componentPlayground.guide.formValidation').split(':')[0]}</strong>: {t('componentPlayground.guide.formValidation').split(':')[1]}</li>
+                  <li>✅ <strong>{t('componentPlayground.guide.interactionTest').split(':')[0]}</strong>: {t('componentPlayground.guide.interactionTest').split(':')[1]}</li>
+                  <li>✅ <strong>{t('componentPlayground.guide.dragDrop').split(':')[0]}</strong>: {t('componentPlayground.guide.dragDrop').split(':')[1]}</li>
+                  <li>✅ <strong>{t('componentPlayground.guide.tabNavigation').split(':')[0]}</strong>: {t('componentPlayground.guide.tabNavigation').split(':')[1]}</li>
+                  <li>✅ <strong>{t('componentPlayground.guide.dataTable').split(':')[0]}</strong>: {t('componentPlayground.guide.dataTable').split(':')[1]}</li>
+                </ol>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold text-blue-800 mb-2">{t('componentPlayground.guide.exercises')}</h3>
+                <ol className="space-y-2 text-sm text-blue-700">
+                  {(t('componentPlayground.guide.exerciseItems', { returnObjects: true }) as string[]).map((item, idx) => (
+                    <li key={idx}>🔍 {item}</li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+            
+            <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>💡 {t('componentPlayground.guide.tip').split(':')[0]}:</strong> {t('componentPlayground.guide.tip').substring(t('componentPlayground.guide.tip').indexOf(':') + 1)}
+              </p>
+            </div>
+          </div>
+        )}
+        
+        {!showGuide && (
+          <button
+            onClick={() => setShowGuide(true)}
+            className="mb-4 text-blue-600 hover:text-blue-800 text-sm font-medium"
+          >
+            📖 {t('testingGuide.showGuide')}
+          </button>
+        )}
+        
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}
@@ -87,17 +144,17 @@ const ComponentPlaygroundPage = () => {
           <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to QA Hub
+          {t('common.back')}
         </button>
         
         <h1 className="text-4xl font-bold text-gray-900 mb-8" data-testid="playground-title">
-          QA Component Playground
+          {t('componentPlayground.title')}
         </h1>
         
         <div className="space-y-8">
           {/* Form Elements Section */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="form-section-title">Form Elements</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="form-section-title">{t('componentPlayground.sections.forms')}</h2>
             <form onSubmit={handleSubmit} data-testid="test-form">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Text Input */}
@@ -387,7 +444,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Buttons Section */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="buttons-section-title">Buttons & Actions</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="buttons-section-title">{t('componentPlayground.sections.buttons')}</h2>
             <div className="flex flex-wrap gap-4">
               <button
                 data-testid="primary-button"
@@ -446,7 +503,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Interactive Elements */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="interactive-section-title">Interactive Elements</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="interactive-section-title">{t('componentPlayground.sections.interactive')}</h2>
             
             {/* Counter */}
             <div className="mb-6">
@@ -545,7 +602,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Tabs */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="tabs-section-title">Tabs</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="tabs-section-title">{t('componentPlayground.sections.tabs')}</h2>
             <div className="border-b border-gray-200">
               <nav className="-mb-px flex space-x-8">
                 {['Tab 1', 'Tab 2', 'Tab 3'].map((tab, index) => (
@@ -574,7 +631,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Accordion */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="accordion-section-title">Accordion</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="accordion-section-title">{t('componentPlayground.sections.accordion')}</h2>
             <div className="space-y-2">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="border rounded-lg">
@@ -607,7 +664,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Drag and Drop */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="dragdrop-section-title">Drag and Drop</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="dragdrop-section-title">{t('componentPlayground.sections.dragDrop')}</h2>
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Drag Items</h3>
@@ -659,7 +716,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Table */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="table-section-title">Table</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="table-section-title">{t('componentPlayground.sections.table')}</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200" data-testid="data-table">
                 <thead className="bg-gray-50">
@@ -723,7 +780,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Alerts & Notifications */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="alerts-section-title">Alerts & Notifications</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="alerts-section-title">{t('componentPlayground.sections.alerts')}</h2>
             <div className="space-y-4">
               <div className="bg-blue-50 border-l-4 border-blue-400 p-4" data-testid="info-alert">
                 <div className="flex">
@@ -789,7 +846,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Progress Indicators */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="progress-section-title">Progress Indicators</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="progress-section-title">{t('componentPlayground.sections.progress')}</h2>
             
             {/* Progress Bar */}
             <div className="mb-6">
@@ -822,7 +879,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Links & Navigation */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold mb-4" data-testid="navigation-section-title">Links & Navigation</h2>
+            <h2 className="text-2xl font-bold mb-4" data-testid="navigation-section-title">{t('componentPlayground.sections.navigation')}</h2>
             <div className="space-y-4">
               <div>
                 <a href="#" data-testid="standard-link" className="text-blue-600 hover:text-blue-800 underline">

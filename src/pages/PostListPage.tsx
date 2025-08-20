@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 import { usePostStore } from '../store/postStore';
 
 const PostListPage: React.FC = () => {
+  const { t } = useTranslation();
   const { posts, isLoading, fetchPosts, likePost } = usePostStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -49,7 +51,7 @@ const PostListPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="flex justify-center items-center min-h-[60vh]">
-          <Loading size="large" text="Loading posts..." />
+          <Loading size="large" text={t('posts.list.loading')} />
         </div>
       </DashboardLayout>
     );
@@ -59,12 +61,12 @@ const PostListPage: React.FC = () => {
     <DashboardLayout>
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">QA Learning Posts</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('posts.list.title')}</h1>
           <Link
             to="/posts/create"
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Create Post
+            {t('posts.list.createPost')}
           </Link>
         </div>
 
@@ -73,7 +75,7 @@ const PostListPage: React.FC = () => {
           <div className="flex gap-4 mb-4">
             <input
               type="text"
-              placeholder="Search posts..."
+              placeholder={t('posts.list.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -90,7 +92,7 @@ const PostListPage: React.FC = () => {
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              All
+              {t('posts.list.all')}
             </button>
             {allTags.map(tag => (
               <button
@@ -112,7 +114,7 @@ const PostListPage: React.FC = () => {
         <div className="grid gap-6">
           {filteredPosts.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">No posts found</p>
+              <p className="text-gray-500">{t('posts.list.noPostsFound')}</p>
             </div>
           ) : (
             filteredPosts.map(post => (
@@ -137,7 +139,7 @@ const PostListPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <span className="text-sm text-gray-500">
-                        By {post.author?.name || 'Unknown'}
+                        {t('posts.list.by')} {post.author?.name || t('posts.list.unknown')}
                       </span>
                       <div className="flex gap-2">
                         {post.tags.map(tag => (

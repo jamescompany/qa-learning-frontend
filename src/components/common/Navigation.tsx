@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface NavigationProps {
   isAuthenticated?: boolean;
@@ -7,17 +8,18 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = ({ isAuthenticated = false }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Show all nav items regardless of authentication status
   const navItems = [
-    { path: '/', label: 'Home', requiresAuth: false },
-    { path: '/dashboard', label: 'Dashboard', requiresAuth: true },
-    { path: '/todos', label: 'My Todos', requiresAuth: true },
-    { path: '/posts', label: 'Posts', requiresAuth: true },
-    { path: '/calendar', label: 'Calendar', requiresAuth: true },
-    { path: '/kanban', label: 'Kanban', requiresAuth: true },
-    { path: '/qa', label: 'QA Testing Hub', requiresAuth: true },
-    { path: '/about', label: 'About', requiresAuth: false },
+    { path: '/', label: t('navigation.home'), requiresAuth: false },
+    { path: '/dashboard', label: t('navigation.dashboard'), requiresAuth: true },
+    { path: '/todos', label: t('navigation.myTodos'), requiresAuth: true },
+    { path: '/posts', label: t('navigation.posts'), requiresAuth: true },
+    { path: '/calendar', label: t('navigation.calendar'), requiresAuth: true },
+    { path: '/kanban', label: t('navigation.kanban'), requiresAuth: true },
+    { path: '/qa', label: t('navigation.qaTestingHub'), requiresAuth: true },
+    { path: '/about', label: t('navigation.about'), requiresAuth: false },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: typeof navItems[0]) => {
@@ -48,7 +50,7 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated = false }) => {
                     : ''
                 }`
               }
-              title={item.requiresAuth && !isAuthenticated ? 'Login required' : ''}
+              title={item.requiresAuth && !isAuthenticated ? t('navigation.loginRequired') : ''}
             >
               {item.label}
               {item.requiresAuth && !isAuthenticated && (

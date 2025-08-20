@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import Loading from '../components/common/Loading';
 import { useAuthStore } from '../store/authStore';
@@ -14,6 +15,7 @@ interface DashboardStats {
 }
 
 const DashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useAuthStore();
   const todoStats = useTodoStore((state) => state.getTodoStats());
   const { posts, fetchPosts, isLoading: postsLoading } = usePostStore();
@@ -65,10 +67,10 @@ const DashboardPage: React.FC = () => {
         {/* Welcome Section */}
         <div className="bg-white rounded-lg shadow p-6">
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {user?.full_name || user?.username || 'User'}!
+            {t('dashboard.welcome', { name: user?.full_name || user?.username || 'User' })}
           </h1>
           <p className="mt-2 text-gray-600">
-            Here's what's happening with your account today.
+            {t('dashboard.subtitle')}
           </p>
         </div>
 
@@ -77,7 +79,7 @@ const DashboardPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Total Posts</p>
+                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.totalPosts')}</p>
                 <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalPosts}</p>
               </div>
               <div className="text-blue-500">
@@ -88,7 +90,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="mt-4">
               <Link to="/posts" className="text-sm text-blue-600 hover:text-blue-500">
-                View all posts →
+                {t('dashboard.stats.viewAllPosts')}
               </Link>
             </div>
           </div>
@@ -96,7 +98,7 @@ const DashboardPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Total Todos</p>
+                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.totalTodos')}</p>
                 <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalTodos}</p>
               </div>
               <div className="text-green-500">
@@ -107,7 +109,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <div className="mt-4">
               <Link to="/todos" className="text-sm text-blue-600 hover:text-blue-500">
-                Manage todos →
+                {t('dashboard.stats.manageTodos')}
               </Link>
             </div>
           </div>
@@ -115,7 +117,7 @@ const DashboardPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Completed</p>
+                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.completed')}</p>
                 <p className="mt-2 text-3xl font-bold text-gray-900">{stats.completedTodos}</p>
               </div>
               <div className="text-purple-500">
@@ -142,7 +144,7 @@ const DashboardPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">Recent Activity</p>
+                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.recentActivity')}</p>
                 <p className="mt-2 text-3xl font-bold text-gray-900">{stats.recentActivity}</p>
               </div>
               <div className="text-orange-500">
@@ -152,45 +154,45 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <div className="mt-4">
-              <p className="text-sm text-gray-600">Last 7 days</p>
+              <p className="text-sm text-gray-600">{t('dashboard.stats.lastDays')}</p>
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions.title')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
               to="/posts/create"
               className="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Create Post
+              {t('dashboard.quickActions.createPost')}
             </Link>
             <Link
               to="/todos?add=true"
               className="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              Add Todo
+              {t('dashboard.quickActions.addTodo')}
             </Link>
             <Link
               to="/calendar"
               className="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
             >
-              View Calendar
+              {t('dashboard.quickActions.viewCalendar')}
             </Link>
             <Link
               to="/profile"
               className="flex items-center justify-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              Edit Profile
+              {t('dashboard.quickActions.editProfile')}
             </Link>
           </div>
         </div>
 
         {/* Recent Activity Feed */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.recentActivityFeed.title')}</h2>
           <div className="space-y-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
@@ -201,8 +203,8 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm text-gray-900">You created a new post</p>
-                <p className="text-xs text-gray-500">2 hours ago</p>
+                <p className="text-sm text-gray-900">{t('dashboard.recentActivityFeed.createdPost')}</p>
+                <p className="text-xs text-gray-500">{t('dashboard.recentActivityFeed.hoursAgo', { hours: 2 })}</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -214,8 +216,8 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm text-gray-900">Completed 3 todos</p>
-                <p className="text-xs text-gray-500">5 hours ago</p>
+                <p className="text-sm text-gray-900">{t('dashboard.recentActivityFeed.completedTodos', { count: 3 })}</p>
+                <p className="text-xs text-gray-500">{t('dashboard.recentActivityFeed.hoursAgo', { hours: 5 })}</p>
               </div>
             </div>
             <div className="flex items-start">
@@ -227,8 +229,8 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm text-gray-900">Updated profile information</p>
-                <p className="text-xs text-gray-500">Yesterday</p>
+                <p className="text-sm text-gray-900">{t('dashboard.recentActivityFeed.updatedProfile')}</p>
+                <p className="text-xs text-gray-500">{t('dashboard.recentActivityFeed.yesterday')}</p>
               </div>
             </div>
           </div>

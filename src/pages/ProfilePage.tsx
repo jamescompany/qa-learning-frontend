@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../components/layout/MainLayout';
 import FormInput from '../components/forms/FormInput';
 import Modal from '../components/common/Modal';
@@ -8,6 +9,7 @@ import authService from '../services/auth.service';
 import toast from 'react-hot-toast';
 
 const ProfilePage: React.FC = () => {
+  const { t } = useTranslation();
   const { user, isAuthenticated } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -79,16 +81,16 @@ const ProfilePage: React.FC = () => {
       setIsEditing(false);
       // Show success modal
       setModalMessage({
-        title: 'Success',
-        message: 'Profile updated successfully!',
+        title: t('profile.success'),
+        message: t('profile.profileUpdatedSuccess'),
         type: 'success'
       });
       setShowModal(true);
     } catch (error) {
       console.error('Failed to update profile:', error);
       setModalMessage({
-        title: 'Error',
-        message: 'Failed to update profile. Please try again.',
+        title: t('profile.error'),
+        message: t('profile.profileUpdateError'),
         type: 'error'
       });
       setShowModal(true);
@@ -104,29 +106,29 @@ const ProfilePage: React.FC = () => {
     let isValid = true;
 
     if (!passwordData.currentPassword) {
-      errors.currentPassword = 'Current password is required';
+      errors.currentPassword = t('profile.security.errors.currentPasswordRequired');
       isValid = false;
     }
 
     if (!passwordData.newPassword) {
-      errors.newPassword = 'New password is required';
+      errors.newPassword = t('profile.security.errors.newPasswordRequired');
       isValid = false;
     } else if (passwordData.newPassword.length < 8) {
-      errors.newPassword = 'Password must be at least 8 characters';
+      errors.newPassword = t('profile.security.errors.passwordMinLength');
       isValid = false;
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordData.newPassword)) {
-      errors.newPassword = 'Password must contain uppercase, lowercase, and number';
+      errors.newPassword = t('profile.security.errors.passwordRequirements');
       isValid = false;
     } else if (passwordData.currentPassword && passwordData.newPassword === passwordData.currentPassword) {
-      errors.newPassword = 'New password must be different from current password';
+      errors.newPassword = t('profile.security.errors.passwordMustBeDifferent');
       isValid = false;
     }
 
     if (!passwordData.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your new password';
+      errors.confirmPassword = t('profile.security.errors.confirmPasswordRequired');
       isValid = false;
     } else if (passwordData.newPassword !== passwordData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
+      errors.confirmPassword = t('profile.security.errors.passwordsDoNotMatch');
       isValid = false;
     }
 
@@ -150,7 +152,7 @@ const ProfilePage: React.FC = () => {
 
     try {
       await authService.changePassword(passwordData.currentPassword, passwordData.newPassword);
-      toast.success('Password changed successfully! Please log in with your new password.');
+      toast.success(t('profile.security.passwordChanged'));
       
       // Clear form
       setShowPasswordSection(false);
@@ -171,10 +173,10 @@ const ProfilePage: React.FC = () => {
         useAuthStore.getState().logout();
       }, 1500); // Give user time to see the success message
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to change password';
+      const errorMessage = error.response?.data?.message || error.message || t('profile.security.passwordChangeError');
       toast.error(errorMessage);
       if (errorMessage.toLowerCase().includes('current password')) {
-        setPasswordErrors(prev => ({ ...prev, currentPassword: 'Current password is incorrect' }));
+        setPasswordErrors(prev => ({ ...prev, currentPassword: t('profile.security.currentPasswordIncorrect') }));
       }
     }
   };
@@ -199,13 +201,13 @@ const ProfilePage: React.FC = () => {
         {/* Profile Content */}
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Profile Information</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('profile.title')}</h2>
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Edit Profile
+                {t('profile.editProfile')}
               </button>
             ) : (
               <div className="space-x-2">
@@ -218,7 +220,7 @@ const ProfilePage: React.FC = () => {
                       : 'bg-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  Save Changes
+                  {t('profile.saveChanges')}
                 </button>
                 <button
                   onClick={() => {
@@ -227,7 +229,7 @@ const ProfilePage: React.FC = () => {
                   }}
                   className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
                 >
-                  Cancel
+                  {t('profile.cancel')}
                 </button>
               </div>
             )}
@@ -236,104 +238,104 @@ const ProfilePage: React.FC = () => {
           {isEditing ? (
             <div className="space-y-4">
               <FormInput
-                label="Name"
+                label={t('profile.fields.name')}
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 disabled={false}
-                placeholder="Enter your name"
+                placeholder={t('profile.placeholders.name')}
               />
               <FormInput
-                label="Email"
+                label={t('profile.fields.email')}
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 disabled={false}
-                placeholder="Enter your email"
+                placeholder={t('profile.placeholders.email')}
               />
               <FormInput
-                label="Bio"
+                label={t('profile.fields.bio')}
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
                 multiline
                 rows={3}
                 disabled={false}
-                placeholder="Tell us about yourself"
+                placeholder={t('profile.placeholders.bio')}
               />
               <FormInput
-                label="Location"
+                label={t('profile.fields.location')}
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
                 disabled={false}
-                placeholder="Enter your location"
+                placeholder={t('profile.placeholders.location')}
               />
               <FormInput
-                label="Website"
+                label={t('profile.fields.website')}
                 name="website"
                 value={formData.website}
                 onChange={handleChange}
                 disabled={false}
-                placeholder="https://example.com"
+                placeholder={t('profile.placeholders.website')}
               />
             </div>
           ) : (
             <div className="space-y-6">
               {formData.name && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Name</h3>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.name')}</h3>
                   <p className="text-gray-900">{formData.name}</p>
                 </div>
               )}
               {formData.email && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Email</h3>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.email')}</h3>
                   <p className="text-gray-900">{formData.email}</p>
                 </div>
               )}
               {formData.bio && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Bio</h3>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.bio')}</h3>
                   <p className="text-gray-900">{formData.bio}</p>
                 </div>
               )}
               {formData.location && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Location</h3>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.location')}</h3>
                   <p className="text-gray-900">{formData.location}</p>
                 </div>
               )}
               {formData.website && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">Website</h3>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.website')}</h3>
                   <a href={formData.website} className="text-blue-600 hover:text-blue-800">
                     {formData.website}
                   </a>
                 </div>
               )}
               {!formData.name && !formData.email && !formData.bio && !formData.location && !formData.website && (
-                <p className="text-gray-500 italic">No profile information available. Click "Edit Profile" to add your information.</p>
+                <p className="text-gray-500 italic">{t('profile.noProfileInfo')}</p>
               )}
             </div>
           )}
 
           {/* Stats Section */}
           <div className="mt-8 pt-8 border-t">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Activity Stats</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.activityStats')}</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-blue-600">0</p>
-                <p className="text-sm text-gray-500">Posts</p>
+                <p className="text-sm text-gray-500">{t('profile.stats.posts')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">0</p>
-                <p className="text-sm text-gray-500">Todos Completed</p>
+                <p className="text-sm text-gray-500">{t('profile.stats.todosCompleted')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-purple-600">1</p>
-                <p className="text-sm text-gray-500">Days Active</p>
+                <p className="text-sm text-gray-500">{t('profile.stats.daysActive')}</p>
               </div>
             </div>
           </div>
@@ -344,13 +346,13 @@ const ProfilePage: React.FC = () => {
       <div className="bg-white rounded-lg shadow mt-6">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Security Settings</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('profile.security.title')}</h2>
             {!showPasswordSection && (
               <button
                 onClick={() => setShowPasswordSection(true)}
                 className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors"
               >
-                Change Password
+                {t('profile.security.changePassword')}
               </button>
             )}
           </div>
@@ -359,7 +361,7 @@ const ProfilePage: React.FC = () => {
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div>
                 <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Password
+                  {t('profile.security.currentPassword')}
                 </label>
                 <input
                   type="password"
@@ -370,7 +372,7 @@ const ProfilePage: React.FC = () => {
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     passwordErrors.currentPassword ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Enter current password"
+                  placeholder={t('profile.security.placeholders.currentPassword')}
                 />
                 {passwordErrors.currentPassword && (
                   <p className="mt-1 text-sm text-red-600">{passwordErrors.currentPassword}</p>
@@ -379,7 +381,7 @@ const ProfilePage: React.FC = () => {
 
               <div>
                 <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
+                  {t('profile.security.newPassword')}
                 </label>
                 <input
                   type="password"
@@ -390,19 +392,19 @@ const ProfilePage: React.FC = () => {
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     passwordErrors.newPassword ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Enter new password"
+                  placeholder={t('profile.security.placeholders.newPassword')}
                 />
                 {passwordErrors.newPassword && (
                   <p className="mt-1 text-sm text-red-600">{passwordErrors.newPassword}</p>
                 )}
                 <p className="mt-1 text-xs text-gray-500">
-                  Password must be at least 8 characters with uppercase, lowercase, and numbers
+                  {t('profile.security.passwordHint')}
                 </p>
               </div>
 
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm New Password
+                  {t('profile.security.confirmPassword')}
                 </label>
                 <input
                   type="password"
@@ -413,7 +415,7 @@ const ProfilePage: React.FC = () => {
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     passwordErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
                   }`}
-                  placeholder="Confirm new password"
+                  placeholder={t('profile.security.placeholders.confirmPassword')}
                 />
                 {passwordErrors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{passwordErrors.confirmPassword}</p>
@@ -425,7 +427,7 @@ const ProfilePage: React.FC = () => {
                   type="submit"
                   className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
-                  Update Password
+                  {t('profile.security.updatePassword')}
                 </button>
                 <button
                   type="button"
@@ -444,20 +446,20 @@ const ProfilePage: React.FC = () => {
                   }}
                   className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
                 >
-                  Cancel
+                  {t('profile.cancel')}
                 </button>
               </div>
             </form>
           ) : (
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                <strong>Password Security Tips:</strong>
+                <strong>{t('profile.security.securityTips.title')}</strong>
               </p>
               <ul className="mt-2 space-y-1 text-sm text-gray-500 list-disc list-inside">
-                <li>Use a strong password with at least 8 characters</li>
-                <li>Include uppercase, lowercase letters, numbers, and symbols</li>
-                <li>Don't use the same password for multiple accounts</li>
-                <li>Change your password regularly</li>
+                <li>{t('profile.security.securityTips.tip1')}</li>
+                <li>{t('profile.security.securityTips.tip2')}</li>
+                <li>{t('profile.security.securityTips.tip3')}</li>
+                <li>{t('profile.security.securityTips.tip4')}</li>
               </ul>
             </div>
           )}

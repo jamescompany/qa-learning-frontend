@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 
 const HomePage: React.FC = () => {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
 
   return (
@@ -12,12 +14,11 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center max-w-4xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Master Quality Assurance <br />
-            <span className="text-blue-600"> Through Practice</span>
+            {t('home.hero.title')} <br />
+            <span className="text-blue-600"> {t('home.hero.subtitle')}</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Interactive learning platform for QA professionals. <br />
-            Learn testing methodologies, automation tools, and best practices.
+          <p className="text-xl text-gray-600 mb-8" style={{ whiteSpace: 'pre-line' }}>
+            {t('home.hero.description')}
           </p>
           <div className="flex gap-4 justify-center">
             {isAuthenticated ? (
@@ -25,7 +26,7 @@ const HomePage: React.FC = () => {
                 to="/dashboard"
                 className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
-                Go to Dashboard
+                {t('home.hero.goToDashboard')}
               </Link>
             ) : (
               <>
@@ -33,13 +34,13 @@ const HomePage: React.FC = () => {
                   to="/signup"
                   className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
-                  Get Started Free
+                  {t('home.hero.getStarted')}
                 </Link>
                 <Link
                   to="/login"
                   className="px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
                 >
-                  Sign In
+                  {t('home.hero.signIn')}
                 </Link>
               </>
             )}
@@ -53,14 +54,13 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4">
-              <span className="text-3xl">🧪</span>
+              <span className="text-3xl">{t('home.qaHub.icon')}</span>
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">
-              QA Testing Hub - Exclusive Member Feature
+              {t('home.qaHub.title')}
             </h2>
-            <p className="text-lg text-gray-300 mb-6">
-              Practice automated testing on real-world application scenarios including e-commerce, 
-              banking, social media, and booking systems. Perfect for Playwright, Cypress, and Selenium testing.
+            <p className="text-lg text-gray-300 mb-6 whitespace-pre-line">
+              {t('home.qaHub.description')}
             </p>
             {isAuthenticated ? (
               <Link
@@ -72,20 +72,20 @@ const HomePage: React.FC = () => {
             ) : (
               <div>
                 <p className="text-yellow-400 font-semibold mb-4">
-                  🔒 Login required to access QA Testing Hub
+                  {t('home.qaHub.loginRequired')}
                 </p>
                 <div className="flex gap-4 justify-center">
                   <Link
                     to="/login"
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                   >
-                    Login to Access
+                    {t('home.qaHub.loginToAccess')}
                   </Link>
                   <Link
                     to="/signup"
                     className="px-6 py-2 bg-white text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
                   >
-                    Create Account
+                    {t('home.qaHub.createAccount')}
                   </Link>
                 </div>
               </div>
@@ -97,34 +97,34 @@ const HomePage: React.FC = () => {
       {/* Features Section */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-          Everything You Need to Excel in QA
+          {t('home.features.title')}
         </h2>
         <div className="grid md:grid-cols-3 gap-8">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-              <span className="text-2xl">📚</span>
+              <span className="text-2xl">{t('home.features.interactive.icon')}</span>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Interactive Tutorials</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('home.features.interactive.title')}</h3>
             <p className="text-gray-600">
-              Learn through hands-on exercises and real-world scenarios.
+              {t('home.features.interactive.description')}
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-              <span className="text-2xl">🚀</span>
+              <span className="text-2xl">{t('home.features.automation.icon')}</span>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Test Automation</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('home.features.automation.title')}</h3>
             <p className="text-gray-600">
-              Master popular automation frameworks and tools.
+              {t('home.features.automation.description')}
             </p>
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-              <span className="text-2xl">📊</span>
+              <span className="text-2xl">{t('home.features.tracking.icon')}</span>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Progress Tracking</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('home.features.tracking.title')}</h3>
             <p className="text-gray-600">
-              Monitor your learning journey with detailed analytics.
+              {t('home.features.tracking.description')}
             </p>
           </div>
         </div>
@@ -134,17 +134,17 @@ const HomePage: React.FC = () => {
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to Advance Your QA Career?
+            {t('home.cta.title')}
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Join thousands of QA professionals improving their skills.
+            {t('home.cta.subtitle')}
           </p>
           {!isAuthenticated && (
             <Link
               to="/signup"
               className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
-              Start Learning Today
+              {t('home.cta.button')}
             </Link>
           )}
         </div>

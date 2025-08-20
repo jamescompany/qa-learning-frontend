@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FormInput from './FormInput';
 import { validateForm, emailValidation, passwordValidation } from './FormValidation';
 
@@ -15,6 +16,7 @@ interface SignupData {
 }
 
 const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<SignupData>({
     name: '',
     email: '',
@@ -22,6 +24,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
     confirmPassword: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const isFormValid = 
+    formData.name.trim().length >= 2 &&
+    formData.email.trim().length > 0 &&
+    formData.password.length >= 8 &&
+    formData.confirmPassword.length > 0 &&
+    formData.password === formData.confirmPassword;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -61,59 +70,63 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <FormInput
-        label="Full Name"
+        label={t('auth.signup.fullName')}
         type="text"
         name="name"
         value={formData.name}
         onChange={handleChange}
         error={errors.name}
-        placeholder="Enter your full name"
+        placeholder={t('auth.signup.fullNamePlaceholder')}
         required
         disabled={isLoading}
       />
       
       <FormInput
-        label="Email"
+        label={t('auth.signup.email')}
         type="email"
         name="email"
         value={formData.email}
         onChange={handleChange}
         error={errors.email}
-        placeholder="Enter your email"
+        placeholder={t('auth.signup.emailPlaceholder')}
         required
         disabled={isLoading}
       />
       
       <FormInput
-        label="Password"
+        label={t('auth.signup.password')}
         type="password"
         name="password"
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
-        placeholder="Create a password (min. 8 characters)"
+        placeholder={t('auth.signup.passwordPlaceholder')}
         required
         disabled={isLoading}
       />
       
       <FormInput
-        label="Confirm Password"
+        label={t('auth.signup.confirmPassword')}
         type="password"
         name="confirmPassword"
         value={formData.confirmPassword}
         onChange={handleChange}
         error={errors.confirmPassword}
-        placeholder="Confirm your password"
+        placeholder={t('auth.signup.confirmPasswordPlaceholder')}
         required
         disabled={isLoading}
       />
       
       <button
         type="submit"
-        disabled={isLoading}
-        className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+        disabled={isLoading || !isFormValid}
+        className={`w-full py-2 px-4 rounded-md transition-colors ${
+          isLoading || !isFormValid
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-blue-600 text-white hover:bg-blue-700'
+        }`}
       >
-        {isLoading ? 'Creating account...' : 'Sign Up'}
+        {isLoading ? 'Creating account...' : t('auth.signup.button')}
       </button>
     </form>
   );
