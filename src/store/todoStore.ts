@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useAuthStore } from './authStore';
 
 export interface Todo {
   id: string;
+  userId: string; // 사용자별 구분을 위한 필드 추가
   title: string;
   description?: string;
   priority: 'low' | 'medium' | 'high';
@@ -19,6 +21,7 @@ interface TodoStore {
   deleteTodo: (id: string) => void;
   updateTodo: (id: string, updates: Partial<Todo>) => void;
   getTodoStats: () => { total: number; completed: number };
+  getUserTodos: () => Todo[]; // 현재 사용자의 todos만 반환
 }
 
 export const useTodoStore = create<TodoStore>()(
@@ -27,8 +30,12 @@ export const useTodoStore = create<TodoStore>()(
       todos: [],
       
       addTodo: (title: string, description?: string, priority: 'low' | 'medium' | 'high' = 'medium', dueDate?: string) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         const newTodo: Todo = {
           id: Date.now().toString(),
+          userId: user.id,
           title,
           description,
           priority,
@@ -44,9 +51,12 @@ export const useTodoStore = create<TodoStore>()(
       },
       
       toggleTodo: (id: string) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         set((state) => ({
           todos: state.todos.map((todo) =>
-            todo.id === id
+            todo.id === id && todo.userId === user.id
               ? { ...todo, completed: !todo.completed, updatedAt: new Date() }
               : todo
           ),
@@ -54,15 +64,21 @@ export const useTodoStore = create<TodoStore>()(
       },
       
       deleteTodo: (id: string) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         set((state) => ({
-          todos: state.todos.filter((todo) => todo.id !== id),
+          todos: state.todos.filter((todo) => !(todo.id === id && todo.userId === user.id)),
         }));
       },
       
       updateTodo: (id: string, updates: Partial<Todo>) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         set((state) => ({
           todos: state.todos.map((todo) =>
-            todo.id === id
+            todo.id === id && todo.userId === user.id
               ? { ...todo, ...updates, updatedAt: new Date() }
               : todo
           ),
@@ -70,11 +86,21 @@ export const useTodoStore = create<TodoStore>()(
       },
       
       getTodoStats: () => {
-        const state = get();
+        const user = useAuthStore.getState().user;
+        if (!user) return { total: 0, completed: 0 };
+        
+        const userTodos = get().todos.filter(todo => todo.userId === user.id);
         return {
-          total: state.todos.length,
-          completed: state.todos.filter((todo) => todo.completed).length,
+          total: userTodos.length,
+          completed: userTodos.filter((todo) => todo.completed).length,
         };
+      },
+      
+      getUserTodos: () => {
+        const user = useAuthStore.getState().user;
+        if (!user) return [];
+        
+        return get().todos.filter(todo => todo.userId === user.id);
       },
     }),
     {

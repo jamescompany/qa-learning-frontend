@@ -14,7 +14,8 @@ interface TodoFormData {
 
 const TodoPageKo: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { todos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
+  const { getUserTodos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
+  const todos = getUserTodos(); // 현재 사용자의 todos만 가져오기
   const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);

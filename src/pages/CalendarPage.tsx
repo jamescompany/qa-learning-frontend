@@ -7,7 +7,8 @@ import { useCalendarStore } from '../store/calendarStore';
 const CalendarPage: React.FC = () => {
   const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { events, addEvent, updateEvent, deleteEvent } = useCalendarStore();
+  const { getUserEvents, addEvent, updateEvent, deleteEvent } = useCalendarStore();
+  const events = getUserEvents(); // 현재 사용자의 이벤트만 가져오기
   const [showEventForm, setShowEventForm] = useState(false);
   const [showEventDetail, setShowEventDetail] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);

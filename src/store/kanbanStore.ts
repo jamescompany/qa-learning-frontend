@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useAuthStore } from './authStore';
 
 export interface KanbanTask {
   id: string;
+  userId: string; // 사용자별 구분을 위한 필드 추가
   title: string;
   description: string;
   status: 'todo' | 'inProgress' | 'review' | 'done';
@@ -14,63 +16,27 @@ export interface KanbanTask {
 
 interface KanbanStore {
   tasks: KanbanTask[];
-  addTask: (task: Omit<KanbanTask, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  addTask: (task: Omit<KanbanTask, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => void;
   updateTask: (id: string, updates: Partial<KanbanTask>) => void;
   deleteTask: (id: string) => void;
   moveTask: (taskId: string, newStatus: KanbanTask['status']) => void;
   getTasksByStatus: (status: KanbanTask['status']) => KanbanTask[];
+  getUserTasks: () => KanbanTask[]; // 현재 사용자의 작업만 반환
 }
 
 export const useKanbanStore = create<KanbanStore>()(
   persist(
     (set, get) => ({
-      tasks: [
-        { 
-          id: '1', 
-          title: 'Write test cases', 
-          description: 'Create test cases for login flow', 
-          status: 'todo', 
-          priority: 'high', 
-          assignee: 'John',
-          createdAt: new Date('2024-01-01'),
-          updatedAt: new Date('2024-01-01')
-        },
-        { 
-          id: '2', 
-          title: 'API testing', 
-          description: 'Test REST endpoints', 
-          status: 'inProgress', 
-          priority: 'medium', 
-          assignee: 'Jane',
-          createdAt: new Date('2024-01-02'),
-          updatedAt: new Date('2024-01-02')
-        },
-        { 
-          id: '3', 
-          title: 'Review automation scripts', 
-          description: 'Code review for Selenium tests', 
-          status: 'review', 
-          priority: 'medium', 
-          assignee: 'Mike',
-          createdAt: new Date('2024-01-03'),
-          updatedAt: new Date('2024-01-03')
-        },
-        { 
-          id: '4', 
-          title: 'Deploy to staging', 
-          description: 'Deploy tested features', 
-          status: 'done', 
-          priority: 'low', 
-          assignee: 'Sarah',
-          createdAt: new Date('2024-01-04'),
-          updatedAt: new Date('2024-01-04')
-        },
-      ],
+      tasks: [],
       
       addTask: (task) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         const newTask: KanbanTask = {
           ...task,
           id: Date.now().toString(),
+          userId: user.id,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -81,9 +47,12 @@ export const useKanbanStore = create<KanbanStore>()(
       },
       
       updateTask: (id, updates) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         set((state) => ({
           tasks: state.tasks.map((task) =>
-            task.id === id
+            task.id === id && task.userId === user.id
               ? { ...task, ...updates, updatedAt: new Date() }
               : task
           ),
@@ -91,15 +60,23 @@ export const useKanbanStore = create<KanbanStore>()(
       },
       
       deleteTask: (id) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         set((state) => ({
-          tasks: state.tasks.filter((task) => task.id !== id),
+          tasks: state.tasks.filter((task) => 
+            !(task.id === id && task.userId === user.id)
+          ),
         }));
       },
       
       moveTask: (taskId, newStatus) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
         set((state) => ({
           tasks: state.tasks.map((task) =>
-            task.id === taskId
+            task.id === taskId && task.userId === user.id
               ? { ...task, status: newStatus, updatedAt: new Date() }
               : task
           ),
@@ -107,7 +84,19 @@ export const useKanbanStore = create<KanbanStore>()(
       },
       
       getTasksByStatus: (status) => {
-        return get().tasks.filter((task) => task.status === status);
+        const user = useAuthStore.getState().user;
+        if (!user) return [];
+        
+        return get().tasks.filter(
+          (task) => task.status === status && task.userId === user.id
+        );
+      },
+      
+      getUserTasks: () => {
+        const user = useAuthStore.getState().user;
+        if (!user) return [];
+        
+        return get().tasks.filter(task => task.userId === user.id);
       },
     }),
     {
