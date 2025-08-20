@@ -1,0 +1,39 @@
+export const todos = {
+  title: '할 일 목록',
+  addNew: '새 할 일 추가',
+  empty: '할 일이 없습니다',
+  filters: {
+    all: '전체',
+    active: '진행중',
+    completed: '완료',
+  },
+  form: {
+    title: '제목',
+    titlePlaceholder: '할 일 제목을 입력하세요',
+    description: '설명',
+    descriptionPlaceholder: '상세 설명을 입력하세요 (선택사항)',
+    priority: '우선순위',
+    priorities: {
+      low: '낮음',
+      medium: '중간',
+      high: '높음',
+    },
+    dueDate: '마감일',
+    submit: '추가',
+    update: '수정',
+    cancel: '취소',
+  },
+  actions: {
+    edit: '수정',
+    delete: '삭제',
+    complete: '완료',
+    incomplete: '미완료',
+  },
+  messages: {
+    created: '할 일이 추가되었습니다',
+    updated: '할 일이 수정되었습니다',
+    deleted: '할 일이 삭제되었습니다',
+    completed: '할 일을 완료했습니다',
+    uncompleted: '할 일을 미완료로 변경했습니다',
+  },
+};

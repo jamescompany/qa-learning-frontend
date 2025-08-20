@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/common/Header';
+import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
 import { placeholderImages } from '../../utils/placeholderImage';
 
@@ -259,6 +260,130 @@ const SocialFeedPage = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Testing Guide */}
+        <TestingGuide
+          title="Social Media Feed Testing Guide"
+          description="Test social media interactions including posts, comments, likes, and real-time updates"
+          scenarios={[
+            {
+              id: 'post-creation',
+              title: 'Create and Edit Post',
+              description: 'Test post creation with text, images, and privacy settings',
+              steps: [
+                'Click "What\'s on your mind?" to create post',
+                'Enter post text',
+                'Add image/photo',
+                'Set privacy to "Friends Only"',
+                'Submit post',
+                'Verify post appears in feed',
+                'Edit the post',
+                'Verify changes are saved'
+              ],
+              expectedResult: 'Post is created, displayed, and editable',
+              difficulty: 'easy'
+            },
+            {
+              id: 'comment-interaction',
+              title: 'Comment Thread Testing',
+              description: 'Test commenting system and nested replies',
+              steps: [
+                'Find a post with comments',
+                'Add a new comment',
+                'Reply to existing comment',
+                'Edit your comment',
+                'Delete a comment',
+                'Verify comment count updates',
+                'Test @mentions in comments'
+              ],
+              expectedResult: 'All comment interactions work correctly',
+              difficulty: 'medium'
+            },
+            {
+              id: 'like-reaction',
+              title: 'Like and Reaction System',
+              description: 'Test various reaction types and counts',
+              steps: [
+                'Click like button on a post',
+                'Verify like count increases',
+                'Long press for reaction menu',
+                'Select different reaction (Love, Laugh, etc.)',
+                'Verify reaction changes',
+                'Unlike the post',
+                'Verify count decreases'
+              ],
+              expectedResult: 'Reactions update correctly and persist',
+              difficulty: 'easy'
+            },
+            {
+              id: 'story-functionality',
+              title: 'Stories Feature',
+              description: 'Test story creation and viewing',
+              steps: [
+                'Click "Add Story" button',
+                'Upload image or video',
+                'Add text overlay',
+                'Set story duration',
+                'Publish story',
+                'View story in story bar',
+                'Check story analytics (views)',
+                'Verify 24-hour expiration'
+              ],
+              expectedResult: 'Stories upload and display correctly',
+              difficulty: 'medium'
+            },
+            {
+              id: 'share-functionality',
+              title: 'Share and Repost',
+              description: 'Test sharing posts to timeline or messages',
+              steps: [
+                'Click share button on a post',
+                'Select "Share to Timeline"',
+                'Add your comment',
+                'Submit share',
+                'Verify shared post appears',
+                'Test "Share via Message"',
+                'Select recipients',
+                'Verify message sent'
+              ],
+              expectedResult: 'Posts share correctly to different destinations',
+              difficulty: 'medium'
+            },
+            {
+              id: 'infinite-scroll',
+              title: 'Feed Infinite Scroll',
+              description: 'Test feed loading and pagination',
+              steps: [
+                'Scroll to bottom of feed',
+                'Verify loading indicator appears',
+                'Verify new posts load',
+                'Check for duplicate posts',
+                'Test pull-to-refresh',
+                'Verify new posts at top'
+              ],
+              expectedResult: 'Feed loads seamlessly without duplicates',
+              difficulty: 'hard'
+            }
+          ]}
+          tips={[
+            'Test with different media types (images, videos, GIFs)',
+            'Verify timestamps update correctly ("just now", "5 mins ago")',
+            'Check notification triggers for interactions',
+            'Test privacy settings (Public, Friends, Only Me)',
+            'Verify real-time updates without page refresh',
+            'Test character limits for posts and comments'
+          ]}
+          dataTestIds={[
+            { element: 'create-post-button', description: 'New post button' },
+            { element: 'post-text-input', description: 'Post text area' },
+            { element: 'like-button', description: 'Like/reaction button' },
+            { element: 'comment-input', description: 'Comment field' },
+            { element: 'share-button', description: 'Share post button' },
+            { element: 'story-add', description: 'Add story button' },
+            { element: 'post-privacy', description: 'Privacy selector' },
+            { element: 'feed-container', description: 'Main feed area' }
+          ]}
+        />
+        
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}

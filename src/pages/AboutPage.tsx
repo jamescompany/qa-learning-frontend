@@ -1,75 +1,84 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 const AboutPage: React.FC = () => {
+  const { t } = useTranslation();
+  const { isAuthenticated } = useAuthStore();
+  
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">About QA Learning Web</h1>
+      <h1 className="text-4xl font-bold text-gray-900 mb-8">{t('about.title')}</h1>
       
       <div className="prose prose-lg max-w-none">
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t('about.mission.title')}</h2>
           <p className="text-gray-600 mb-4">
-            QA Learning Web is dedicated to helping quality assurance professionals enhance their skills,
-            share knowledge, and collaborate on testing best practices. We believe in continuous learning
-            and the power of community-driven education.
+            {t('about.mission.description')}
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Features</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">📚 Learning Resources</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {t('about.features.learning.icon')} {t('about.features.learning.title')}
+              </h3>
               <p className="text-gray-600">
-                Access a comprehensive library of QA tutorials, best practices, and industry insights.
+                {t('about.features.learning.description')}
               </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">👥 Community Forum</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {t('about.features.community.icon')} {t('about.features.community.title')}
+              </h3>
               <p className="text-gray-600">
-                Connect with other QA professionals, ask questions, and share your expertise.
+                {t('about.features.community.description')}
               </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">✅ Task Management</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {t('about.features.tasks.icon')} {t('about.features.tasks.title')}
+              </h3>
               <p className="text-gray-600">
-                Organize your testing tasks, track progress, and manage your QA workflow efficiently.
+                {t('about.features.tasks.description')}
               </p>
             </div>
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">📊 Progress Tracking</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                {t('about.features.progress.icon')} {t('about.features.progress.title')}
+              </h3>
               <p className="text-gray-600">
-                Monitor your learning journey and celebrate your achievements along the way.
+                {t('about.features.progress.description')}
               </p>
             </div>
           </div>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Get Started</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t('about.getStarted.title')}</h2>
           <p className="text-gray-600 mb-4">
-            Join our community today and take your QA skills to the next level. Whether you're a beginner
-            looking to learn the basics or an experienced tester seeking advanced techniques, we have
-            resources tailored for you.
+            {t('about.getStarted.description')}
           </p>
           <div className="flex gap-4">
-            <a href="/signup" className="btn btn-primary">
-              Sign Up Now
-            </a>
-            <a href="/posts" className="btn btn-secondary">
-              Browse Resources
-            </a>
+            {!isAuthenticated && (
+              <Link to="/signup" className="btn btn-primary">
+                {t('about.getStarted.signUpNow')}
+              </Link>
+            )}
+            <Link to="/posts" className="btn btn-secondary">
+              {t('about.getStarted.browseResources')}
+            </Link>
           </div>
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Contact Us</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t('about.contact.title')}</h2>
           <p className="text-gray-600">
-            Have questions or feedback? We'd love to hear from you!
+            {t('about.contact.description')}
             <br />
-            Email: support@qalearningweb.com
-            <br />
-            Follow us on social media for updates and tips.
+            {t('about.contact.email')}
           </p>
         </section>
       </div>

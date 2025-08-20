@@ -2,14 +2,20 @@ import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from './store/authStore'
 import { initGA } from './utils/analytics'
 import MainLayout from './components/layout/MainLayout'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import ScrollToTop from './components/common/ScrollToTop'
 import GoogleAnalytics from './components/common/GoogleAnalytics'
+import LanguageRouter from './components/common/LanguageRouter'
 import HomePage from './pages/HomePage'
+import HomePageKo from './pages/ko/HomePageKo'
+import HomePageEn from './pages/en/HomePageEn'
 import LoginPage from './pages/LoginPage'
+import LoginPageKo from './pages/ko/LoginPageKo'
+import LoginPageEn from './pages/en/LoginPageEn'
 import SignupPage from './pages/SignupPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import DashboardPage from './pages/DashboardPage'
@@ -17,6 +23,8 @@ import PostListPage from './pages/PostListPage'
 import PostDetailPage from './pages/PostDetailPage'
 import PostCreatePage from './pages/PostCreatePage'
 import TodoPage from './pages/TodoPage'
+import TodoPageKo from './pages/ko/TodoPageKo'
+import TodoPageEn from './pages/en/TodoPageEn'
 import ChatPage from './pages/ChatPage'
 import CalendarPage from './pages/CalendarPage'
 import KanbanPage from './pages/KanbanPage'
@@ -46,11 +54,18 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   const { checkAuth } = useAuthStore();
+  const { i18n } = useTranslation();
   
   useEffect(() => {
+    // Set the lang attribute on the HTML element
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
+  
+  useEffect(() => {
+    // Only check auth once on app mount
     checkAuth();
     initGA();
-  }, [checkAuth]);
+  }, []); // Remove checkAuth from dependencies to prevent re-runs
   
   return (
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -59,7 +74,7 @@ function AppContent() {
         <Routes>
           {/* Public routes with MainLayout */}
           <Route element={<MainLayout />}>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<LanguageRouter ko={HomePageKo} en={HomePageEn} />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
@@ -67,7 +82,7 @@ function AppContent() {
           </Route>
           
           {/* Public auth routes */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={<LanguageRouter ko={LoginPageKo} en={LoginPageEn} />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           
@@ -77,7 +92,7 @@ function AppContent() {
             <Route path="/posts" element={<PostListPage />} />
             <Route path="/posts/:id" element={<PostDetailPage />} />
             <Route path="/posts/create" element={<PostCreatePage />} />
-            <Route path="/todos" element={<TodoPage />} />
+            <Route path="/todos" element={<LanguageRouter ko={TodoPageKo} en={TodoPageEn} />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/kanban" element={<KanbanPage />} />
             <Route path="/chat" element={<ChatPage />} />

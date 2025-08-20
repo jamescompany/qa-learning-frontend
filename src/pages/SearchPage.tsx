@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface SearchResult {
   id: string;
@@ -10,6 +11,7 @@ interface SearchResult {
 }
 
 const SearchPage: React.FC = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -72,7 +74,7 @@ const SearchPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Search</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('search.title')}</h1>
         
         {/* Search Bar */}
         <form onSubmit={handleSearch} className="relative">
@@ -80,7 +82,7 @@ const SearchPage: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for posts, todos, users..."
+            placeholder={t('search.placeholder')}
             className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
@@ -96,19 +98,19 @@ const SearchPage: React.FC = () => {
       {isSearching ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">Searching...</p>
+            <p className="mt-4 text-gray-600">{t('search.searching')}</p>
           </div>
         ) : hasSearched ? (
           <div>
             <div className="mb-4">
               <p className="text-gray-600">
-                Found {results.length} results for "{searchQuery}"
+                {t('search.resultCount', { count: results.length, query: searchQuery })}
               </p>
             </div>
             
             {results.length === 0 ? (
               <div className="bg-gray-50 rounded-lg p-8 text-center">
-                <p className="text-gray-500">No results found. Try a different search term.</p>
+                <p className="text-gray-500">{t('search.noResults')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -140,7 +142,7 @@ const SearchPage: React.FC = () => {
         ) : (
           <div className="bg-gray-50 rounded-lg p-12 text-center">
             <div className="text-4xl mb-4">🔍</div>
-            <p className="text-gray-600">Start typing to search across all content</p>
+            <p className="text-gray-600">{t('search.placeholder')}</p>
           </div>
         )}
       </div>

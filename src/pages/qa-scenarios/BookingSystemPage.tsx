@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/common/Header';
+import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
 
 interface TimeSlot {
@@ -192,6 +193,133 @@ const BookingSystemPage = () => {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Testing Guide */}
+        <TestingGuide
+          title="Booking System Testing Guide"
+          description="Test multi-step booking flows, calendar interactions, and validation logic"
+          scenarios={[
+            {
+              id: 'multi-step-flow',
+              title: 'Complete Booking Flow',
+              description: 'Test the entire multi-step booking process',
+              steps: [
+                'Select a service (e.g., Haircut & Style)',
+                'Click Next to proceed to step 2',
+                'Select a date from calendar',
+                'Choose an available time slot',
+                'Click Next to step 3',
+                'Select a staff member',
+                'Click Next to step 4',
+                'Fill in customer details',
+                'Submit booking',
+                'Verify confirmation and booking reference'
+              ],
+              expectedResult: 'Booking completes with confirmation number',
+              difficulty: 'medium'
+            },
+            {
+              id: 'calendar-navigation',
+              title: 'Calendar Date Selection',
+              description: 'Test calendar navigation and date restrictions',
+              steps: [
+                'Navigate to calendar step',
+                'Try selecting past date',
+                'Verify past dates are disabled',
+                'Navigate to next month',
+                'Select a weekend date',
+                'Check if weekends have different availability',
+                'Select a valid future date'
+              ],
+              expectedResult: 'Only valid future dates can be selected',
+              difficulty: 'easy'
+            },
+            {
+              id: 'time-slot-availability',
+              title: 'Time Slot Management',
+              description: 'Test time slot selection and availability',
+              steps: [
+                'Select a date',
+                'View available time slots',
+                'Try selecting unavailable slot (grayed out)',
+                'Verify it cannot be selected',
+                'Select available slot',
+                'Change date',
+                'Verify time slot resets'
+              ],
+              expectedResult: 'Only available slots can be selected',
+              difficulty: 'easy'
+            },
+            {
+              id: 'form-validation',
+              title: 'Customer Information Validation',
+              description: 'Test form field validations',
+              steps: [
+                'Navigate to customer info step',
+                'Try submitting empty form',
+                'Verify required field errors',
+                'Enter invalid email format',
+                'Verify email validation error',
+                'Enter invalid phone number',
+                'Verify phone validation',
+                'Fill all fields correctly',
+                'Submit successfully'
+              ],
+              expectedResult: 'Form validates all inputs correctly',
+              difficulty: 'medium'
+            },
+            {
+              id: 'step-navigation',
+              title: 'Step Navigation Control',
+              description: 'Test moving between booking steps',
+              steps: [
+                'Complete step 1',
+                'Click Next',
+                'Click Back button',
+                'Verify data persists',
+                'Try skipping to step 3',
+                'Verify cannot skip steps',
+                'Complete all steps in order'
+              ],
+              expectedResult: 'Steps must be completed in order',
+              difficulty: 'medium'
+            },
+            {
+              id: 'addon-selection',
+              title: 'Service Add-ons',
+              description: 'Test adding additional services',
+              steps: [
+                'Select main service',
+                'Check available add-ons',
+                'Select multiple add-ons',
+                'Verify price updates',
+                'Verify duration updates',
+                'Remove an add-on',
+                'Verify price recalculation'
+              ],
+              expectedResult: 'Add-ons correctly update price and duration',
+              difficulty: 'hard'
+            }
+          ]}
+          tips={[
+            'Test with different time zones if applicable',
+            'Verify booking confirmation email format',
+            'Check calendar for holidays and special hours',
+            'Test maximum booking limits per day',
+            'Verify cancellation and rescheduling options',
+            'Test with various guest counts for group bookings'
+          ]}
+          dataTestIds={[
+            { element: 'service-card', description: 'Service selection cards' },
+            { element: 'calendar-date', description: 'Calendar date cells' },
+            { element: 'time-slot', description: 'Time slot buttons' },
+            { element: 'staff-card', description: 'Staff member cards' },
+            { element: 'next-step-btn', description: 'Next step button' },
+            { element: 'back-step-btn', description: 'Previous step button' },
+            { element: 'submit-booking', description: 'Final submit button' },
+            { element: 'booking-reference', description: 'Confirmation number' }
+          ]}
+        />
+        
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}

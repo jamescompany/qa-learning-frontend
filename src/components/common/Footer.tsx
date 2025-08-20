@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useTranslation();
 
   const footerLinks = [
-    { label: 'About', path: '/about' },
-    { label: 'Privacy Policy', path: '/privacy' },
-    { label: 'Terms of Service', path: '/terms' },
-    { label: 'Contact', path: '/contact' },
+    { label: t('footer.about'), path: '/about' },
+    { label: t('footer.privacyPolicy'), path: '/privacy' },
+    { label: t('footer.termsOfService'), path: '/terms' },
+    { label: t('footer.contact'), path: '/contact' },
   ];
 
   return (
@@ -17,16 +19,15 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">QA Learning Web</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('footer.brand')}</h3>
             <p className="text-gray-400 text-sm">
-              Your comprehensive platform for quality assurance learning and practice.
-              Master testing skills with interactive tutorials and real-world projects.
+              {t('footer.description')}
             </p>
           </div>
           
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               {footerLinks.map((link) => (
                 <li key={link.path}>
@@ -43,7 +44,7 @@ const Footer: React.FC = () => {
           
           {/* Social Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('footer.connectWithUs')}</h3>
             <div className="flex space-x-4">
               <a
                 href="https://twitter.com"
@@ -76,7 +77,7 @@ const Footer: React.FC = () => {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-gray-700 text-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} QA Learning Web. All rights reserved.
+            {t('footer.copyright', { year: currentYear })}
           </p>
         </div>
       </div>

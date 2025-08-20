@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import authService from '../services/auth.service';
 import TempPasswordModal from '../components/common/TempPasswordModal';
 
 const ForgotPasswordPage: React.FC = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -67,7 +69,7 @@ const ForgotPasswordPage: React.FC = () => {
               to="/login"
               className="mt-4 inline-block font-medium text-indigo-600 hover:text-indigo-500"
             >
-              Back to login
+              {t('auth.forgotPassword.backToLogin')}
             </Link>
           </div>
         </div>
@@ -80,16 +82,16 @@ const ForgotPasswordPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Forgot your password?
+            {t('auth.forgotPassword.title')}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your email address<br /> and we'll send you instructions to reset your password.
+          <p className="mt-2 text-center text-sm text-gray-600 whitespace-pre-line">
+            {t('auth.forgotPassword.subtitle')}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email address
+              {t('auth.forgotPassword.email')}
             </label>
             <input
               id="email"
@@ -100,7 +102,7 @@ const ForgotPasswordPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Enter your email"
+              placeholder={t('auth.forgotPassword.emailPlaceholder')}
               data-testid="forgot-password-email-input"
             />
           </div>
@@ -112,7 +114,7 @@ const ForgotPasswordPage: React.FC = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="forgot-password-submit-button"
             >
-              {isSubmitting ? 'Sending...' : 'Send reset instructions'}
+              {isSubmitting ? 'Sending...' : t('auth.forgotPassword.button')}
             </button>
           </div>
 
@@ -122,7 +124,7 @@ const ForgotPasswordPage: React.FC = () => {
               className="font-medium text-indigo-600 hover:text-indigo-500"
               data-testid="back-to-login-link"
             >
-              Back to login
+              {t('auth.forgotPassword.backToLogin')}
             </Link>
           </div>
         </form>

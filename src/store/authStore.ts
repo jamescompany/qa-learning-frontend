@@ -30,9 +30,20 @@ export const useAuthStore = create<AuthState>()(
         error: null,
 
         login: async (email: string, password: string) => {
+          const isDevelopment = import.meta.env.DEV;
+          
+          if (isDevelopment) {
+            console.log('🔑 AuthStore: Login attempt for', email);
+          }
+          
           set({ isLoading: true, error: null });
           try {
             const response = await authService.login({ email, password });
+            
+            if (isDevelopment) {
+              console.log('✅ AuthStore: Login successful', response.user);
+            }
+            
             set({
               user: response.user,
               isAuthenticated: true,
@@ -40,6 +51,10 @@ export const useAuthStore = create<AuthState>()(
               error: null,
             });
           } catch (error: any) {
+            if (isDevelopment) {
+              console.error('❌ AuthStore: Login failed', error);
+            }
+            
             set({
               user: null,
               isAuthenticated: false,
@@ -97,8 +112,8 @@ export const useAuthStore = create<AuthState>()(
           // Clear storage and auth synchronously
           authService.logout().catch(console.error);
           
-          // Force complete page reload to clear all state
-          window.location.replace('/');
+          // Navigate to home page without reload - let React Router handle it
+          // The component using logout should handle navigation
         },
 
         updateProfile: async (data) => {
@@ -126,6 +141,7 @@ export const useAuthStore = create<AuthState>()(
               user: null,
               isAuthenticated: false,
               isLoading: false,
+              // Keep existing error if any
             });
             return;
           }
@@ -150,7 +166,7 @@ export const useAuthStore = create<AuthState>()(
               user: null,
               isAuthenticated: false,
               isLoading: false,
-              error: null,
+              // Don't clear error here - keep login error visible
             });
           }
         },

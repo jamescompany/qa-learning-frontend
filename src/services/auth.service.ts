@@ -20,10 +20,20 @@ interface AuthResponse {
 
 class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    const isDevelopment = import.meta.env.DEV;
+    
     try {
       // First, try the actual API
+      if (isDevelopment) {
+        console.log('🌐 AuthService: Calling login API...');
+      }
+      
       const response = await api.post('/auth/login', credentials);
       const { access_token, refresh_token } = response.data;
+      
+      if (isDevelopment) {
+        console.log('✅ AuthService: API login successful');
+      }
       
       // Store tokens
       localStorage.setItem('accessToken', access_token);
@@ -42,7 +52,12 @@ class AuthService {
       };
     } catch (error: any) {
       // Fallback for development: Check temporary passwords
-      console.warn('Login API failed, checking temporary passwords');
+      if (isDevelopment) {
+        console.warn('⚠️ AuthService: Login API failed, checking mock users...', {
+          status: error.response?.status,
+          message: error.response?.data?.detail || error.message
+        });
+      }
       
       // Check if there's a temporary password for this email
       const tempPasswords = JSON.parse(localStorage.getItem('tempPasswords') || '{}');
@@ -55,7 +70,9 @@ class AuthService {
         
         if (!isExpired && credentials.password === tempPasswordData.password) {
           // Temp password is valid - create mock session
-          console.log('Login successful with temporary password');
+          if (isDevelopment) {
+            console.log('🔓 AuthService: Login successful with temporary password');
+          }
           
           // Clear the temp password after successful use
           delete tempPasswords[credentials.email];
@@ -111,6 +128,10 @@ class AuthService {
       );
       
       if (matchedUser) {
+        if (isDevelopment) {
+          console.log('✅ AuthService: Mock user login successful');
+        }
+        
         // Create mock session for default users
         const mockAccessToken = 'mock_access_' + Date.now();
         const mockRefreshToken = 'mock_refresh_' + Date.now();
@@ -135,6 +156,10 @@ class AuthService {
           accessToken: mockAccessToken,
           refreshToken: mockRefreshToken
         };
+      }
+      
+      if (isDevelopment) {
+        console.error('❌ AuthService: No matching user found');
       }
       
       // If no match found, throw the original error

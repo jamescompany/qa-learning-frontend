@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useCalendarStore } from '../store/calendarStore';
 
 
 const CalendarPage: React.FC = () => {
+  const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const { events, addEvent, updateEvent, deleteEvent } = useCalendarStore();
   const [showEventForm, setShowEventForm] = useState(false);
@@ -12,11 +14,9 @@ const CalendarPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [eventFormData, setEventFormData] = useState({ title: '', type: 'meeting' });
 
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+  const monthNames = t('calendar.months', { returnObjects: true }) as string[];
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -47,6 +47,7 @@ const CalendarPage: React.FC = () => {
           className="h-24 border border-gray-200 p-2 hover:bg-gray-50 cursor-pointer"
           onClick={() => {
             setSelectedDate(dateStr);
+            setEventFormData({ title: '', type: 'meeting' });
             setShowEventForm(true);
           }}
         >
@@ -65,7 +66,7 @@ const CalendarPage: React.FC = () => {
                   setSelectedEvent(event);
                   setShowEventDetail(true);
                 }}
-                title="Click to view details"
+                title={t('calendar.clickToViewDetails')}
               >
                 {event.time && <span className="font-medium">{event.time} </span>}
                 {event.title}
@@ -102,29 +103,30 @@ const CalendarPage: React.FC = () => {
                   const today = new Date();
                   const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                   setSelectedDate(dateStr);
+                  setEventFormData({ title: '', type: 'meeting' });
                   setShowEventForm(true);
                 }}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
-                Add Event
+                {t('calendar.addEvent')}
               </button>
               <button
                 onClick={handlePrevMonth}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                Previous
+                {t('calendar.previous')}
               </button>
               <button
                 onClick={() => setCurrentDate(new Date())}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Today
+                {t('calendar.today')}
               </button>
               <button
                 onClick={handleNextMonth}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                Next
+                {t('calendar.next')}
               </button>
             </div>
           </div>
@@ -133,7 +135,7 @@ const CalendarPage: React.FC = () => {
           <div className="p-6">
             {/* Day Headers */}
             <div className="grid grid-cols-7 mb-2">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+              {(t('calendar.weekDays', { returnObjects: true }) as string[]).map(day => (
                 <div key={day} className="text-center font-semibold text-sm text-gray-600 py-2">
                   {day}
                 </div>
@@ -149,19 +151,19 @@ const CalendarPage: React.FC = () => {
 
         {/* Legend */}
         <div className="mt-6 bg-white rounded-lg shadow p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Event Types</h3>
+          <h3 className="font-semibold text-gray-900 mb-3">{t('calendar.eventTypes')}</h3>
           <div className="flex space-x-6">
             <div className="flex items-center">
               <div className="w-3 h-3 bg-blue-100 rounded mr-2"></div>
-              <span className="text-sm text-gray-600">Meeting</span>
+              <span className="text-sm text-gray-600">{t('calendar.meeting')}</span>
             </div>
             <div className="flex items-center">
               <div className="w-3 h-3 bg-red-100 rounded mr-2"></div>
-              <span className="text-sm text-gray-600">Deadline</span>
+              <span className="text-sm text-gray-600">{t('calendar.deadline')}</span>
             </div>
             <div className="flex items-center">
               <div className="w-3 h-3 bg-green-100 rounded mr-2"></div>
-              <span className="text-sm text-gray-600">Todo</span>
+              <span className="text-sm text-gray-600">{t('calendar.todo')}</span>
             </div>
           </div>
       </div>
@@ -170,7 +172,7 @@ const CalendarPage: React.FC = () => {
       {showEventForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Add Event</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('calendar.eventForm.addTitle')}</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -183,64 +185,68 @@ const CalendarPage: React.FC = () => {
                   description: formData.get('description') as string || undefined,
                 });
                 setShowEventForm(false);
+                setEventFormData({ title: '', type: 'meeting' });
               }}
             >
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title
+                    {t('calendar.eventForm.title')}
+                    <span className="text-red-500 ml-1">*</span>
                   </label>
                   <input
                     type="text"
                     name="title"
                     required
+                    value={eventFormData.title}
+                    onChange={(e) => setEventFormData(prev => ({ ...prev, title: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date
+                    {t('calendar.eventForm.date')}
                   </label>
                   <input
                     type="date"
                     name="date"
                     value={selectedDate}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type
+                    {t('calendar.eventForm.type')}
                   </label>
                   <select
                     name="type"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="meeting">Meeting</option>
-                    <option value="deadline">Deadline</option>
-                    <option value="todo">Todo</option>
+                    <option value="meeting">{t('calendar.meeting')}</option>
+                    <option value="deadline">{t('calendar.deadline')}</option>
+                    <option value="todo">{t('calendar.todo')}</option>
                   </select>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Time (optional)
+                    {t('calendar.eventForm.timeOptional')}
                   </label>
                   <input
                     type="text"
                     name="time"
-                    placeholder="e.g., 10:00 AM"
+                    placeholder={t('calendar.eventForm.timePlaceholder')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description (optional)
+                    {t('calendar.eventForm.descriptionOptional')}
                   </label>
                   <textarea
                     name="description"
@@ -253,16 +259,24 @@ const CalendarPage: React.FC = () => {
               <div className="flex space-x-3 mt-6">
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  disabled={!eventFormData.title.trim()}
+                  className={`flex-1 px-4 py-2 rounded-md transition-colors ${
+                    eventFormData.title.trim()
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
                 >
-                  Add Event
+                  {t('calendar.addEvent')}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setShowEventForm(false)}
+                  onClick={() => {
+                    setShowEventForm(false);
+                    setEventFormData({ title: '', type: 'meeting' });
+                  }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
                 >
-                  Cancel
+                  {t('calendar.eventForm.cancel')}
                 </button>
               </div>
             </form>
@@ -275,7 +289,7 @@ const CalendarPage: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
             <div className="flex justify-between items-start mb-4">
-              <h2 className="text-xl font-semibold">Event Details</h2>
+              <h2 className="text-xl font-semibold">{t('calendar.eventDetail.title')}</h2>
               <button
                 onClick={() => {
                   setShowEventDetail(false);
@@ -291,17 +305,17 @@ const CalendarPage: React.FC = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Title</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">{t('calendar.eventForm.title')}</label>
                 <p className="text-gray-900">{selectedEvent.title}</p>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Date</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">{t('calendar.eventForm.date')}</label>
                 <p className="text-gray-900">{new Date(selectedEvent.date).toLocaleDateString()}</p>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1">Type</label>
+                <label className="block text-sm font-medium text-gray-600 mb-1">{t('calendar.eventForm.type')}</label>
                 <span className={`inline-block px-3 py-1 rounded-full text-sm ${
                   selectedEvent.type === 'meeting' ? 'bg-blue-100 text-blue-700' :
                   selectedEvent.type === 'deadline' ? 'bg-red-100 text-red-700' :
@@ -313,14 +327,14 @@ const CalendarPage: React.FC = () => {
               
               {selectedEvent.time && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Time</label>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">{t('calendar.eventForm.time')}</label>
                   <p className="text-gray-900">{selectedEvent.time}</p>
                 </div>
               )}
               
               {selectedEvent.description && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">{t('calendar.eventForm.description')}</label>
                   <p className="text-gray-900">{selectedEvent.description}</p>
                 </div>
               )}
@@ -334,7 +348,7 @@ const CalendarPage: React.FC = () => {
                 }}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
-                Edit
+                {t('calendar.eventDetail.edit')}
               </button>
               <button
                 onClick={() => {
@@ -342,7 +356,7 @@ const CalendarPage: React.FC = () => {
                 }}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
-                Delete
+                {t('calendar.eventDetail.delete')}
               </button>
               <button
                 onClick={() => {
@@ -351,7 +365,7 @@ const CalendarPage: React.FC = () => {
                 }}
                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
               >
-                Close
+                {t('calendar.eventDetail.close')}
               </button>
             </div>
           </div>
@@ -362,7 +376,7 @@ const CalendarPage: React.FC = () => {
       {isEditing && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">Edit Event</h2>
+            <h2 className="text-xl font-semibold mb-4">{t('calendar.eventForm.editTitle')}</h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -382,7 +396,7 @@ const CalendarPage: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title
+                    {t('calendar.eventForm.title')}
                   </label>
                   <input
                     type="text"
@@ -395,7 +409,7 @@ const CalendarPage: React.FC = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date
+                    {t('calendar.eventForm.date')}
                   </label>
                   <input
                     type="date"
@@ -408,7 +422,7 @@ const CalendarPage: React.FC = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type
+                    {t('calendar.eventForm.type')}
                   </label>
                   <select
                     name="type"
@@ -416,28 +430,28 @@ const CalendarPage: React.FC = () => {
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="meeting">Meeting</option>
-                    <option value="deadline">Deadline</option>
-                    <option value="todo">Todo</option>
+                    <option value="meeting">{t('calendar.meeting')}</option>
+                    <option value="deadline">{t('calendar.deadline')}</option>
+                    <option value="todo">{t('calendar.todo')}</option>
                   </select>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Time (optional)
+                    {t('calendar.eventForm.timeOptional')}
                   </label>
                   <input
                     type="text"
                     name="time"
                     defaultValue={selectedEvent.time || ''}
-                    placeholder="e.g., 10:00 AM"
+                    placeholder={t('calendar.eventForm.timePlaceholder')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description (optional)
+                    {t('calendar.eventForm.descriptionOptional')}
                   </label>
                   <textarea
                     name="description"
@@ -453,7 +467,7 @@ const CalendarPage: React.FC = () => {
                   type="submit"
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  Save Changes
+                  {t('calendar.eventForm.saveChanges')}
                 </button>
                 <button
                   type="button"
@@ -462,7 +476,7 @@ const CalendarPage: React.FC = () => {
                   }}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
                 >
-                  Cancel
+                  {t('calendar.eventForm.cancel')}
                 </button>
               </div>
             </form>
@@ -481,13 +495,13 @@ const CalendarPage: React.FC = () => {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Delete Event</h3>
-                <p className="text-sm text-gray-600 mt-1">Are you sure you want to delete "{selectedEvent.title}"?</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('calendar.deleteConfirm.title')}</h3>
+                <p className="text-sm text-gray-600 mt-1">{t('calendar.deleteConfirm.message', { title: selectedEvent.title })}</p>
               </div>
             </div>
             
             <p className="text-sm text-gray-500 mb-6">
-              This action cannot be undone. The event will be permanently removed from your calendar.
+              {t('calendar.deleteConfirm.warning')}
             </p>
             
             <div className="flex space-x-3">
@@ -500,13 +514,13 @@ const CalendarPage: React.FC = () => {
                 }}
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
               >
-                Delete
+                {t('calendar.deleteConfirm.confirmButton')}
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
               >
-                Cancel
+                {t('calendar.deleteConfirm.cancelButton')}
               </button>
             </div>
           </div>
