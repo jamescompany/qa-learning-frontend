@@ -9,9 +9,9 @@ export const home = {
   },
   qaHub: {
     icon: '🧪',
-    title: 'QA 테스팅 허브 - 회원 전용',
+    title: 'QA 테스팅 플레이그라운드',
     description: '이커머스, 뱅킹, 소셜 미디어, 예약 시스템을 포함한 실제 애플리케이션 시나리오에서 자동화 테스팅을 연습하세요.\nPlaywright, Cypress, Selenium 테스팅에 완벽합니다.',
-    loginRequired: '🔒 QA 테스팅 허브 진입을 위해 로그인이 필요합니다',
+    loginRequired: '🔒 QA 테스팅 플레이그라운드 진입을 위해 로그인이 필요합니다',
     loginToAccess: '로그인',
     createAccount: '계정 만들기',
   },

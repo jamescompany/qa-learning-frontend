@@ -184,11 +184,11 @@ const ProfilePage: React.FC = () => {
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg shadow">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
         {/* Profile Header */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-lg p-8">
           <div className="flex items-center space-x-6">
-            <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl">
+            <div className="w-24 h-24 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-4xl">
               👤
             </div>
             <div className="text-white">
@@ -201,7 +201,7 @@ const ProfilePage: React.FC = () => {
         {/* Profile Content */}
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">{t('profile.title')}</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{t('profile.title')}</h2>
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
@@ -227,7 +227,7 @@ const ProfilePage: React.FC = () => {
                     setFormData(originalData);
                     setIsEditing(false);
                   }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                  className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
                 >
                   {t('profile.cancel')}
                 </button>
@@ -285,57 +285,57 @@ const ProfilePage: React.FC = () => {
             <div className="space-y-6">
               {formData.name && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.name')}</h3>
-                  <p className="text-gray-900">{formData.name}</p>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{t('profile.fields.name')}</h3>
+                  <p className="text-gray-900 dark:text-gray-100">{formData.name}</p>
                 </div>
               )}
               {formData.email && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.email')}</h3>
-                  <p className="text-gray-900">{formData.email}</p>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{t('profile.fields.email')}</h3>
+                  <p className="text-gray-900 dark:text-gray-100">{formData.email}</p>
                 </div>
               )}
               {formData.bio && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.bio')}</h3>
-                  <p className="text-gray-900">{formData.bio}</p>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{t('profile.fields.bio')}</h3>
+                  <p className="text-gray-900 dark:text-gray-100">{formData.bio}</p>
                 </div>
               )}
               {formData.location && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.location')}</h3>
-                  <p className="text-gray-900">{formData.location}</p>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{t('profile.fields.location')}</h3>
+                  <p className="text-gray-900 dark:text-gray-100">{formData.location}</p>
                 </div>
               )}
               {formData.website && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">{t('profile.fields.website')}</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{t('profile.fields.website')}</h3>
                   <a href={formData.website} className="text-blue-600 hover:text-blue-800">
                     {formData.website}
                   </a>
                 </div>
               )}
               {!formData.name && !formData.email && !formData.bio && !formData.location && !formData.website && (
-                <p className="text-gray-500 italic">{t('profile.noProfileInfo')}</p>
+                <p className="text-gray-500 dark:text-gray-400 italic">{t('profile.noProfileInfo')}</p>
               )}
             </div>
           )}
 
           {/* Stats Section */}
           <div className="mt-8 pt-8 border-t">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.activityStats')}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('profile.activityStats')}</h3>
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <p className="text-2xl font-bold text-blue-600">0</p>
-                <p className="text-sm text-gray-500">{t('profile.stats.posts')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.stats.posts')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-600">0</p>
-                <p className="text-sm text-gray-500">{t('profile.stats.todosCompleted')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.stats.todosCompleted')}</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-purple-600">1</p>
-                <p className="text-sm text-gray-500">{t('profile.stats.daysActive')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('profile.stats.daysActive')}</p>
               </div>
             </div>
           </div>
@@ -343,10 +343,10 @@ const ProfilePage: React.FC = () => {
       </div>
 
       {/* Password Change Section */}
-      <div className="bg-white rounded-lg shadow mt-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow mt-6">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">{t('profile.security.title')}</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{t('profile.security.title')}</h2>
             {!showPasswordSection && (
               <button
                 onClick={() => setShowPasswordSection(true)}
@@ -360,7 +360,7 @@ const ProfilePage: React.FC = () => {
           {showPasswordSection ? (
             <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div>
-                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('profile.security.currentPassword')}
                 </label>
                 <input
@@ -369,8 +369,8 @@ const ProfilePage: React.FC = () => {
                   name="currentPassword"
                   value={passwordData.currentPassword}
                   onChange={handlePasswordChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    passwordErrors.currentPassword ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    passwordErrors.currentPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder={t('profile.security.placeholders.currentPassword')}
                 />
@@ -380,7 +380,7 @@ const ProfilePage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('profile.security.newPassword')}
                 </label>
                 <input
@@ -389,21 +389,21 @@ const ProfilePage: React.FC = () => {
                   name="newPassword"
                   value={passwordData.newPassword}
                   onChange={handlePasswordChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    passwordErrors.newPassword ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    passwordErrors.newPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder={t('profile.security.placeholders.newPassword')}
                 />
                 {passwordErrors.newPassword && (
                   <p className="mt-1 text-sm text-red-600">{passwordErrors.newPassword}</p>
                 )}
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   {t('profile.security.passwordHint')}
                 </p>
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('profile.security.confirmPassword')}
                 </label>
                 <input
@@ -412,8 +412,8 @@ const ProfilePage: React.FC = () => {
                   name="confirmPassword"
                   value={passwordData.confirmPassword}
                   onChange={handlePasswordChange}
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    passwordErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    passwordErrors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder={t('profile.security.placeholders.confirmPassword')}
                 />
@@ -444,18 +444,18 @@ const ProfilePage: React.FC = () => {
                       confirmPassword: '',
                     });
                   }}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                  className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
                 >
                   {t('profile.cancel')}
                 </button>
               </div>
             </form>
           ) : (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 <strong>{t('profile.security.securityTips.title')}</strong>
               </p>
-              <ul className="mt-2 space-y-1 text-sm text-gray-500 list-disc list-inside">
+              <ul className="mt-2 space-y-1 text-sm text-gray-500 dark:text-gray-400 list-disc list-inside">
                 <li>{t('profile.security.securityTips.tip1')}</li>
                 <li>{t('profile.security.securityTips.tip2')}</li>
                 <li>{t('profile.security.securityTips.tip3')}</li>

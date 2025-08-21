@@ -124,7 +124,7 @@ const PostDetailPage: React.FC = () => {
     return (
       <DashboardLayout>
         <div className="text-center py-12">
-          <p className="text-gray-500">{t('posts.detail.notFound')}</p>
+          <p className="text-gray-500 dark:text-gray-400">{t('posts.detail.notFound')}</p>
           <Link to="/posts" className="text-blue-600 hover:text-blue-800 mt-4 inline-block">
             {t('posts.detail.backToPosts')}
           </Link>
@@ -136,11 +136,11 @@ const PostDetailPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
-      <article className="bg-white rounded-lg shadow p-8">
+      <article className="bg-white dark:bg-gray-800 rounded-lg shadow p-8">
           {/* Post Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{post.title}</h1>
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">{post.title}</h1>
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-4">
                 <span>{t('posts.detail.by')} {post.author}</span>
                 <span>{new Date(post.createdAt).toLocaleDateString()}</span>
@@ -168,14 +168,14 @@ const PostDetailPage: React.FC = () => {
 
           {/* Post Content */}
           <div className="prose max-w-none mb-8">
-            <div className="whitespace-pre-wrap text-gray-700">
+            <div className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
               {post.content}
             </div>
           </div>
 
           {/* Comments Section */}
           <div className="border-t pt-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
               {t('posts.detail.comments')} ({post.comments.length})
             </h2>
 
@@ -185,7 +185,7 @@ const PostDetailPage: React.FC = () => {
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder={t('posts.detail.addComment')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={3}
               />
               <button
@@ -200,14 +200,14 @@ const PostDetailPage: React.FC = () => {
             {/* Comments List */}
             <div className="space-y-4">
               {post.comments.map(comment => (
-                <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
+                <div key={comment.id} className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="font-medium text-gray-900">{comment.author}</span>
-                    <span className="text-sm text-gray-500">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{comment.author}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {new Date(comment.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className="text-gray-700">{comment.content}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{comment.content}</p>
                 </div>
               ))}
             </div>

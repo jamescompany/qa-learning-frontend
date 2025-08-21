@@ -65,22 +65,22 @@ const DashboardPage: React.FC = () => {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {t('dashboard.welcome', { name: user?.full_name || user?.username || 'User' })}
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             {t('dashboard.subtitle')}
           </p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.totalPosts')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalPosts}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.totalPosts')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.totalPosts}</p>
               </div>
               <div className="text-blue-500">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,11 +95,11 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.totalTodos')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.totalTodos}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.totalTodos')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.totalTodos}</p>
               </div>
               <div className="text-green-500">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,11 +114,11 @@ const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.completed')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.completedTodos}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.completed')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.completedTodos}</p>
               </div>
               <div className="text-purple-500">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,18 +134,18 @@ const DashboardPage: React.FC = () => {
                     style={{ width: stats.totalTodos > 0 ? `${(stats.completedTodos / stats.totalTodos) * 100}%` : '0%' }}
                   />
                 </div>
-                <span className="ml-2 text-sm text-gray-600">
+                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                   {stats.totalTodos > 0 ? Math.round((stats.completedTodos / stats.totalTodos) * 100) : 0}%
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.recentActivity')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900">{stats.recentActivity}</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.recentActivity')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.recentActivity}</p>
               </div>
               <div className="text-orange-500">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,14 +154,14 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <div className="mt-4">
-              <p className="text-sm text-gray-600">{t('dashboard.stats.lastDays')}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.stats.lastDays')}</p>
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions.title')}</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dashboard.quickActions.title')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
               to="/posts/create"
@@ -183,7 +183,7 @@ const DashboardPage: React.FC = () => {
             </Link>
             <Link
               to="/profile"
-              className="flex items-center justify-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="flex items-center justify-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               {t('dashboard.quickActions.editProfile')}
             </Link>
@@ -191,8 +191,8 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Recent Activity Feed */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.recentActivityFeed.title')}</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('dashboard.recentActivityFeed.title')}</h2>
           <div className="space-y-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
@@ -203,7 +203,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm text-gray-900">{t('dashboard.recentActivityFeed.createdPost')}</p>
+                <p className="text-sm text-gray-900 dark:text-gray-100">{t('dashboard.recentActivityFeed.createdPost')}</p>
                 <p className="text-xs text-gray-500">{t('dashboard.recentActivityFeed.hoursAgo', { hours: 2 })}</p>
               </div>
             </div>
@@ -216,7 +216,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm text-gray-900">{t('dashboard.recentActivityFeed.completedTodos', { count: 3 })}</p>
+                <p className="text-sm text-gray-900 dark:text-gray-100">{t('dashboard.recentActivityFeed.completedTodos', { count: 3 })}</p>
                 <p className="text-xs text-gray-500">{t('dashboard.recentActivityFeed.hoursAgo', { hours: 5 })}</p>
               </div>
             </div>
@@ -229,7 +229,7 @@ const DashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm text-gray-900">{t('dashboard.recentActivityFeed.updatedProfile')}</p>
+                <p className="text-sm text-gray-900 dark:text-gray-100">{t('dashboard.recentActivityFeed.updatedProfile')}</p>
                 <p className="text-xs text-gray-500">{t('dashboard.recentActivityFeed.yesterday')}</p>
               </div>
             </div>

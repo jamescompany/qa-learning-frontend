@@ -26,13 +26,13 @@ const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-blue-600">QA</span>
-            <span className="text-xl font-semibold text-gray-700">Learning</span>
+            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">QA</span>
+            <span className="text-xl font-semibold text-gray-700 dark:text-gray-300">Learning</span>
           </Link>
           
           {/* User Menu */}
@@ -42,13 +42,13 @@ const Header: React.FC<HeaderProps> = ({
               <>
                 <Link
                   to="/dashboard"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   {t('navigation.dashboard')}
                 </Link>
                 <Link
                   to="/profile"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   {userName}
                 </Link>
@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({
               <>
                 <Link
                   to="/login"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   {t('navigation.login')}
                 </Link>

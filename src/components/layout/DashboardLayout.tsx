@@ -34,7 +34,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
       <Header 
         isAuthenticated={isAuthenticated}
         userName={user?.full_name || user?.username || user?.email}
@@ -48,12 +48,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <aside
           className={`${
             isSidebarOpen ? 'w-64' : 'w-20'
-          } bg-white shadow-md transition-all duration-300 flex flex-col h-full`}
+          } bg-white dark:bg-gray-800 shadow-md transition-all duration-300 flex flex-col h-full`}
         >
           <div className="p-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`w-full text-gray-600 hover:text-gray-900 ${
+              className={`w-full text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 ${
                 isSidebarOpen ? 'text-left' : 'text-center'
               }`}
             >
@@ -82,8 +82,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                   ${isSidebarOpen ? '' : 'justify-center'}
                   ${
                     isActive(item.path)
-                      ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-l-4 border-blue-600 dark:border-blue-400'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }
                 `}
               >
