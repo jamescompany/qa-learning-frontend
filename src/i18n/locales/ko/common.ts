@@ -16,7 +16,7 @@ export const common = {
     login: '로그인',
     signup: '회원가입',
     logout: '로그아웃',
-    qa: 'QA 테스팅',
+    qa: 'QA 테스팅 플레이그라운드',
     qaTestingHub: 'QA 테스팅 플레이그라운드',
     playground: '컴포넌트 플레이그라운드',
     search: '검색',

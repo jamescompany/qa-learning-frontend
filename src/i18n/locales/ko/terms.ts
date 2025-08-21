@@ -1,6 +1,6 @@
 export const terms = {
   title: '이용약관',
-  lastUpdated: '최종 업데이트: 2024년 12월',
+  lastUpdated: '최종 업데이트: 2025년 8월',
   section1: {
     title: '1. 약관 동의',
     description: 'QA Learning Web에 접속하거나 사용함으로써, 귀하는 이러한 이용약관에 구속되는 것에 동의합니다.',
@@ -52,7 +52,7 @@ export const terms = {
   },
   section10: {
     title: '10. 연락처 정보',
-    description: '이 이용약관에 대한 질문은 다음으로 문의해 주세요:',
+    description: '이 이용약관에 대한 질문은 다음으로 문의해 주세요.',
     email: 'legal@qalearningweb.com',
   },
 };

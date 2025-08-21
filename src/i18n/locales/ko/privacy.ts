@@ -1,6 +1,6 @@
 export const privacy = {
   title: '개인정보 처리방침',
-  lastUpdated: '최종 업데이트: 2024년 12월',
+  lastUpdated: '최종 업데이트: 2025년 8월',
   section1: {
     title: '1. 수집하는 정보',
     description: '우리는 계정 생성, 콘텐츠 제출, 지원 요청 시 고객님이 직접 제공하는 정보를 수집합니다.',

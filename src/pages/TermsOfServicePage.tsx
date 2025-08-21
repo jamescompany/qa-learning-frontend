@@ -86,7 +86,12 @@ const TermsOfServicePage: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             {t('termsOfService.section10.description')}
             <br />
-            {t('termsOfService.section10.email')}
+            <a 
+              href={`mailto:${t('termsOfService.section10.email')}`}
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {t('termsOfService.section10.email')}
+            </a>
           </p>
         </section>
 
