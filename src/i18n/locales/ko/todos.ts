@@ -22,6 +22,26 @@ export const todos = {
     submit: '추가',
     update: '수정',
     cancel: '취소',
+    fields: {
+      title: '제목',
+      titlePlaceholder: '할 일 제목을 입력하세요',
+      titleRequired: '제목은 필수입니다',
+      description: '설명',
+      descriptionPlaceholder: '상세 설명을 입력하세요 (선택사항)',
+      priority: '우선순위',
+      priorityLow: '낮음',
+      priorityMedium: '중간',
+      priorityHigh: '높음',
+      dueDate: '마감일',
+    },
+    buttons: {
+      saving: '저장 중...',
+      update: '수정',
+      create: '추가',
+    },
+    validation: {
+      titleMinLength: '제목은 최소 3자 이상이어야 합니다',
+    },
   },
   actions: {
     edit: '수정',

@@ -146,7 +146,7 @@ const TestingGuide = ({ title, description, scenarios, tips, dataTestIds }: Test
           <h3 className="font-semibold text-purple-900 mb-2">{t('testingGuide.availableTestIds')}</h3>
           <div className="grid grid-cols-2 gap-2 text-sm">
             {dataTestIds.map((item, index) => (
-              <div key={index} className="flex items-start">
+              <div key={index} className="flex items-center">
                 <code className="bg-purple-100 px-2 py-1 rounded text-purple-800 mr-2">
                   {item.element}
                 </code>

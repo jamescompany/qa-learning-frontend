@@ -87,16 +87,16 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
           <button
             onClick={handleClose}
             disabled={isLoading}
-            className="px-4 py-2 bg-gray-100 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
-            {t('common.cancel')}
+            {t('buttons.cancel')}
           </button>
           <button
             onClick={handleConfirm}
             disabled={!isConfirmed || isLoading}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
-            {isLoading ? t('common.loading') : t('settings.account.deleteAccountButton')}
+            {isLoading ? t('status.loading') : t('settings.account.deleteAccountButton')}
           </button>
         </div>
       </div>

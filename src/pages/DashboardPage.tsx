@@ -154,7 +154,7 @@ const DashboardPage: React.FC = () => {
               </div>
             </div>
             <div className="mt-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.stats.lastDays')}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.stats.lastDays', { days: 30 })}</p>
             </div>
           </div>
         </div>

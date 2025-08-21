@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../../components/common/Header';
 import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
@@ -27,6 +28,7 @@ interface Account {
 const BankingDashboardPage = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [selectedAccount, setSelectedAccount] = useState('checking');
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showPayBillModal, setShowPayBillModal] = useState(false);
@@ -42,10 +44,10 @@ const BankingDashboardPage = () => {
   const [showPinModal, setShowPinModal] = useState(false);
 
   const accounts: Account[] = [
-    { id: 'checking', name: 'Checking Account', type: 'Checking', number: '****1234', balance: 5432.10, currency: 'USD' },
-    { id: 'savings', name: 'Savings Account', type: 'Savings', number: '****5678', balance: 12000.50, currency: 'USD' },
-    { id: 'credit', name: 'Credit Card', type: 'Credit', number: '****9012', balance: -1234.75, currency: 'USD' },
-    { id: 'investment', name: 'Investment Account', type: 'Investment', number: '****3456', balance: 45678.90, currency: 'USD' },
+    { id: 'checking', name: t('banking.account.checking'), type: t('banking.account.type.checking'), number: '****1234', balance: 5432.10, currency: 'USD' },
+    { id: 'savings', name: t('banking.account.savings'), type: t('banking.account.type.savings'), number: '****5678', balance: 12000.50, currency: 'USD' },
+    { id: 'credit', name: t('banking.account.credit'), type: t('banking.account.type.credit'), number: '****9012', balance: -1234.75, currency: 'USD' },
+    { id: 'investment', name: t('banking.account.investment'), type: t('banking.account.type.investment'), number: '****3456', balance: 45678.90, currency: 'USD' },
   ];
 
   const transactions: Transaction[] = [
@@ -60,12 +62,12 @@ const BankingDashboardPage = () => {
   ];
 
   const quickActions = [
-    { id: 'transfer', label: 'Transfer Money', icon: '💸' },
-    { id: 'pay-bill', label: 'Pay Bills', icon: '📄' },
-    { id: 'deposit', label: 'Mobile Deposit', icon: '📱' },
-    { id: 'send-money', label: 'Send Money', icon: '💰' },
-    { id: 'cards', label: 'Manage Cards', icon: '💳' },
-    { id: 'statements', label: 'Statements', icon: '📊' },
+    { id: 'transfer', label: t('banking.quickActions.transfer'), icon: '💸' },
+    { id: 'pay-bill', label: t('banking.quickActions.payBills'), icon: '📄' },
+    { id: 'deposit', label: t('banking.quickActions.mobileDeposit'), icon: '📱' },
+    { id: 'send-money', label: t('banking.quickActions.sendMoney'), icon: '💰' },
+    { id: 'cards', label: t('banking.quickActions.manageCards'), icon: '💳' },
+    { id: 'statements', label: t('banking.quickActions.statements'), icon: '📊' },
   ];
 
   const upcomingBills = [
@@ -77,7 +79,7 @@ const BankingDashboardPage = () => {
 
   const handleTransfer = () => {
     if (!transferAmount || !transferTo) {
-      toast.error('Please fill all fields');
+      toast.error(t('banking.messages.fillAllFields'));
       return;
     }
     setShowPinModal(true);
@@ -85,23 +87,23 @@ const BankingDashboardPage = () => {
 
   const handlePinSubmit = () => {
     if (pin === '1234') {
-      toast.success('Transfer initiated successfully!');
+      toast.success(t('banking.messages.transferSuccess'));
       setShowTransferModal(false);
       setShowPinModal(false);
       setPin('');
       setTransferAmount('');
       setTransferTo('');
     } else {
-      toast.error('Invalid PIN');
+      toast.error(t('banking.messages.invalidPin'));
     }
   };
 
   const handlePayBill = () => {
     if (!selectedBiller || !billAmount) {
-      toast.error('Please select a biller and enter amount');
+      toast.error(t('banking.messages.selectBillerAmount'));
       return;
     }
-    toast.success('Bill payment scheduled!');
+    toast.success(t('banking.messages.billPaymentScheduled'));
     setShowPayBillModal(false);
     setBillAmount('');
     setSelectedBiller('');
@@ -116,13 +118,13 @@ const BankingDashboardPage = () => {
         setShowPayBillModal(true);
         break;
       case 'deposit':
-        toast('Opening camera for mobile deposit...');
+        toast(t('banking.messages.openingCamera'));
         break;
       case 'send-money':
-        toast('Send money feature coming soon!');
+        toast(t('banking.messages.sendMoneyComingSoon'));
         break;
       case 'cards':
-        toast('Card management feature coming soon!');
+        toast(t('banking.messages.cardManagementComingSoon'));
         break;
       case 'statements':
         setShowStatementModal(true);
@@ -159,8 +161,8 @@ const BankingDashboardPage = () => {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome back, John!</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Last login: Today at 9:30 AM</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('banking.header.welcome')}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('banking.header.lastLogin')}</p>
             </div>
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-400 hover:text-gray-600" data-testid="notifications-btn">
@@ -182,7 +184,7 @@ const BankingDashboardPage = () => {
                 </svg>
               </button>
               <button className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700" data-testid="logout-btn">
-                Logout
+                {t('banking.header.logout')}
               </button>
             </div>
           </div>
@@ -192,138 +194,138 @@ const BankingDashboardPage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Testing Guide */}
         <TestingGuide
-          title="Banking Dashboard Testing Guide"
-          description="Learn to test critical banking features including transfers, security, and transaction management"
+          title={t('banking.testingGuide.title')}
+          description={t('banking.testingGuide.description')}
           scenarios={[
             {
               id: 'security-validation',
-              title: 'PIN Security Validation',
-              description: 'Test security measures for sensitive transactions',
+              title: t('banking.testingGuide.scenarios.pinSecurity.title'),
+              description: t('banking.testingGuide.scenarios.pinSecurity.description'),
               steps: [
-                'Click "Transfer Money" quick action',
-                'Fill in transfer details',
-                'Click transfer button',
-                'Enter incorrect PIN (anything except 1234)',
-                'Verify error message',
-                'Enter correct PIN (1234)',
-                'Verify successful transfer'
+                t('banking.testingGuide.scenarios.pinSecurity.steps.1'),
+                t('banking.testingGuide.scenarios.pinSecurity.steps.2'),
+                t('banking.testingGuide.scenarios.pinSecurity.steps.3'),
+                t('banking.testingGuide.scenarios.pinSecurity.steps.4'),
+                t('banking.testingGuide.scenarios.pinSecurity.steps.5'),
+                t('banking.testingGuide.scenarios.pinSecurity.steps.6'),
+                t('banking.testingGuide.scenarios.pinSecurity.steps.7')
               ],
-              expectedResult: 'Transfer only completes with correct PIN',
+              expectedResult: t('banking.testingGuide.scenarios.pinSecurity.expectedResult'),
               difficulty: 'hard'
             },
             {
               id: 'account-switching',
-              title: 'Account Balance Display',
-              description: 'Verify account switching updates balance and transactions',
+              title: t('banking.testingGuide.scenarios.accountSwitching.title'),
+              description: t('banking.testingGuide.scenarios.accountSwitching.description'),
               steps: [
-                'Note current account balance',
-                'Switch to Savings Account',
-                'Verify balance changes to $12,000.50',
-                'Switch to Credit Card',
-                'Verify negative balance display',
-                'Check transaction list updates'
+                t('banking.testingGuide.scenarios.accountSwitching.steps.1'),
+                t('banking.testingGuide.scenarios.accountSwitching.steps.2'),
+                t('banking.testingGuide.scenarios.accountSwitching.steps.3'),
+                t('banking.testingGuide.scenarios.accountSwitching.steps.4'),
+                t('banking.testingGuide.scenarios.accountSwitching.steps.5'),
+                t('banking.testingGuide.scenarios.accountSwitching.steps.6')
               ],
-              expectedResult: 'Account data updates correctly when switching',
+              expectedResult: t('banking.testingGuide.scenarios.accountSwitching.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'transaction-filtering',
-              title: 'Transaction Search and Filter',
-              description: 'Test transaction filtering by category and date',
+              title: t('banking.testingGuide.scenarios.transactionFiltering.title'),
+              description: t('banking.testingGuide.scenarios.transactionFiltering.description'),
               steps: [
-                'Select "Shopping" from category filter',
-                'Verify only shopping transactions show',
-                'Search for "Amazon"',
-                'Verify search results',
-                'Set date range filter',
-                'Verify transactions within date range'
+                t('banking.testingGuide.scenarios.transactionFiltering.steps.1'),
+                t('banking.testingGuide.scenarios.transactionFiltering.steps.2'),
+                t('banking.testingGuide.scenarios.transactionFiltering.steps.3'),
+                t('banking.testingGuide.scenarios.transactionFiltering.steps.4'),
+                t('banking.testingGuide.scenarios.transactionFiltering.steps.5'),
+                t('banking.testingGuide.scenarios.transactionFiltering.steps.6')
               ],
-              expectedResult: 'Transactions filter correctly by all criteria',
+              expectedResult: t('banking.testingGuide.scenarios.transactionFiltering.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'bill-payment',
-              title: 'Bill Payment Flow',
-              description: 'Test the complete bill payment process',
+              title: t('banking.testingGuide.scenarios.billPayment.title'),
+              description: t('banking.testingGuide.scenarios.billPayment.description'),
               steps: [
-                'Click "Pay Bills" quick action',
-                'Select "Electric Company" from billers',
-                'Enter amount $98.50',
-                'Submit payment',
-                'Verify confirmation message',
-                'Check account balance updated'
+                t('banking.testingGuide.scenarios.billPayment.steps.1'),
+                t('banking.testingGuide.scenarios.billPayment.steps.2'),
+                t('banking.testingGuide.scenarios.billPayment.steps.3'),
+                t('banking.testingGuide.scenarios.billPayment.steps.4'),
+                t('banking.testingGuide.scenarios.billPayment.steps.5'),
+                t('banking.testingGuide.scenarios.billPayment.steps.6')
               ],
-              expectedResult: 'Bill payment completes and balance updates',
+              expectedResult: t('banking.testingGuide.scenarios.billPayment.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'transfer-validation',
-              title: 'Money Transfer Validation',
-              description: 'Test transfer form validations and limits',
+              title: t('banking.testingGuide.scenarios.transferValidation.title'),
+              description: t('banking.testingGuide.scenarios.transferValidation.description'),
               steps: [
-                'Open transfer modal',
-                'Try to submit empty form',
-                'Verify validation errors',
-                'Enter amount exceeding balance',
-                'Verify insufficient funds error',
-                'Enter valid transfer details',
-                'Complete transfer with PIN'
+                t('banking.testingGuide.scenarios.transferValidation.steps.1'),
+                t('banking.testingGuide.scenarios.transferValidation.steps.2'),
+                t('banking.testingGuide.scenarios.transferValidation.steps.3'),
+                t('banking.testingGuide.scenarios.transferValidation.steps.4'),
+                t('banking.testingGuide.scenarios.transferValidation.steps.5'),
+                t('banking.testingGuide.scenarios.transferValidation.steps.6'),
+                t('banking.testingGuide.scenarios.transferValidation.steps.7')
               ],
-              expectedResult: 'All validations work correctly',
+              expectedResult: t('banking.testingGuide.scenarios.transferValidation.expectedResult'),
               difficulty: 'hard'
             },
             {
               id: 'statement-download',
-              title: 'Statement Generation',
-              description: 'Test account statement download functionality',
+              title: t('banking.testingGuide.scenarios.statementDownload.title'),
+              description: t('banking.testingGuide.scenarios.statementDownload.description'),
               steps: [
-                'Click "Statements" quick action',
-                'Select date range',
-                'Choose PDF format',
-                'Click download',
-                'Verify download initiates',
-                'Check statement preview'
+                t('banking.testingGuide.scenarios.statementDownload.steps.1'),
+                t('banking.testingGuide.scenarios.statementDownload.steps.2'),
+                t('banking.testingGuide.scenarios.statementDownload.steps.3'),
+                t('banking.testingGuide.scenarios.statementDownload.steps.4'),
+                t('banking.testingGuide.scenarios.statementDownload.steps.5'),
+                t('banking.testingGuide.scenarios.statementDownload.steps.6')
               ],
-              expectedResult: 'Statement downloads successfully',
+              expectedResult: t('banking.testingGuide.scenarios.statementDownload.expectedResult'),
               difficulty: 'easy'
             }
           ]}
           tips={[
-            'Test PIN: 1234 for security validations',
-            'Verify all monetary calculations are accurate to 2 decimal places',
-            'Check that pending transactions are clearly marked',
-            'Test with keyboard navigation for accessibility',
-            'Verify session timeout for security features',
-            'Check responsive design on mobile devices'
+            t('banking.testingGuide.tips.1'),
+            t('banking.testingGuide.tips.2'),
+            t('banking.testingGuide.tips.3'),
+            t('banking.testingGuide.tips.4'),
+            t('banking.testingGuide.tips.5'),
+            t('banking.testingGuide.tips.6')
           ]}
           dataTestIds={[
-            { element: 'account-selector', description: 'Account dropdown' },
-            { element: 'balance-display', description: 'Current balance' },
-            { element: 'transfer-button', description: 'Transfer money button' },
-            { element: 'pin-input', description: 'PIN entry field' },
-            { element: 'transaction-search', description: 'Search transactions' },
-            { element: 'category-filter', description: 'Category dropdown' },
-            { element: 'quick-action-*', description: 'Quick action buttons' },
-            { element: 'transaction-row', description: 'Transaction items' }
+            { element: 'account-selector', description: t('banking.testingGuide.testIds.accountSelector') },
+            { element: 'balance-display', description: t('banking.testingGuide.testIds.balanceDisplay') },
+            { element: 'transfer-button', description: t('banking.testingGuide.testIds.transferButton') },
+            { element: 'pin-input', description: t('banking.testingGuide.testIds.pinInput') },
+            { element: 'transaction-search', description: t('banking.testingGuide.testIds.transactionSearch') },
+            { element: 'category-filter', description: t('banking.testingGuide.testIds.categoryFilter') },
+            { element: 'quick-action-*', description: t('banking.testingGuide.testIds.quickActions') },
+            { element: 'transaction-row', description: t('banking.testingGuide.testIds.transactionRow') }
           ]}
         />
         
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}
-          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="mb-6 inline-flex items-center px-5 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-md hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
           data-testid="back-to-qa-hub"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to QA Testing Playground
+          {t('banking.testingGuide.backButton')}
         </button>
         
         {/* Account Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="md:col-span-3">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Account Overview</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('banking.account.overview')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {accounts.map((account) => (
                 <div
@@ -341,19 +343,19 @@ const BankingDashboardPage = () => {
                       <p className="text-xs text-gray-500 dark:text-gray-400">{account.number}</p>
                     </div>
                     {selectedAccount === account.id && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Selected</span>
+                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">{t('banking.account.selected')}</span>
                     )}
                   </div>
                   <p className={`text-2xl font-bold ${account.balance < 0 ? 'text-red-600' : 'text-gray-900 dark:text-gray-100'}`}>
                     ${Math.abs(account.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </p>
-                  {account.type === 'Savings' && (
-                    <p className="text-xs text-green-600 mt-1">+2.5% APY</p>
+                  {account.type === t('banking.account.type.savings') && (
+                    <p className="text-xs text-green-600 mt-1">{t('banking.account.apy')}</p>
                   )}
-                  {account.type === 'Credit' && (
+                  {account.type === t('banking.account.type.credit') && (
                     <div className="mt-2">
                       <div className="flex justify-between text-xs text-gray-500">
-                        <span>Available Credit</span>
+                        <span>{t('banking.account.availableCredit')}</span>
                         <span>$8,765.25</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
@@ -368,19 +370,19 @@ const BankingDashboardPage = () => {
           
           {/* Total Balance Card */}
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Total Balance</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('banking.account.totalBalance')}</h2>
             <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg p-6 text-white shadow-lg">
-              <p className="text-sm opacity-90 mb-2">All Accounts</p>
+              <p className="text-sm opacity-90 mb-2">{t('banking.account.allAccounts')}</p>
               <p className="text-3xl font-bold mb-4" data-testid="total-balance">
                 ${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="opacity-90">This Month</span>
+                  <span className="opacity-90">{t('banking.account.thisMonth')}</span>
                   <span className="font-semibold text-green-300">+$2,340.50</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="opacity-90">Last Month</span>
+                  <span className="opacity-90">{t('banking.account.lastMonth')}</span>
                   <span className="font-semibold">+$1,890.25</span>
                 </div>
               </div>
@@ -390,7 +392,7 @@ const BankingDashboardPage = () => {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('banking.quickActions.title')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             {quickActions.map((action) => (
               <button
@@ -412,9 +414,9 @@ const BankingDashboardPage = () => {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
               <div className="p-6 border-b">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Transactions</h2>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('banking.transactions.title')}</h2>
                   <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline" data-testid="view-all-transactions">
-                    View All
+                    {t('banking.transactions.viewAll')}
                   </button>
                 </div>
                 
@@ -422,7 +424,7 @@ const BankingDashboardPage = () => {
                 <div className="flex flex-wrap gap-3">
                   <input
                     type="text"
-                    placeholder="Search transactions..."
+                    placeholder={t('banking.transactions.searchPlaceholder')}
                     value={searchTransaction}
                     onChange={(e) => setSearchTransaction(e.target.value)}
                     className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -434,19 +436,19 @@ const BankingDashboardPage = () => {
                     className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     data-testid="category-filter"
                   >
-                    <option value="all">All Categories</option>
-                    <option value="Shopping">Shopping</option>
-                    <option value="Food">Food</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Income">Income</option>
+                    <option value="all">{t('banking.transactions.allCategories')}</option>
+                    <option value="Shopping">{t('banking.transactions.categories.shopping')}</option>
+                    <option value="Food">{t('banking.transactions.categories.food')}</option>
+                    <option value="Transport">{t('banking.transactions.categories.transport')}</option>
+                    <option value="Entertainment">{t('banking.transactions.categories.entertainment')}</option>
+                    <option value="Utilities">{t('banking.transactions.categories.utilities')}</option>
+                    <option value="Income">{t('banking.transactions.categories.income')}</option>
                   </select>
                   <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100" data-testid="date-filter">
-                    Date Range
+                    {t('banking.transactions.dateRange')}
                   </button>
                   <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" data-testid="export-btn">
-                    Export
+                    {t('banking.transactions.export')}
                   </button>
                 </div>
               </div>
@@ -485,7 +487,7 @@ const BankingDashboardPage = () => {
                           {transaction.type === 'credit' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                         </p>
                         {transaction.status === 'pending' && (
-                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Pending</span>
+                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{t('banking.transactions.pending')}</span>
                         )}
                       </div>
                     </div>
@@ -499,7 +501,7 @@ const BankingDashboardPage = () => {
           <div className="space-y-6">
             {/* Upcoming Bills */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Upcoming Bills</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('banking.bills.title')}</h2>
               <div className="space-y-3">
                 {upcomingBills.map((bill) => (
                   <div
@@ -509,27 +511,27 @@ const BankingDashboardPage = () => {
                   >
                     <div>
                       <p className="font-medium text-gray-900 dark:text-gray-100">{bill.name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Due {bill.dueDate}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{t('banking.bills.due')} {bill.dueDate}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900 dark:text-gray-100">${bill.amount.toFixed(2)}</p>
-                      <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">Pay Now</button>
+                      <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">{t('banking.bills.payNow')}</button>
                     </div>
                   </div>
                 ))}
               </div>
               <button className="w-full mt-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" data-testid="manage-bills-btn">
-                Manage All Bills
+                {t('banking.bills.manageAll')}
               </button>
             </div>
 
             {/* Spending Insights */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Spending Insights</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('banking.insights.title')}</h2>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Shopping</span>
+                    <span>{t('banking.insights.shopping')}</span>
                     <span className="font-medium">$450.00</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -538,7 +540,7 @@ const BankingDashboardPage = () => {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Food & Dining</span>
+                    <span>{t('banking.insights.foodDining')}</span>
                     <span className="font-medium">$320.00</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -547,7 +549,7 @@ const BankingDashboardPage = () => {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Transport</span>
+                    <span>{t('banking.insights.transport')}</span>
                     <span className="font-medium">$180.00</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -556,7 +558,7 @@ const BankingDashboardPage = () => {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span>Utilities</span>
+                    <span>{t('banking.insights.utilities')}</span>
                     <span className="font-medium">$150.00</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -566,30 +568,30 @@ const BankingDashboardPage = () => {
               </div>
               <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ You've spent 23% more than last month
+                  ⚠️ {t('banking.insights.warning')}
                 </p>
               </div>
             </div>
 
             {/* Security Alert */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Security Center</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('banking.security.title')}</h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Two-Factor Auth</span>
-                  <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded">Enabled</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{t('banking.security.twoFactorAuth')}</span>
+                  <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded">{t('banking.security.enabled')}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Login Alerts</span>
-                  <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded">Active</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{t('banking.security.loginAlerts')}</span>
+                  <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded">{t('banking.security.active')}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Last Password Change</span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">30 days ago</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{t('banking.security.lastPasswordChange')}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">30 {t('banking.security.daysAgo')}</span>
                 </div>
               </div>
               <button className="w-full mt-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" data-testid="security-settings-btn">
-                Security Settings
+                {t('banking.security.settings')}
               </button>
             </div>
           </div>
@@ -600,28 +602,28 @@ const BankingDashboardPage = () => {
       {showTransferModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="transfer-modal">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Transfer Money</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t('banking.modals.transfer.title')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Account</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.transfer.fromAccount')}</label>
                 <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg" data-testid="transfer-from">
-                  <option value="checking">Checking - $5,432.10</option>
-                  <option value="savings">Savings - $12,000.50</option>
+                  <option value="checking">{t('banking.account.checking')} - $5,432.10</option>
+                  <option value="savings">{t('banking.account.savings')} - $12,000.50</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Account</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.transfer.toAccount')}</label>
                 <input
                   type="text"
                   value={transferTo}
                   onChange={(e) => setTransferTo(e.target.value)}
-                  placeholder="Enter account number or select"
+                  placeholder={t('banking.modals.transfer.toPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="transfer-to"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.transfer.amount')}</label>
                 <input
                   type="number"
                   value={transferAmount}
@@ -632,10 +634,10 @@ const BankingDashboardPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Memo (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.transfer.memo')}</label>
                 <input
                   type="text"
-                  placeholder="Add a note"
+                  placeholder={t('banking.modals.transfer.memoPlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="transfer-memo"
                 />
@@ -647,14 +649,14 @@ const BankingDashboardPage = () => {
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 data-testid="transfer-cancel"
               >
-                Cancel
+                {t('banking.modals.transfer.cancel')}
               </button>
               <button
                 onClick={handleTransfer}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 data-testid="transfer-submit"
               >
-                Continue
+                {t('banking.modals.transfer.continue')}
               </button>
             </div>
           </div>
@@ -665,8 +667,8 @@ const BankingDashboardPage = () => {
       {showPinModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full" data-testid="pin-modal">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Enter PIN</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Please enter your 4-digit PIN to confirm the transfer</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t('banking.modals.pin.title')}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{t('banking.modals.pin.description')}</p>
             <input
               type="password"
               value={pin}
@@ -676,7 +678,7 @@ const BankingDashboardPage = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center text-2xl"
               data-testid="pin-input"
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Hint: Try 1234</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{t('banking.modals.pin.hint')}</p>
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => {
@@ -686,14 +688,14 @@ const BankingDashboardPage = () => {
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 data-testid="pin-cancel"
               >
-                Cancel
+                {t('banking.modals.pin.cancel')}
               </button>
               <button
                 onClick={handlePinSubmit}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 data-testid="pin-submit"
               >
-                Confirm
+                {t('banking.modals.pin.confirm')}
               </button>
             </div>
           </div>
@@ -704,25 +706,25 @@ const BankingDashboardPage = () => {
       {showPayBillModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="pay-bill-modal">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Pay Bills</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">{t('banking.modals.payBill.title')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Biller</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.payBill.selectBiller')}</label>
                 <select
                   value={selectedBiller}
                   onChange={(e) => setSelectedBiller(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="select-biller"
                 >
-                  <option value="">Choose a biller</option>
-                  <option value="electric">Electric Company</option>
-                  <option value="internet">Internet Provider</option>
-                  <option value="phone">Phone Bill</option>
-                  <option value="insurance">Insurance</option>
+                  <option value="">{t('banking.modals.payBill.chooseBiller')}</option>
+                  <option value="electric">{t('banking.modals.payBill.billers.electric')}</option>
+                  <option value="internet">{t('banking.modals.payBill.billers.internet')}</option>
+                  <option value="phone">{t('banking.modals.payBill.billers.phone')}</option>
+                  <option value="insurance">{t('banking.modals.payBill.billers.insurance')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.payBill.amount')}</label>
                 <input
                   type="number"
                   value={billAmount}
@@ -733,7 +735,7 @@ const BankingDashboardPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('banking.modals.payBill.paymentDate')}</label>
                 <input
                   type="date"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
@@ -747,14 +749,14 @@ const BankingDashboardPage = () => {
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 data-testid="bill-cancel"
               >
-                Cancel
+                {t('banking.modals.payBill.cancel')}
               </button>
               <button
                 onClick={handlePayBill}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 data-testid="bill-submit"
               >
-                Schedule Payment
+                {t('banking.modals.payBill.schedulePayment')}
               </button>
             </div>
           </div>

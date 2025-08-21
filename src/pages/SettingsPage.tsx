@@ -11,7 +11,7 @@ const SettingsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const [settings, setSettings] = useState({
+  const initialSettings = {
     emailNotifications: true,
     pushNotifications: false,
     weeklyReports: true,
@@ -19,20 +19,101 @@ const SettingsPage: React.FC = () => {
     twoFactorAuth: false,
     theme: theme,
     language: i18n.language,
-  });
+  };
+  
+  const [settings, setSettings] = useState(initialSettings);
+  const [originalSettings, setOriginalSettings] = useState(initialSettings);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Load saved settings on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('userSettings');
+    if (savedSettings) {
+      try {
+        const parsed = JSON.parse(savedSettings);
+        const loadedSettings = {
+          ...parsed,
+          theme: localStorage.getItem('theme') || theme,
+          language: localStorage.getItem('language') || i18n.language,
+        };
+        setSettings(loadedSettings);
+        setOriginalSettings(loadedSettings);
+      } catch (error) {
+        console.error('Failed to load settings:', error);
+      }
+    }
+  }, []);
+
+  // Check for changes whenever settings update
+  useEffect(() => {
+    const changed = JSON.stringify(settings) !== JSON.stringify(originalSettings);
+    setHasChanges(changed);
+  }, [settings, originalSettings]);
 
   const handleToggle = (key: string) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key as keyof typeof prev] }));
   };
 
-  const handleSave = () => {
-    console.log('Saving settings:', settings);
-    // Show success message
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // Save settings to localStorage (for theme and language)
+      localStorage.setItem('theme', settings.theme);
+      localStorage.setItem('language', settings.language);
+      
+      // Apply theme immediately if changed
+      if (settings.theme !== originalSettings.theme) {
+        if (settings.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      
+      // Apply language immediately if changed
+      if (settings.language !== originalSettings.language) {
+        await i18n.changeLanguage(settings.language);
+      }
+      
+      // Save other settings to localStorage as well
+      localStorage.setItem('userSettings', JSON.stringify({
+        emailNotifications: settings.emailNotifications,
+        pushNotifications: settings.pushNotifications,
+        weeklyReports: settings.weeklyReports,
+        publicProfile: settings.publicProfile,
+        twoFactorAuth: settings.twoFactorAuth,
+      }));
+      
+      // If you have a backend API, uncomment and use this:
+      // await api.put('/users/settings', settings);
+      
+      // Update original settings after successful save
+      setOriginalSettings(settings);
+      setHasChanges(false);
+      
+      // Show success message
+      setSuccessMessage(t('settings.saveSuccess'));
+      setShowSuccessModal(true);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 3000);
+      
+    } catch (error: any) {
+      console.error('Failed to save settings:', error);
+      setErrorMessage(t('settings.saveError') || 'Failed to save settings');
+      setShowErrorModal(true);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -73,7 +154,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.notifications.emailNotifications')}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notifications.emailNotifications')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notifications.emailNotificationsDescription')}</p>
               </div>
               <button
                 onClick={() => handleToggle('emailNotifications')}
@@ -92,7 +173,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.notifications.pushNotifications')}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notifications.pushNotifications')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notifications.pushNotificationsDescription')}</p>
               </div>
               <button
                 onClick={() => handleToggle('pushNotifications')}
@@ -111,7 +192,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.notifications.notificationTypes.weeklyDigest')}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notifications.notificationTypes.weeklyDigest')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.notifications.notificationTypes.weeklyDigestDescription')}</p>
               </div>
               <button
                 onClick={() => handleToggle('weeklyReports')}
@@ -139,7 +220,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.privacy.profileVisibility')}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.privacy.profileVisibility')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.privacy.profileVisibilityDescription')}</p>
               </div>
               <button
                 onClick={() => handleToggle('publicProfile')}
@@ -158,7 +239,7 @@ const SettingsPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{t('settings.account.twoFactorAuth')}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.account.twoFactorAuth')}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('settings.privacy.twoFactorAuthDescription')}</p>
               </div>
               <button
                 onClick={() => handleToggle('twoFactorAuth')}
@@ -235,8 +316,8 @@ const SettingsPage: React.FC = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('settings.account.title')}</p>
           </div>
           <div className="p-6">
-            <div className="border border-red-200 rounded-lg p-4 bg-red-50">
-              <h3 className="text-lg font-semibold text-red-900 mb-2">
+            <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
+              <h3 className="text-lg font-semibold text-red-900 dark:text-red-400 mb-2">
                 {t('settings.account.dangerZone')}
               </h3>
               <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
@@ -244,7 +325,7 @@ const SettingsPage: React.FC = () => {
               </p>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-red-600 dark:bg-red-700 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-800 transition-colors"
               >
                 {t('settings.account.deleteAccount')}
               </button>
@@ -256,9 +337,14 @@ const SettingsPage: React.FC = () => {
         <div className="flex justify-end">
           <button
             onClick={handleSave}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={!hasChanges || isSaving}
+            className={`px-6 py-2 rounded-lg transition-colors font-medium ${
+              hasChanges && !isSaving
+                ? 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2' 
+                : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }`}
           >
-            {t('settings.saveChanges')}
+            {isSaving ? t('status.saving') : t('settings.saveChanges')}
           </button>
         </div>
       </div>
@@ -275,8 +361,8 @@ const SettingsPage: React.FC = () => {
       <Modal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
-        title={t('common.success')}
-        message={t('settings.account.deleteAccountSuccess')}
+        title={t('status.success')}
+        message={successMessage || t('settings.account.deleteAccountSuccess')}
         type="success"
       />
 
@@ -284,7 +370,7 @@ const SettingsPage: React.FC = () => {
       <Modal
         isOpen={showErrorModal}
         onClose={() => setShowErrorModal(false)}
-        title={t('common.error')}
+        title={t('status.error')}
         message={errorMessage}
         type="error"
       />

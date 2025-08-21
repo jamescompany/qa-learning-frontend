@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-800 dark:bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* About Section */}
           <div>
             <h3 className="text-lg font-semibold mb-4">{t('footer.brand')}</h3>
@@ -40,37 +40,6 @@ const Footer: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </div>
-          
-          {/* Social Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.connectWithUs')}</h3>
-            <div className="flex space-x-4">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors"
-              >
-                Twitter
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors"
-              >
-                GitHub
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 dark:text-gray-500 hover:text-white transition-colors"
-              >
-                LinkedIn
-              </a>
-            </div>
           </div>
         </div>
         

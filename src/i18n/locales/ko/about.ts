@@ -31,6 +31,7 @@ export const about = {
     description: '커뮤니티에 가입하고 QA 기술을 한 단계 더 발전시켜보세요. 기본을 배우고자 하는 초보자든 고급 기술을 찾는 숙련된 테스터든, 여러분을 위한 맞춤형 리소스가 준비되어 있습니다.',
     signUpNow: '지금 가입하기',
     browseResources: '리소스 둘러보기',
+    qaTestingPlayground: 'QA 테스팅 플레이그라운드',
   },
   contact: {
     title: '연락처',

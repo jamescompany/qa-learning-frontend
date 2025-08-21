@@ -10,7 +10,7 @@ interface AuthState {
   error: string | null;
   
   // Actions
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signup: (data: { name: string; email: string; password: string }) => Promise<void>;
   logout: () => void;
   register: (data: { name: string; email: string; password: string }) => Promise<void>;
@@ -29,7 +29,7 @@ export const useAuthStore = create<AuthState>()(
         isLoading: true,
         error: null,
 
-        login: async (email: string, password: string) => {
+        login: async (email: string, password: string, rememberMe?: boolean) => {
           const isDevelopment = import.meta.env.DEV;
           
           if (isDevelopment) {
@@ -43,6 +43,9 @@ export const useAuthStore = create<AuthState>()(
             if (isDevelopment) {
               console.log('✅ AuthStore: Login successful', response.user);
             }
+            
+            // Note: rememberMe parameter is now only used for email remember feature
+            // Session persistence should be handled by backend token expiry
             
             set({
               user: response.user,
@@ -116,6 +119,7 @@ export const useAuthStore = create<AuthState>()(
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('mockUser');
+          // Note: We keep 'rememberedEmail' and 'rememberMe' for the login form email remember feature
           
           // Clear storage and auth synchronously
           authService.logout().catch(console.error);
@@ -144,6 +148,7 @@ export const useAuthStore = create<AuthState>()(
 
         checkAuth: async () => {
           const token = localStorage.getItem('accessToken');
+          
           if (!token) {
             set({
               user: null,

@@ -10,16 +10,11 @@ const Navigation: React.FC<NavigationProps> = ({ isAuthenticated = false }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Show all nav items regardless of authentication status
+  // Only show Home, About, and QA Testing Playground in navigation
   const navItems = [
     { path: '/', label: t('navigation.home'), requiresAuth: false },
-    { path: '/dashboard', label: t('navigation.dashboard'), requiresAuth: true },
-    { path: '/todos', label: t('navigation.myTodos'), requiresAuth: true },
-    { path: '/posts', label: t('navigation.posts'), requiresAuth: true },
-    { path: '/calendar', label: t('navigation.calendar'), requiresAuth: true },
-    { path: '/kanban', label: t('navigation.kanban'), requiresAuth: true },
-    { path: '/qa', label: t('navigation.qaTestingHub'), requiresAuth: true },
     { path: '/about', label: t('navigation.about'), requiresAuth: false },
+    { path: '/qa', label: t('navigation.qaTestingHub'), requiresAuth: true },
   ];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: typeof navItems[0]) => {

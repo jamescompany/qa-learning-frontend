@@ -1,22 +1,36 @@
 export const dashboard = {
   title: '대시보드',
-  welcome: '환영합니다',
+  welcome: '{{name}}님, 환영합니다!',
+  subtitle: '오늘 프로젝트의 진행 상황을 확인하세요.',
   stats: {
     totalTodos: '전체 할 일',
     completedTodos: '완료된 할 일',
     totalPosts: '전체 게시물',
     totalCalendarEvents: '캘린더 이벤트',
+    completed: '완료',
+    recentActivity: '최근 활동',
+    viewAllPosts: '모든 게시물 보기 →',
+    manageTodos: '할 일 관리 →',
+    lastDays: '최근 {{days}}일',
   },
   quickActions: {
     title: '빠른 작업',
     createTodo: '할 일 만들기',
+    addTodo: '새 할 일 추가',
     createPost: '게시물 작성',
     viewCalendar: '캘린더 보기',
     startChat: '채팅 시작',
+    editProfile: '프로필 편집',
   },
-  recentActivity: {
+  recentActivityFeed: {
     title: '최근 활동',
     noActivity: '최근 활동이 없습니다',
+    createdPost: '새 게시물을 작성했습니다',
+    completedTodos: '{{count}}개의 할 일을 완료했습니다',
+    updatedProfile: '프로필 정보를 업데이트했습니다',
+    hoursAgo: '{{hours}}시간 전',
+    yesterday: '어제',
+    today: '오늘',
   },
   performance: {
     title: '성과 지표',
