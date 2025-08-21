@@ -9,6 +9,28 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+          'form-libs': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'ui-libs': ['react-hot-toast', 'clsx', 'date-fns'],
+          'state': ['zustand', '@tanstack/react-query'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
   server: {
     port: 5173,
     proxy: {
