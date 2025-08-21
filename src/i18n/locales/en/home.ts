@@ -9,9 +9,9 @@ export const home = {
   },
   qaHub: {
     icon: '🧪',
-    title: 'QA Testing Hub - Exclusive Member Feature',
+    title: 'QA Testing Playground',
     description: 'Practice automated testing on real-world application scenarios including e-commerce, banking, social media, and booking systems. Perfect for Playwright, Cypress, and Selenium testing.',
-    loginRequired: '🔒 Login required to access QA Testing Hub',
+    loginRequired: '🔒 Login required to access QA Testing Playground',
     loginToAccess: 'Login to Access',
     createAccount: 'Create Account',
   },

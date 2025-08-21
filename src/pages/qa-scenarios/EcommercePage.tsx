@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../../components/common/Header';
 import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
@@ -17,6 +18,7 @@ interface Review {
 }
 
 const EcommercePage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(0);
@@ -50,12 +52,12 @@ const EcommercePage = () => {
     sizes: ['Small', 'Medium', 'Large', 'X-Large'],
     colors: ['Black', 'White', 'Blue', 'Red'],
     features: [
-      'Active Noise Cancellation',
-      '40-hour battery life',
-      'Premium sound quality',
-      'Comfortable over-ear design',
-      'Bluetooth 5.2 connectivity',
-      'Built-in microphone',
+      t('qaPages.ecommerce.product.feature1'),
+      t('qaPages.ecommerce.product.feature2'),
+      t('qaPages.ecommerce.product.feature3'),
+      t('qaPages.ecommerce.product.feature4'),
+      t('qaPages.ecommerce.product.feature5'),
+      t('qaPages.ecommerce.product.feature6'),
     ],
   };
 
@@ -98,35 +100,36 @@ const EcommercePage = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast.error('Please select a size');
+      toast.error(t('qaPages.ecommerce.messages.selectSize'));
       return;
     }
     if (!selectedColor) {
-      toast.error('Please select a color');
+      toast.error(t('qaPages.ecommerce.messages.selectColor'));
       return;
     }
-    toast.success(`Added ${quantity} item(s) to cart`);
+    toast.success(t('qaPages.ecommerce.messages.addedToCart', { quantity }));
   };
 
   const handleBuyNow = () => {
     if (!selectedSize) {
-      toast.error('Please select a size');
+      toast.error(t('qaPages.ecommerce.messages.selectSize'));
       return;
     }
     if (!selectedColor) {
-      toast.error('Please select a color');
+      toast.error(t('qaPages.ecommerce.messages.selectColor'));
       return;
     }
-    toast.success('Proceeding to checkout...');
-    navigate('/checkout');
+    toast.success(t('qaPages.ecommerce.messages.redirectingCheckout'));
+    // Navigate to checkout page - for demo, just show success message
+    // navigate('/checkout');  // Uncomment when checkout page exists
   };
 
   const handleApplyCoupon = () => {
     if (couponCode.toUpperCase() === 'SAVE20') {
       setIsCouponApplied(true);
-      toast.success('Coupon applied! 20% discount');
+      toast.success(t('qaPages.ecommerce.messages.couponApplied', { discount: '20%' }));
     } else {
-      toast.error('Invalid coupon code');
+      toast.error(t('qaPages.ecommerce.messages.invalidCoupon'));
     }
   };
 
@@ -145,7 +148,7 @@ const EcommercePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Common Header */}
       <Header 
         isAuthenticated={isAuthenticated}
@@ -154,16 +157,16 @@ const EcommercePage = () => {
       />
       
       {/* Breadcrumb */}
-      <nav className="bg-white border-b" data-testid="breadcrumb">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" data-testid="breadcrumb">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <ol className="flex items-center space-x-2 text-sm">
-            <li><a href="/" className="text-gray-500 hover:text-gray-700">Home</a></li>
-            <li><span className="text-gray-400">/</span></li>
-            <li><a href="/electronics" className="text-gray-500 hover:text-gray-700">Electronics</a></li>
-            <li><span className="text-gray-400">/</span></li>
-            <li><a href="/audio" className="text-gray-500 hover:text-gray-700">Audio</a></li>
-            <li><span className="text-gray-400">/</span></li>
-            <li className="text-gray-900">Headphones</li>
+            <li><a href="/" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">{t('common.home')}</a></li>
+            <li><span className="text-gray-400 dark:text-gray-500">/</span></li>
+            <li><a href="/electronics" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">{t('qaPages.ecommerce.breadcrumb.electronics')}</a></li>
+            <li><span className="text-gray-400 dark:text-gray-500">/</span></li>
+            <li><a href="/audio" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">{t('qaPages.ecommerce.breadcrumb.audio')}</a></li>
+            <li><span className="text-gray-400 dark:text-gray-500">/</span></li>
+            <li className="text-gray-900 dark:text-gray-100">{t('qaPages.ecommerce.breadcrumb.headphones')}</li>
           </ol>
         </div>
       </nav>
@@ -171,132 +174,132 @@ const EcommercePage = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Testing Guide */}
         <TestingGuide
-          title="E-commerce Testing Guide"
-          description="Learn to test a complete e-commerce product page with shopping cart, reviews, and checkout flow"
+          title={t('qaPages.ecommerce.testingGuide.title')}
+          description={t('qaPages.ecommerce.testingGuide.description')}
           scenarios={[
             {
               id: 'cart-validation',
-              title: 'Add to Cart Validation',
-              description: 'Test that products cannot be added to cart without selecting required options',
+              title: t('qaPages.ecommerce.scenarios.cartValidation.title'),
+              description: t('qaPages.ecommerce.scenarios.cartValidation.description'),
               steps: [
-                'Try adding to cart without selecting size',
-                'Verify error message appears',
-                'Select size but not color',
-                'Verify error message for color',
-                'Select both size and color',
-                'Verify successful add to cart'
+                t('qaPages.ecommerce.scenarios.cartValidation.step1'),
+                t('qaPages.ecommerce.scenarios.cartValidation.step2'),
+                t('qaPages.ecommerce.scenarios.cartValidation.step3'),
+                t('qaPages.ecommerce.scenarios.cartValidation.step4'),
+                t('qaPages.ecommerce.scenarios.cartValidation.step5'),
+                t('qaPages.ecommerce.scenarios.cartValidation.step6')
               ],
-              expectedResult: 'Product only adds to cart when all required options are selected',
+              expectedResult: t('qaPages.ecommerce.scenarios.cartValidation.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'price-calculation',
-              title: 'Price Calculation with Coupon',
-              description: 'Verify price updates correctly with quantity changes and coupon codes',
+              title: t('qaPages.ecommerce.scenarios.priceCalculation.title'),
+              description: t('qaPages.ecommerce.scenarios.priceCalculation.description'),
               steps: [
-                'Change quantity to 3',
-                'Verify total price updates',
-                'Enter coupon code "SAVE20"',
-                'Apply coupon',
-                'Verify 20% discount is applied',
-                'Change quantity again',
-                'Verify discount persists'
+                t('qaPages.ecommerce.scenarios.priceCalculation.step1'),
+                t('qaPages.ecommerce.scenarios.priceCalculation.step2'),
+                t('qaPages.ecommerce.scenarios.priceCalculation.step3'),
+                t('qaPages.ecommerce.scenarios.priceCalculation.step4'),
+                t('qaPages.ecommerce.scenarios.priceCalculation.step5'),
+                t('qaPages.ecommerce.scenarios.priceCalculation.step6'),
+                t('qaPages.ecommerce.scenarios.priceCalculation.step7')
               ],
-              expectedResult: 'Price calculations are accurate with quantity and discount',
+              expectedResult: t('qaPages.ecommerce.scenarios.priceCalculation.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'image-gallery',
-              title: 'Product Image Gallery',
-              description: 'Test image gallery navigation and zoom functionality',
+              title: t('qaPages.ecommerce.scenarios.imageGallery.title'),
+              description: t('qaPages.ecommerce.scenarios.imageGallery.description'),
               steps: [
-                'Click on thumbnail images',
-                'Verify main image changes',
-                'Test image zoom on hover',
-                'Navigate through all product images',
-                'Verify image loading states'
+                t('qaPages.ecommerce.scenarios.imageGallery.step1'),
+                t('qaPages.ecommerce.scenarios.imageGallery.step2'),
+                t('qaPages.ecommerce.scenarios.imageGallery.step3'),
+                t('qaPages.ecommerce.scenarios.imageGallery.step4'),
+                t('qaPages.ecommerce.scenarios.imageGallery.step5')
               ],
-              expectedResult: 'All images load and navigate correctly',
+              expectedResult: t('qaPages.ecommerce.scenarios.imageGallery.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'review-filtering',
-              title: 'Review Filtering and Sorting',
-              description: 'Test review section filtering and sorting capabilities',
+              title: t('qaPages.ecommerce.scenarios.reviewFiltering.title'),
+              description: t('qaPages.ecommerce.scenarios.reviewFiltering.description'),
               steps: [
-                'Sort reviews by "Most Recent"',
-                'Verify order changes',
-                'Filter by 5-star reviews only',
-                'Verify only 5-star reviews show',
-                'Mark a review as helpful',
-                'Verify count increases'
+                t('qaPages.ecommerce.scenarios.reviewFiltering.step1'),
+                t('qaPages.ecommerce.scenarios.reviewFiltering.step2'),
+                t('qaPages.ecommerce.scenarios.reviewFiltering.step3'),
+                t('qaPages.ecommerce.scenarios.reviewFiltering.step4'),
+                t('qaPages.ecommerce.scenarios.reviewFiltering.step5'),
+                t('qaPages.ecommerce.scenarios.reviewFiltering.step6')
               ],
-              expectedResult: 'Reviews filter and sort correctly',
+              expectedResult: t('qaPages.ecommerce.scenarios.reviewFiltering.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'stock-validation',
-              title: 'Stock Availability Check',
-              description: 'Verify stock limits and out-of-stock behavior',
+              title: t('qaPages.ecommerce.scenarios.stockValidation.title'),
+              description: t('qaPages.ecommerce.scenarios.stockValidation.description'),
               steps: [
-                'Set quantity to maximum stock (15)',
-                'Try to increase beyond stock',
-                'Verify limitation message',
-                'Check low stock warning',
-                'Verify buy now functionality'
+                t('qaPages.ecommerce.scenarios.stockValidation.step1'),
+                t('qaPages.ecommerce.scenarios.stockValidation.step2'),
+                t('qaPages.ecommerce.scenarios.stockValidation.step3'),
+                t('qaPages.ecommerce.scenarios.stockValidation.step4'),
+                t('qaPages.ecommerce.scenarios.stockValidation.step5')
               ],
-              expectedResult: 'Stock limits are enforced correctly',
+              expectedResult: t('qaPages.ecommerce.scenarios.stockValidation.expectedResult'),
               difficulty: 'hard'
             },
             {
               id: 'wishlist-flow',
-              title: 'Wishlist Functionality',
-              description: 'Test adding/removing items from wishlist',
+              title: t('qaPages.ecommerce.scenarios.wishlistFlow.title'),
+              description: t('qaPages.ecommerce.scenarios.wishlistFlow.description'),
               steps: [
-                'Click wishlist heart icon',
-                'Verify item is added to wishlist',
-                'Click again to remove',
-                'Verify removal confirmation',
-                'Check wishlist persistence'
+                t('qaPages.ecommerce.scenarios.wishlistFlow.step1'),
+                t('qaPages.ecommerce.scenarios.wishlistFlow.step2'),
+                t('qaPages.ecommerce.scenarios.wishlistFlow.step3'),
+                t('qaPages.ecommerce.scenarios.wishlistFlow.step4'),
+                t('qaPages.ecommerce.scenarios.wishlistFlow.step5')
               ],
-              expectedResult: 'Wishlist add/remove works correctly',
+              expectedResult: t('qaPages.ecommerce.scenarios.wishlistFlow.expectedResult'),
               difficulty: 'easy'
             }
           ]}
           tips={[
-            'Use browser DevTools to verify API calls when adding to cart',
-            'Test with different screen sizes for responsive design',
-            'Check keyboard navigation for accessibility',
-            'Verify all form validations show appropriate error messages',
-            'Test edge cases like negative quantities or special characters in coupon codes'
+            t('qaPages.ecommerce.tips.tip1'),
+            t('qaPages.ecommerce.tips.tip2'),
+            t('qaPages.ecommerce.tips.tip3'),
+            t('qaPages.ecommerce.tips.tip4'),
+            t('qaPages.ecommerce.tips.tip5')
           ]}
           dataTestIds={[
-            { element: 'product-image', description: 'Main product image' },
-            { element: 'add-to-cart', description: 'Add to cart button' },
-            { element: 'quantity-input', description: 'Quantity selector' },
-            { element: 'size-selector', description: 'Size options' },
-            { element: 'color-selector', description: 'Color options' },
-            { element: 'coupon-input', description: 'Coupon code field' },
-            { element: 'price-display', description: 'Current price' },
-            { element: 'review-sort', description: 'Review sort dropdown' }
+            { element: 'product-image', description: t('qaPages.ecommerce.testIds.productImage') },
+            { element: 'add-to-cart', description: t('qaPages.ecommerce.testIds.addToCart') },
+            { element: 'quantity-input', description: t('qaPages.ecommerce.testIds.quantityInput') },
+            { element: 'size-selector', description: t('qaPages.ecommerce.testIds.sizeSelector') },
+            { element: 'color-selector', description: t('qaPages.ecommerce.testIds.colorSelector') },
+            { element: 'coupon-input', description: t('qaPages.ecommerce.testIds.couponInput') },
+            { element: 'price-display', description: t('qaPages.ecommerce.testIds.priceDisplay') },
+            { element: 'review-sort', description: t('qaPages.ecommerce.testIds.reviewSort') }
           ]}
         />
         
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}
-          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           data-testid="back-to-qa-hub"
         >
           <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to QA Hub
+          {t('common.back')}
         </button>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-white rounded-lg overflow-hidden border">
+            <div className="aspect-square bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
@@ -324,10 +327,10 @@ const EcommercePage = () => {
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-500" data-testid="product-brand">{product.brand}</span>
-                <span className="text-sm text-gray-500" data-testid="product-sku">SKU: {product.sku}</span>
+                <span className="text-sm text-gray-500" data-testid="product-brand">{t('qaPages.ecommerce.product.brand')}: {product.brand}</span>
+                <span className="text-sm text-gray-500" data-testid="product-sku">{t('qaPages.ecommerce.product.sku')}: {product.sku}</span>
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2" data-testid="product-title">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2" data-testid="product-title">
                 {product.name}
               </h1>
               
@@ -348,23 +351,23 @@ const EcommercePage = () => {
                     </svg>
                   ))}
                 </div>
-                <span className="text-sm text-gray-600">
-                  {product.rating} ({product.reviewCount} reviews)
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {t('qaPages.ecommerce.product.rating', { rating: product.rating, count: product.reviewCount })}
                 </span>
               </div>
 
               {/* Price */}
               <div className="flex items-center space-x-3 mb-6">
-                <span className="text-3xl font-bold text-gray-900" data-testid="product-price">
+                <span className="text-3xl font-bold text-gray-900 dark:text-gray-100" data-testid="product-price">
                   ${calculatePrice()}
                 </span>
                 {product.originalPrice > product.price && (
                   <>
-                    <span className="text-xl text-gray-500 line-through" data-testid="original-price">
+                    <span className="text-xl text-gray-500 dark:text-gray-400 line-through" data-testid="original-price">
                       ${(product.originalPrice * quantity).toFixed(2)}
                     </span>
                     <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm" data-testid="discount-badge">
-                      Save ${calculateSavings()}
+                      {t('qaPages.ecommerce.product.save', { amount: `$${calculateSavings()}` })}
                     </span>
                   </>
                 )}
@@ -378,16 +381,16 @@ const EcommercePage = () => {
                       <svg className="w-5 h-5 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-green-600 font-medium" data-testid="stock-status">In Stock</span>
+                      <span className="text-green-600 font-medium" data-testid="stock-status">{t('qaPages.ecommerce.product.inStock')}</span>
                     </span>
                     {product.stockCount <= 20 && (
                       <span className="text-orange-600 text-sm" data-testid="stock-warning">
-                        Only {product.stockCount} left!
+                        {t('qaPages.ecommerce.product.lowStock', { count: product.stockCount })}
                       </span>
                     )}
                   </>
                 ) : (
-                  <span className="text-red-600 font-medium" data-testid="out-of-stock">Out of Stock</span>
+                  <span className="text-red-600 font-medium" data-testid="out-of-stock">{t('qaPages.ecommerce.product.outOfStock')}</span>
                 )}
               </div>
             </div>
@@ -395,13 +398,13 @@ const EcommercePage = () => {
             {/* Size Selection */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700">Size</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('qaPages.ecommerce.options.size')}</label>
                 <button
                   onClick={() => setShowSizeChart(!showSizeChart)}
                   className="text-sm text-blue-600 hover:underline"
                   data-testid="size-chart-toggle"
                 >
-                  Size Chart
+                  {t('qaPages.ecommerce.options.sizeGuide')}
                 </button>
               </div>
               <div className="grid grid-cols-4 gap-2">
@@ -421,17 +424,17 @@ const EcommercePage = () => {
                 ))}
               </div>
               {showSizeChart && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg" data-testid="size-chart">
+                <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg" data-testid="size-chart">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2">Size</th>
-                        <th className="text-left py-2">US</th>
-                        <th className="text-left py-2">EU</th>
-                        <th className="text-left py-2">CM</th>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th className="text-left py-2 text-gray-700 dark:text-gray-300">Size</th>
+                        <th className="text-left py-2 text-gray-700 dark:text-gray-300">US</th>
+                        <th className="text-left py-2 text-gray-700 dark:text-gray-300">EU</th>
+                        <th className="text-left py-2 text-gray-700 dark:text-gray-300">CM</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="text-gray-600 dark:text-gray-400">
                       <tr><td>Small</td><td>6-7</td><td>39-40</td><td>24-25</td></tr>
                       <tr><td>Medium</td><td>8-9</td><td>41-42</td><td>26-27</td></tr>
                       <tr><td>Large</td><td>10-11</td><td>43-44</td><td>28-29</td></tr>
@@ -444,7 +447,7 @@ const EcommercePage = () => {
 
             {/* Color Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('qaPages.ecommerce.options.color')}</label>
               <div className="flex space-x-2">
                 {product.colors.map((color) => (
                   <button
@@ -466,17 +469,17 @@ const EcommercePage = () => {
                 ))}
               </div>
               {selectedColor && (
-                <p className="text-sm text-gray-600 mt-2">Selected: {selectedColor}</p>
+                <p className="text-sm text-gray-600 mt-2">{t('common.selected')}: {selectedColor}</p>
               )}
             </div>
 
             {/* Quantity */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('qaPages.ecommerce.options.quantity')}</label>
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50"
+                  className="w-10 h-10 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
                   data-testid="quantity-decrease"
                 >
                   -
@@ -485,12 +488,12 @@ const EcommercePage = () => {
                   type="number"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-20 text-center border border-gray-300 rounded-lg py-2"
+                  className="w-20 text-center border border-gray-300 dark:border-gray-600 rounded-lg py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   data-testid="quantity-input"
                 />
                 <button
                   onClick={() => setQuantity(Math.min(product.stockCount, quantity + 1))}
-                  className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50"
+                  className="w-10 h-10 border border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
                   data-testid="quantity-increase"
                 >
                   +
@@ -500,27 +503,27 @@ const EcommercePage = () => {
 
             {/* Coupon Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Promo Code</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('qaPages.ecommerce.coupon.title')}</label>
               <div className="flex space-x-2">
                 <input
                   type="text"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  placeholder="Enter code (try SAVE20)"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder={t('qaPages.ecommerce.coupon.placeholder')}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   data-testid="coupon-input"
                 />
                 <button
                   onClick={handleApplyCoupon}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-gray-600"
                   data-testid="apply-coupon-btn"
                 >
-                  Apply
+                  {t('qaPages.ecommerce.actions.applyCoupon')}
                 </button>
               </div>
               {isCouponApplied && (
                 <p className="text-sm text-green-600 mt-1" data-testid="coupon-success">
-                  Coupon applied successfully!
+                  {t('qaPages.ecommerce.messages.couponApplied', { discount: '20%' })}
                 </p>
               )}
             </div>
@@ -532,14 +535,14 @@ const EcommercePage = () => {
                 className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 data-testid="add-to-cart-btn"
               >
-                Add to Cart
+                {t('qaPages.ecommerce.actions.addToCart')}
               </button>
               <button
                 onClick={handleBuyNow}
                 className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors"
                 data-testid="buy-now-btn"
               >
-                Buy Now
+                {t('qaPages.ecommerce.actions.buyNow')}
               </button>
               <button
                 onClick={() => setIsWishlisted(!isWishlisted)}
@@ -558,51 +561,51 @@ const EcommercePage = () => {
 
             {/* Features */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-3">Key Features</h3>
+              <h3 className="text-lg font-semibold mb-3">{t('qaPages.ecommerce.product.features')}</h3>
               <ul className="space-y-2" data-testid="product-features">
                 {product.features.map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <svg className="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* Shipping Info */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
               <div className="flex items-center">
                 <svg className="w-5 h-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                 </svg>
-                <span className="text-sm">Free shipping on orders over $50</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('qaPages.ecommerce.product.shippingInfo')}</span>
               </div>
               <div className="flex items-center">
                 <svg className="w-5 h-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-                <span className="text-sm">Estimated delivery: 3-5 business days</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('qaPages.ecommerce.product.estimatedDelivery')}</span>
               </div>
               <div className="flex items-center">
                 <svg className="w-5 h-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                 </svg>
-                <span className="text-sm">30-day return policy</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('qaPages.ecommerce.product.returnsInfo')}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Product Description Tabs */}
-        <div className="mt-12 bg-white rounded-lg shadow">
-          <div className="border-b">
+        <div className="mt-12 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div className="border-b border-gray-200 dark:border-gray-600">
             <nav className="flex space-x-8 px-6">
               {['Description', 'Specifications', 'Reviews', 'Q&A'].map((tab, index) => (
                 <button
                   key={tab}
-                  className="py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600"
+                  className="py-4 px-1 border-b-2 font-medium text-sm border-blue-500 text-blue-600 dark:text-blue-400"
                   data-testid={`tab-${tab.toLowerCase()}`}
                 >
                   {tab}
@@ -615,12 +618,12 @@ const EcommercePage = () => {
             {/* Reviews Section */}
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold">Customer Reviews</h3>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Customer Reviews</h3>
                 <div className="flex items-center space-x-4">
                   <select
                     value={sortReviews}
                     onChange={(e) => setSortReviews(e.target.value)}
-                    className="border border-gray-300 rounded-lg px-3 py-1 text-sm"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     data-testid="sort-reviews"
                   >
                     <option value="helpful">Most Helpful</option>
@@ -631,7 +634,7 @@ const EcommercePage = () => {
                   <select
                     value={filterRating}
                     onChange={(e) => setFilterRating(parseInt(e.target.value))}
-                    className="border border-gray-300 rounded-lg px-3 py-1 text-sm"
+                    className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     data-testid="filter-rating"
                   >
                     <option value="0">All Ratings</option>
@@ -647,7 +650,7 @@ const EcommercePage = () => {
               {/* Rating Summary */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold">{product.rating}</div>
+                  <div className="text-4xl font-bold text-gray-900 dark:text-gray-100">{product.rating}</div>
                   <div className="flex justify-center my-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <svg
@@ -663,19 +666,19 @@ const EcommercePage = () => {
                       </svg>
                     ))}
                   </div>
-                  <div className="text-sm text-gray-600">{product.reviewCount} reviews</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{t('qaPages.ecommerce.product.rating', { rating: '', count: product.reviewCount })}</div>
                 </div>
                 <div className="col-span-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center mb-2">
-                      <span className="text-sm w-12">{rating} star</span>
-                      <div className="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                      <span className="text-sm w-12 text-gray-700 dark:text-gray-300">{rating} {t('common.star')}</span>
+                      <div className="flex-1 mx-3 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div
                           className="bg-yellow-400 h-2 rounded-full"
                           style={{ width: `${rating === 5 ? 60 : rating === 4 ? 30 : 10}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm text-gray-600 w-12">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 w-12">
                         {rating === 5 ? '60%' : rating === 4 ? '30%' : '10%'}
                       </span>
                     </div>
@@ -686,7 +689,7 @@ const EcommercePage = () => {
               {/* Individual Reviews */}
               <div className="space-y-6">
                 {reviews.map((review) => (
-                  <div key={review.id} className="border-b pb-6" data-testid={`review-${review.id}`}>
+                  <div key={review.id} className="border-b border-gray-200 dark:border-gray-600 pb-6" data-testid={`review-${review.id}`}>
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center mb-2">
@@ -705,18 +708,18 @@ const EcommercePage = () => {
                               </svg>
                             ))}
                           </div>
-                          <span className="ml-2 font-semibold">{review.author}</span>
+                          <span className="ml-2 font-semibold text-gray-900 dark:text-gray-100">{review.author}</span>
                           {review.verified && (
                             <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                              Verified Purchase
+                              {t('qaPages.ecommerce.reviews.verifiedPurchase')}
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-700 mb-2">{review.comment}</p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <p className="text-gray-700 dark:text-gray-300 mb-2">{review.comment}</p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                           <span>{review.date}</span>
-                          <button className="hover:text-blue-600">Helpful ({review.helpful})</button>
-                          <button className="hover:text-blue-600">Report</button>
+                          <button className="hover:text-blue-600 dark:hover:text-blue-400">{t('qaPages.ecommerce.reviews.helpful')} ({review.helpful})</button>
+                          <button className="hover:text-blue-600 dark:hover:text-blue-400">{t('common.report')}</button>
                         </div>
                       </div>
                     </div>
@@ -727,10 +730,10 @@ const EcommercePage = () => {
               {!showMoreReviews && (
                 <button
                   onClick={() => setShowMoreReviews(true)}
-                  className="mt-6 w-full py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="mt-6 w-full py-2 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                   data-testid="show-more-reviews"
                 >
-                  Show More Reviews
+                  {t('qaPages.ecommerce.reviews.showMore')}
                 </button>
               )}
             </div>
@@ -739,20 +742,20 @@ const EcommercePage = () => {
 
         {/* Related Products */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">You Might Also Like</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('qaPages.ecommerce.related.title')}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer"
                 data-testid={`related-product-${item.id}`}
               >
-                <div className="aspect-square bg-gray-100 rounded-t-lg overflow-hidden">
+                <div className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-t-lg overflow-hidden">
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-medium text-gray-900 mb-2">{item.name}</h3>
-                  <p className="text-lg font-bold text-gray-900">${item.price}</p>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{item.name}</h3>
+                  <p className="text-lg font-bold text-gray-900 dark:text-gray-100">${item.price}</p>
                 </div>
               </div>
             ))}

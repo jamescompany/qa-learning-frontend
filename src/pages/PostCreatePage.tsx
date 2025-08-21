@@ -29,9 +29,9 @@ const PostCreatePage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('posts.create.title')}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">{t('posts.create.title')}</h1>
         
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <PostForm onSubmit={handleSubmit} isLoading={isLoading} />
         </div>
       </div>

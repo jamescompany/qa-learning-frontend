@@ -61,7 +61,7 @@ const PostListPage: React.FC = () => {
     <DashboardLayout>
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('posts.list.title')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('posts.list.title')}</h1>
           <Link
             to="/posts/create"
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -78,7 +78,7 @@ const PostListPage: React.FC = () => {
               placeholder={t('posts.list.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           
@@ -89,7 +89,7 @@ const PostListPage: React.FC = () => {
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                 !selectedTag
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
               }`}
             >
               {t('posts.list.all')}
@@ -101,7 +101,7 @@ const PostListPage: React.FC = () => {
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                   selectedTag === tag
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
                 }`}
               >
                 {tag}
@@ -113,32 +113,32 @@ const PostListPage: React.FC = () => {
         {/* Posts Grid */}
         <div className="grid gap-6">
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">{t('posts.list.noPostsFound')}</p>
+            <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
+              <p className="text-gray-500 dark:text-gray-400">{t('posts.list.noPostsFound')}</p>
             </div>
           ) : (
             filteredPosts.map(post => (
-              <article key={post.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+              <article key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow">
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
                     <Link
                       to={`/posts/${post.id}`}
-                      className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                      className="text-xl font-semibold text-gray-900 dark:text-gray-100 hover:text-blue-600 transition-colors"
                     >
                       {post.title}
                     </Link>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {new Date(post.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   
-                  <p className="text-gray-600 mb-4 line-clamp-2">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
                     {post.content}
                   </p>
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {t('posts.list.by')} {post.author?.name || t('posts.list.unknown')}
                       </span>
                       <div className="flex gap-2">
@@ -153,7 +153,7 @@ const PostListPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                       <button
                         onClick={(e) => {
                           e.preventDefault();

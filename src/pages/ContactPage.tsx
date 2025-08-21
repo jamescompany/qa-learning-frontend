@@ -44,12 +44,12 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('about.contact.title')}</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">{t('about.contact.title')}</h1>
       
       <div className="grid md:grid-cols-2 gap-8">
         {/* Contact Form */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('about.contact.form.title')}</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('about.contact.form.title')}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <FormInput
               label={t('about.contact.form.name')}
@@ -95,8 +95,8 @@ const ContactPage: React.FC = () => {
               disabled={isSubmitting}
               className={`w-full py-2 px-4 rounded-lg text-white transition-colors ${
                 isSubmitting
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
+                  : 'bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600'
               }`}
             >
               {isSubmitting ? t('about.contact.form.submitting') : t('about.contact.form.submit')}
@@ -106,15 +106,15 @@ const ContactPage: React.FC = () => {
 
         {/* Contact Information */}
         <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('about.contact.info.title')}</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('about.contact.info.title')}</h2>
             <div className="space-y-4">
               <div className="flex items-start">
                 <span className="text-2xl mr-3">📧</span>
                 <div>
-                  <h3 className="font-medium text-gray-900">{t('about.contact.info.email')}</h3>
-                  <p className="text-gray-600">{t('about.contact.info.emailSupport')}</p>
-                  <p className="text-gray-600">{t('about.contact.info.emailInfo')}</p>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100">{t('about.contact.info.email')}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">{t('about.contact.info.emailSupport')}</p>
+                  <p className="text-gray-600 dark:text-gray-400">{t('about.contact.info.emailInfo')}</p>
                 </div>
               </div>
             </div>

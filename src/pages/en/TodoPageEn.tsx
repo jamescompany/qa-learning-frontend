@@ -19,7 +19,7 @@ const TodoPageEn: React.FC = () => {
   const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<'all' | 'incomplete' | 'completed'>('all');
   const [deletingTodoId, setDeletingTodoId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,9 +60,9 @@ const TodoPageEn: React.FC = () => {
   };
 
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') return !todo.completed;
+    if (filter === 'incomplete') return !todo.completed;
     if (filter === 'completed') return todo.completed;
-    return true;
+    return true; // 'all' shows everything
   });
 
   const getPriorityColor = (priority: string) => {
@@ -70,8 +70,36 @@ const TodoPageEn: React.FC = () => {
       case 'high': return 'text-red-600 bg-red-50';
       case 'medium': return 'text-yellow-600 bg-yellow-50';
       case 'low': return 'text-green-600 bg-green-50';
-      default: return 'text-gray-600 bg-gray-50';
+      default: return 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900';
     }
+  };
+
+  const isOverdue = (dueDate?: string) => {
+    if (!dueDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(dueDate);
+    due.setHours(0, 0, 0, 0);
+    return due < today;
+  };
+
+  const getDaysRemaining = (dueDate?: string) => {
+    if (!dueDate) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(dueDate);
+    due.setHours(0, 0, 0, 0);
+    const diffTime = due.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const getDayLabel = (dueDate?: string) => {
+    const days = getDaysRemaining(dueDate);
+    if (days === null) return '';
+    if (days < 0) return ' (Overdue)';
+    if (days === 0) return ' (D-Day)';
+    return ` (D-${days})`;
   };
 
   if (isLoading) {
@@ -86,7 +114,7 @@ const TodoPageEn: React.FC = () => {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Todo List</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Todo List</h1>
           <button
             onClick={() => setShowForm(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -102,29 +130,29 @@ const TodoPageEn: React.FC = () => {
             className={`px-4 py-2 rounded-lg ${
               filter === 'all' 
                 ? 'bg-blue-600 text-white' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
             }`}
             data-testid="filter-all"
           >
             All ({todos.length})
           </button>
           <button
-            onClick={() => setFilter('active')}
+            onClick={() => setFilter('incomplete')}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'active' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              filter === 'incomplete' 
+                ? 'bg-yellow-600 text-white' 
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
             }`}
-            data-testid="filter-active"
+            data-testid="filter-incomplete"
           >
-            Active ({todos.filter(t => !t.completed).length})
+            Incomplete ({todos.filter(t => !t.completed).length})
           </button>
           <button
             onClick={() => setFilter('completed')}
             className={`px-4 py-2 rounded-lg ${
               filter === 'completed' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-green-600 text-white' 
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500'
             }`}
             data-testid="filter-completed"
           >
@@ -134,7 +162,7 @@ const TodoPageEn: React.FC = () => {
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
               <h2 className="text-xl font-semibold mb-4">
                 {editingTodoId ? 'Edit Todo' : 'New Todo'}
               </h2>
@@ -152,7 +180,7 @@ const TodoPageEn: React.FC = () => {
                   setShowForm(false);
                   setEditingTodoId(null);
                 }}
-                className="mt-4 w-full py-2 text-gray-600 hover:text-gray-800"
+                className="mt-4 w-full py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800"
               >
                 Cancel
               </button>
@@ -162,35 +190,32 @@ const TodoPageEn: React.FC = () => {
 
         <div className="space-y-3">
           {filteredTodos.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">No todos found</p>
+            <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
+              <p className="text-gray-500 dark:text-gray-400">No todos found</p>
             </div>
           ) : (
             filteredTodos.map(todo => (
               <div
                 key={todo.id}
-                className={`bg-white rounded-lg shadow p-4 transition-all ${
+                className={`rounded-lg shadow p-4 transition-all ${
                   deletingTodoId === todo.id ? 'opacity-50 scale-95' : ''
+                } ${
+                  isOverdue(todo.dueDate) && !todo.completed
+                    ? 'bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700'
+                    : 'bg-white dark:bg-gray-800'
                 }`}
                 data-testid={`todo-item-${todo.id}`}
               >
-                <div className="flex items-start space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => toggleTodo(todo.id)}
-                    className="mt-1 h-5 w-5 text-blue-600 rounded"
-                    data-testid={`todo-checkbox-${todo.id}`}
-                  />
+                <div className="flex items-start">
                   <div className="flex-1">
                     <h3 className={`font-semibold ${
-                      todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
+                      todo.completed ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-gray-100'
                     }`}>
                       {todo.title}
                     </h3>
                     {todo.description && (
                       <p className={`mt-1 text-sm ${
-                        todo.completed ? 'text-gray-400' : 'text-gray-600'
+                        todo.completed ? 'text-gray-400' : 'text-gray-600 dark:text-gray-400'
                       }`}>
                         {todo.description}
                       </p>
@@ -200,13 +225,40 @@ const TodoPageEn: React.FC = () => {
                         {todo.priority}
                       </span>
                       {todo.dueDate && (
-                        <span className="text-gray-500">
+                        <span className={`${
+                          isOverdue(todo.dueDate) && !todo.completed
+                            ? 'text-red-600 dark:text-red-400 font-semibold'
+                            : getDaysRemaining(todo.dueDate) === 0
+                            ? 'text-orange-600 dark:text-orange-400 font-semibold'
+                            : getDaysRemaining(todo.dueDate)! <= 3
+                            ? 'text-yellow-600 dark:text-yellow-400'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}>
                           Due: {new Date(todo.dueDate).toLocaleDateString()}
+                          {!todo.completed && getDayLabel(todo.dueDate)}
                         </span>
                       )}
                     </div>
                   </div>
                   <div className="flex space-x-2">
+                    {!todo.completed && (
+                      <button
+                        onClick={() => toggleTodo(todo.id)}
+                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                        data-testid={`todo-complete-${todo.id}`}
+                      >
+                        Complete
+                      </button>
+                    )}
+                    {todo.completed && (
+                      <button
+                        onClick={() => toggleTodo(todo.id)}
+                        className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
+                        data-testid={`todo-uncomplete-${todo.id}`}
+                      >
+                        Undo
+                      </button>
+                    )}
                     <button
                       onClick={() => handleEdit(todo.id)}
                       className="text-blue-600 hover:text-blue-800"

@@ -146,7 +146,7 @@ const BankingDashboardPage = () => {
   const totalBalance = accounts.reduce((sum, acc) => sum + (acc.type !== 'Credit' ? acc.balance : 0), 0);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Common Header */}
       <Header 
         isAuthenticated={isAuthenticated}
@@ -155,12 +155,12 @@ const BankingDashboardPage = () => {
       />
       
       {/* Banking Header */}
-      <header className="bg-white shadow-sm border-b" data-testid="banking-header">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700" data-testid="banking-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome back, John!</h1>
-              <p className="text-sm text-gray-500">Last login: Today at 9:30 AM</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Welcome back, John!</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Last login: Today at 9:30 AM</p>
             </div>
             <div className="flex items-center space-x-4">
               <button className="relative p-2 text-gray-400 hover:text-gray-600" data-testid="notifications-btn">
@@ -311,40 +311,40 @@ const BankingDashboardPage = () => {
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}
-          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           data-testid="back-to-qa-hub"
         >
           <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to QA Hub
+          Back to QA Testing Playground
         </button>
         
         {/* Account Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="md:col-span-3">
-            <h2 className="text-lg font-semibold mb-4">Account Overview</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Account Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {accounts.map((account) => (
                 <div
                   key={account.id}
                   onClick={() => setSelectedAccount(account.id)}
-                  className={`bg-white rounded-lg p-6 cursor-pointer transition-all ${
+                  className={`bg-white dark:bg-gray-800 rounded-lg p-6 cursor-pointer transition-all ${
                     selectedAccount === account.id ? 'ring-2 ring-blue-500 shadow-lg' : 'shadow hover:shadow-md'
                   }`}
                   data-testid={`account-${account.id}`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <p className="text-sm text-gray-500">{account.type}</p>
-                      <h3 className="font-semibold text-gray-900">{account.name}</h3>
-                      <p className="text-xs text-gray-500">{account.number}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{account.type}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">{account.name}</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{account.number}</p>
                     </div>
                     {selectedAccount === account.id && (
                       <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Selected</span>
                     )}
                   </div>
-                  <p className={`text-2xl font-bold ${account.balance < 0 ? 'text-red-600' : 'text-gray-900'}`}>
+                  <p className={`text-2xl font-bold ${account.balance < 0 ? 'text-red-600' : 'text-gray-900 dark:text-gray-100'}`}>
                     ${Math.abs(account.balance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </p>
                   {account.type === 'Savings' && (
@@ -368,7 +368,7 @@ const BankingDashboardPage = () => {
           
           {/* Total Balance Card */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">Total Balance</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Total Balance</h2>
             <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg p-6 text-white shadow-lg">
               <p className="text-sm opacity-90 mb-2">All Accounts</p>
               <p className="text-3xl font-bold mb-4" data-testid="total-balance">
@@ -390,17 +390,17 @@ const BankingDashboardPage = () => {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             {quickActions.map((action) => (
               <button
                 key={action.id}
                 onClick={() => handleQuickAction(action.id)}
-                className="bg-white rounded-lg p-4 shadow hover:shadow-md transition-shadow text-center"
+                className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow hover:shadow-md transition-shadow text-center"
                 data-testid={`quick-action-${action.id}`}
               >
                 <div className="text-3xl mb-2">{action.icon}</div>
-                <p className="text-sm text-gray-700">{action.label}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{action.label}</p>
               </button>
             ))}
           </div>
@@ -409,11 +409,11 @@ const BankingDashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Transactions */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
               <div className="p-6 border-b">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Recent Transactions</h2>
-                  <button className="text-sm text-blue-600 hover:underline" data-testid="view-all-transactions">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Transactions</h2>
+                  <button className="text-sm text-blue-600 dark:text-blue-400 hover:underline" data-testid="view-all-transactions">
                     View All
                   </button>
                 </div>
@@ -425,13 +425,13 @@ const BankingDashboardPage = () => {
                     placeholder="Search transactions..."
                     value={searchTransaction}
                     onChange={(e) => setSearchTransaction(e.target.value)}
-                    className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     data-testid="search-transactions"
                   />
                   <select
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     data-testid="category-filter"
                   >
                     <option value="all">All Categories</option>
@@ -442,10 +442,10 @@ const BankingDashboardPage = () => {
                     <option value="Utilities">Utilities</option>
                     <option value="Income">Income</option>
                   </select>
-                  <button className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50" data-testid="date-filter">
+                  <button className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100" data-testid="date-filter">
                     Date Range
                   </button>
-                  <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700" data-testid="export-btn">
+                  <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" data-testid="export-btn">
                     Export
                   </button>
                 </div>
@@ -455,7 +455,7 @@ const BankingDashboardPage = () => {
                 {filteredTransactions.map((transaction) => (
                   <div
                     key={transaction.id}
-                    className="p-4 hover:bg-gray-50 cursor-pointer"
+                    className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                     data-testid={`transaction-${transaction.id}`}
                   >
                     <div className="flex items-center justify-between">
@@ -474,13 +474,13 @@ const BankingDashboardPage = () => {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{transaction.description}</p>
-                          <p className="text-sm text-gray-500">{transaction.category} • {transaction.date}</p>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">{transaction.description}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">{transaction.category} • {transaction.date}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className={`font-semibold ${
-                          transaction.type === 'credit' ? 'text-green-600' : 'text-gray-900'
+                          transaction.type === 'credit' ? 'text-green-600' : 'text-gray-900 dark:text-gray-100'
                         }`}>
                           {transaction.type === 'credit' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                         </p>
@@ -498,34 +498,34 @@ const BankingDashboardPage = () => {
           {/* Upcoming Bills & Spending Insights */}
           <div className="space-y-6">
             {/* Upcoming Bills */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold mb-4">Upcoming Bills</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Upcoming Bills</h2>
               <div className="space-y-3">
                 {upcomingBills.map((bill) => (
                   <div
                     key={bill.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
                     data-testid={`upcoming-bill-${bill.id}`}
                   >
                     <div>
-                      <p className="font-medium text-gray-900">{bill.name}</p>
-                      <p className="text-sm text-gray-500">Due {bill.dueDate}</p>
+                      <p className="font-medium text-gray-900 dark:text-gray-100">{bill.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Due {bill.dueDate}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${bill.amount.toFixed(2)}</p>
-                      <button className="text-xs text-blue-600 hover:underline">Pay Now</button>
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">${bill.amount.toFixed(2)}</p>
+                      <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">Pay Now</button>
                     </div>
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" data-testid="manage-bills-btn">
+              <button className="w-full mt-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" data-testid="manage-bills-btn">
                 Manage All Bills
               </button>
             </div>
 
             {/* Spending Insights */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold mb-4">Spending Insights</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Spending Insights</h2>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between text-sm mb-1">
@@ -572,23 +572,23 @@ const BankingDashboardPage = () => {
             </div>
 
             {/* Security Alert */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold mb-4">Security Center</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Security Center</h2>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Two-Factor Auth</span>
-                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Enabled</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Two-Factor Auth</span>
+                  <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded">Enabled</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Login Alerts</span>
-                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Active</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Login Alerts</span>
+                  <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded">Active</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Last Password Change</span>
-                  <span className="text-xs text-gray-500">30 days ago</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Last Password Change</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">30 days ago</span>
                 </div>
               </div>
-              <button className="w-full mt-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50" data-testid="security-settings-btn">
+              <button className="w-full mt-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300" data-testid="security-settings-btn">
                 Security Settings
               </button>
             </div>
@@ -599,44 +599,44 @@ const BankingDashboardPage = () => {
       {/* Transfer Modal */}
       {showTransferModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full" data-testid="transfer-modal">
-            <h3 className="text-lg font-bold mb-4">Transfer Money</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="transfer-modal">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Transfer Money</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">From Account</label>
-                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg" data-testid="transfer-from">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Account</label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg" data-testid="transfer-from">
                   <option value="checking">Checking - $5,432.10</option>
                   <option value="savings">Savings - $12,000.50</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">To Account</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Account</label>
                 <input
                   type="text"
                   value={transferTo}
                   onChange={(e) => setTransferTo(e.target.value)}
                   placeholder="Enter account number or select"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="transfer-to"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
                 <input
                   type="number"
                   value={transferAmount}
                   onChange={(e) => setTransferAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="transfer-amount"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Memo (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Memo (Optional)</label>
                 <input
                   type="text"
                   placeholder="Add a note"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="transfer-memo"
                 />
               </div>
@@ -644,7 +644,7 @@ const BankingDashboardPage = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowTransferModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 data-testid="transfer-cancel"
               >
                 Cancel
@@ -664,9 +664,9 @@ const BankingDashboardPage = () => {
       {/* PIN Modal */}
       {showPinModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full" data-testid="pin-modal">
-            <h3 className="text-lg font-bold mb-4">Enter PIN</h3>
-            <p className="text-sm text-gray-600 mb-4">Please enter your 4-digit PIN to confirm the transfer</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full" data-testid="pin-modal">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Enter PIN</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Please enter your 4-digit PIN to confirm the transfer</p>
             <input
               type="password"
               value={pin}
@@ -676,14 +676,14 @@ const BankingDashboardPage = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-center text-2xl"
               data-testid="pin-input"
             />
-            <p className="text-xs text-gray-500 mt-2">Hint: Try 1234</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Hint: Try 1234</p>
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => {
                   setShowPinModal(false);
                   setPin('');
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 data-testid="pin-cancel"
               >
                 Cancel
@@ -703,15 +703,15 @@ const BankingDashboardPage = () => {
       {/* Pay Bill Modal */}
       {showPayBillModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full" data-testid="pay-bill-modal">
-            <h3 className="text-lg font-bold mb-4">Pay Bills</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="pay-bill-modal">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Pay Bills</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Select Biller</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Biller</label>
                 <select
                   value={selectedBiller}
                   onChange={(e) => setSelectedBiller(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="select-biller"
                 >
                   <option value="">Choose a biller</option>
@@ -722,21 +722,21 @@ const BankingDashboardPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount</label>
                 <input
                   type="number"
                   value={billAmount}
                   onChange={(e) => setBillAmount(e.target.value)}
                   placeholder="0.00"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="bill-amount"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Date</label>
                 <input
                   type="date"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg"
                   data-testid="payment-date"
                 />
               </div>
@@ -744,7 +744,7 @@ const BankingDashboardPage = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setShowPayBillModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
                 data-testid="bill-cancel"
               >
                 Cancel

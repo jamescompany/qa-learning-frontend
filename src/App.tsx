@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from './store/authStore'
 import { initGA } from './utils/analytics'
+import { useTheme } from './hooks/useTheme'
 import MainLayout from './components/layout/MainLayout'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import ScrollToTop from './components/common/ScrollToTop'
@@ -52,6 +53,7 @@ const queryClient = new QueryClient({
 function AppContent() {
   const { checkAuth } = useAuthStore();
   const { i18n } = useTranslation();
+  const { theme } = useTheme(); // Initialize theme
   
   useEffect(() => {
     // Set the lang attribute on the HTML element
@@ -97,7 +99,7 @@ function AppContent() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/search" element={<SearchPage />} />
             
-            {/* Protected QA Testing Hub - all QA pages require login */}
+            {/* Protected QA Testing Playground - all QA pages require login */}
             <Route path="/qa" element={<QAHubPage />} />
             <Route path="/playground" element={<ComponentPlaygroundPage />} />
             <Route path="/qa/ecommerce" element={<EcommercePage />} />

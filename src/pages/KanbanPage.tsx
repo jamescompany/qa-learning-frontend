@@ -41,7 +41,7 @@ const KanbanPage: React.FC = () => {
       case 'high': return 'bg-red-500';
       case 'medium': return 'bg-yellow-500';
       case 'low': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      default: return 'bg-gray-50 dark:bg-gray-7000';
     }
   };
 
@@ -50,8 +50,8 @@ const KanbanPage: React.FC = () => {
       <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('kanban.title')}</h1>
-            <p className="text-gray-600 mt-2">{t('kanban.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('kanban.title')}</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">{t('kanban.subtitle')}</p>
           </div>
           <button
             onClick={() => setShowAddForm(true)}
@@ -65,7 +65,7 @@ const KanbanPage: React.FC = () => {
           {columns.map(column => (
             <div key={column.id} className="flex flex-col">
               <div className="mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {column.title}
                 </h2>
                 <div className="text-sm text-gray-500 mt-1">
@@ -83,7 +83,7 @@ const KanbanPage: React.FC = () => {
                     setSelectedColumn(column.id as 'todo' | 'inProgress' | 'review' | 'done');
                     setShowAddForm(true);
                   }}
-                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-300"
                   title={t('kanban.addToColumn')}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,10 +98,10 @@ const KanbanPage: React.FC = () => {
                         key={task.id}
                         draggable
                         onDragStart={() => handleDragStart(task.id)}
-                        className="bg-white rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group"
+                        className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group"
                       >
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-medium text-gray-900">{task.title}</h3>
+                          <h3 className="font-medium text-gray-900 dark:text-gray-100">{task.title}</h3>
                           <div className="flex items-center space-x-2">
                             <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
                             <button
@@ -134,7 +134,7 @@ const KanbanPage: React.FC = () => {
                             </button>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{task.description}</p>
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-gray-500">{t('kanban.assignedTo', { assignee: task.assignee })}</span>
                           <span className={`text-xs px-2 py-1 rounded ${
@@ -157,7 +157,7 @@ const KanbanPage: React.FC = () => {
       {/* Add Task Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">{editingTask ? t('kanban.form.editTitle') : t('kanban.form.title')}</h2>
             <form
               onSubmit={(e) => {
@@ -186,7 +186,7 @@ const KanbanPage: React.FC = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {t('kanban.form.fields.title')}
                     <span className="text-red-500 ml-1">*</span>
                   </label>
@@ -196,12 +196,12 @@ const KanbanPage: React.FC = () => {
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {t('kanban.form.fields.description')}
                   </label>
                   <textarea
@@ -210,12 +210,12 @@ const KanbanPage: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     required
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {t('kanban.form.fields.priority')}
                   </label>
                   <select
@@ -223,7 +223,7 @@ const KanbanPage: React.FC = () => {
                     value={formData.priority}
                     onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="low">{t('kanban.priority.low')}</option>
                     <option value="medium">{t('kanban.priority.medium')}</option>
@@ -232,8 +232,9 @@ const KanbanPage: React.FC = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {t('kanban.form.fields.assignee')}
+                    <span className="text-red-500 ml-1">*</span>
                   </label>
                   <input
                     type="text"
@@ -242,18 +243,18 @@ const KanbanPage: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
                     required
                     placeholder={t('kanban.form.fields.assigneePlaceholder')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {t('kanban.form.fields.column')}
                   </label>
                   <select
                     value={selectedColumn}
                     onChange={(e) => setSelectedColumn(e.target.value as 'todo' | 'inProgress' | 'review' | 'done')}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="todo">{t('kanban.columns.todo')}</option>
                     <option value="inProgress">{t('kanban.columns.inProgress')}</option>
@@ -270,7 +271,7 @@ const KanbanPage: React.FC = () => {
                   className={`flex-1 px-4 py-2 rounded-md transition-colors ${
                     formData.title.trim()
                       ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   {editingTask ? t('kanban.form.buttons.update') : t('kanban.form.buttons.add')}
@@ -282,7 +283,7 @@ const KanbanPage: React.FC = () => {
                     setEditingTask(null);
                     setFormData({ title: '', description: '', priority: 'medium', assignee: '' });
                   }}
-                  className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                  className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
                 >
                   {t('kanban.form.buttons.cancel')}
                 </button>

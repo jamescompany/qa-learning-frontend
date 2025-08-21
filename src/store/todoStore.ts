@@ -57,7 +57,11 @@ export const useTodoStore = create<TodoStore>()(
         set((state) => ({
           todos: state.todos.map((todo) =>
             todo.id === id && todo.userId === user.id
-              ? { ...todo, completed: !todo.completed, updatedAt: new Date() }
+              ? { 
+                  ...todo, 
+                  completed: !todo.completed,
+                  updatedAt: new Date() 
+                }
               : todo
           ),
         }));

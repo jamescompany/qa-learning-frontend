@@ -46,10 +46,19 @@ const ChatPage: React.FC = () => {
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
-        // Simulate response
+        // Simulate response with varied messages
+        const responses = [
+          '업데이트 감사합니다. 곧 검토하겠습니다.',
+          '알겠습니다. 확인 후 피드백 드리겠습니다.',
+          '네, 바로 확인해보겠습니다.',
+          '정보 감사합니다. 처리하겠습니다.',
+          '좋습니다. 테스트 진행하겠습니다.',
+          '확인했습니다. 결과 공유드리겠습니다.',
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
         const response: Message = {
           id: (Date.now() + 1).toString(),
-          text: t('chat.messages.response'),
+          text: randomResponse,
           sender: 'John',
           timestamp: new Date(),
           isOwn: false,
@@ -62,11 +71,11 @@ const ChatPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto h-[calc(100vh-200px)]">
-      <div className="bg-white rounded-lg shadow h-full flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full flex flex-col">
           {/* Chat Header */}
           <div className="p-4 border-b">
-            <h1 className="text-xl font-semibold text-gray-900">{t('chat.title')}</h1>
-            <p className="text-sm text-gray-500">{t('chat.membersOnline', { count: 3 })}</p>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('chat.title')}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('chat.membersOnline', { count: 2 })}</p>
           </div>
 
           {/* Messages Area */}
@@ -80,7 +89,7 @@ const ChatPage: React.FC = () => {
                   className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                     message.isOwn
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   {!message.isOwn && (
@@ -88,7 +97,7 @@ const ChatPage: React.FC = () => {
                   )}
                   <p className="text-sm">{message.text}</p>
                   <p className={`text-xs mt-1 ${
-                    message.isOwn ? 'text-blue-100' : 'text-gray-500'
+                    message.isOwn ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                   }`}>
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
@@ -98,7 +107,7 @@ const ChatPage: React.FC = () => {
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                <div className="bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg">
                   <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -119,7 +128,7 @@ const ChatPage: React.FC = () => {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder={t('chat.typeMessage')}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="submit"
