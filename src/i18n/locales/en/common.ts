@@ -1,4 +1,7 @@
 export const common = {
+  testingGuide: {
+    showGuide: 'Show Testing Guide',
+  },
   navigation: {
     home: 'Home',
     dashboard: 'Dashboard',

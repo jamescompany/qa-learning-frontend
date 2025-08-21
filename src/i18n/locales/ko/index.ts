@@ -28,7 +28,7 @@ const ko = {
   todos,
   banking,
   qa,
-  playground,
+  ...playground,
   footer,
   sidebar,
   posts,

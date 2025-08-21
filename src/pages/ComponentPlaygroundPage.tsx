@@ -126,9 +126,13 @@ const ComponentPlaygroundPage = () => {
               <div>
                 <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">{t('componentPlayground.guide.exercises')}</h3>
                 <ol className="space-y-2 text-sm text-blue-700 dark:text-blue-300">
-                  {(t('componentPlayground.guide.exerciseItems', { returnObjects: true }) as string[]).map((item, idx) => (
-                    <li key={idx}>🔍 {item}</li>
-                  ))}
+                  {(() => {
+                    const items = t('componentPlayground.guide.exerciseItems', { returnObjects: true });
+                    const itemsArray = Array.isArray(items) ? items : [];
+                    return itemsArray.map((item, idx) => (
+                      <li key={idx}>🔍 {item}</li>
+                    ));
+                  })()}
                 </ol>
               </div>
             </div>
@@ -159,7 +163,7 @@ const ComponentPlaygroundPage = () => {
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          {t('common.back')}
+          {t('buttons.back')}
         </button>
         
         <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8" data-testid="playground-title">
@@ -169,7 +173,7 @@ const ComponentPlaygroundPage = () => {
         <div className="space-y-8">
           {/* Form Elements Section */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="form-section-title">{t('componentPlayground.sections.forms')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="form-section-title">{t('componentPlayground.sections.forms.title')}</h2>
             <form onSubmit={handleSubmit} data-testid="test-form">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Text Input */}
@@ -413,7 +417,7 @@ const ComponentPlaygroundPage = () => {
                     data-testid="checkbox"
                     checked={checkbox}
                     onChange={(e) => setCheckbox(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 dark:bg-gray-700 dark:checked:bg-indigo-600 dark:checked:border-indigo-600"
                   />
                   <label htmlFor="checkbox" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                     {t('componentPlayground.labels.checkboxOption')}
@@ -434,7 +438,7 @@ const ComponentPlaygroundPage = () => {
                           value={option}
                           checked={radio === option}
                           onChange={(e) => setRadio(e.target.value)}
-                          className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="h-4 w-4 border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 dark:bg-gray-700 dark:checked:bg-indigo-600 dark:checked:border-indigo-600"
                         />
                         <label htmlFor={`radio-${option}`} className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                           {t('componentPlayground.labels.radioOption', { number: option.charAt(option.length - 1) })}
@@ -459,7 +463,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Buttons Section */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="buttons-section-title">{t('componentPlayground.sections.buttons')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="buttons-section-title">{t('componentPlayground.sections.buttons.title')}</h2>
             <div className="flex flex-wrap gap-4">
               <button
                 data-testid="primary-button"
@@ -518,7 +522,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Interactive Elements */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="interactive-section-title">{t('componentPlayground.sections.interactive')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="interactive-section-title">{t('componentPlayground.sections.interactive.title')}</h2>
             
             {/* Counter */}
             <div className="mb-6">
@@ -617,7 +621,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="tabs-section-title">{t('componentPlayground.sections.tabs')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="tabs-section-title">{t('componentPlayground.sections.tabs.title')}</h2>
             <div className="border-b border-gray-200 dark:border-gray-600">
               <nav className="-mb-px flex space-x-8">
                 {[t('componentPlayground.labels.tab1'), t('componentPlayground.labels.tab2'), t('componentPlayground.labels.tab3')].map((tab, index) => (
@@ -646,7 +650,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Accordion */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="accordion-section-title">{t('componentPlayground.sections.accordion')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="accordion-section-title">{t('componentPlayground.sections.accordion.title')}</h2>
             <div className="space-y-2">
               {[1, 2, 3].map((item) => (
                 <div key={item} className="border border-gray-200 dark:border-gray-600 rounded-lg">
@@ -679,7 +683,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Drag and Drop */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="dragdrop-section-title">{t('componentPlayground.sections.dragDrop')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="dragdrop-section-title">{t('componentPlayground.sections.dragDrop.title')}</h2>
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{t('componentPlayground.labels.dragItems')}</h3>
@@ -731,7 +735,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="table-section-title">{t('componentPlayground.sections.table')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="table-section-title">{t('componentPlayground.sections.tables.title')}</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600" data-testid="data-table">
                 <thead className="bg-gray-50 dark:bg-gray-700">
@@ -795,7 +799,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Alerts & Notifications */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="alerts-section-title">{t('componentPlayground.sections.alerts')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="alerts-section-title">{t('componentPlayground.sections.notifications.title')}</h2>
             <div className="space-y-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 p-4" data-testid="info-alert">
                 <div className="flex">
@@ -861,7 +865,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Progress Indicators */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="progress-section-title">{t('componentPlayground.sections.progress')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="progress-section-title">{t('componentPlayground.sections.loading.title')}</h2>
             
             {/* Progress Bar */}
             <div className="mb-6">
@@ -894,7 +898,7 @@ const ComponentPlaygroundPage = () => {
 
           {/* Links & Navigation */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="navigation-section-title">{t('componentPlayground.sections.navigation')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="navigation-section-title">{t('componentPlayground.sections.navigation.title')}</h2>
             <div className="space-y-4">
               <div>
                 <a href="#" data-testid="standard-link" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline">
