@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../../components/common/Header';
 import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
@@ -34,6 +35,7 @@ interface Story {
 const SocialFeedPage = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [posts, setPosts] = useState<Post[]>([
     {
       id: '1',
@@ -262,125 +264,125 @@ const SocialFeedPage = () => {
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Testing Guide */}
         <TestingGuide
-          title="Social Media Feed Testing Guide"
-          description="Test social media interactions including posts, comments, likes, and real-time updates"
+          title={t('social.testingGuide.title')}
+          description={t('social.testingGuide.description')}
           scenarios={[
             {
               id: 'post-creation',
-              title: 'Create and Edit Post',
-              description: 'Test post creation with text, images, and privacy settings',
+              title: t('social.testingGuide.scenarios.postCreation.title'),
+              description: t('social.testingGuide.scenarios.postCreation.description'),
               steps: [
-                'Click "What\'s on your mind?" to create post',
-                'Enter post text',
-                'Add image/photo',
-                'Set privacy to "Friends Only"',
-                'Submit post',
-                'Verify post appears in feed',
-                'Edit the post',
-                'Verify changes are saved'
+                t('social.testingGuide.scenarios.postCreation.steps.1'),
+                t('social.testingGuide.scenarios.postCreation.steps.2'),
+                t('social.testingGuide.scenarios.postCreation.steps.3'),
+                t('social.testingGuide.scenarios.postCreation.steps.4'),
+                t('social.testingGuide.scenarios.postCreation.steps.5'),
+                t('social.testingGuide.scenarios.postCreation.steps.6'),
+                t('social.testingGuide.scenarios.postCreation.steps.7'),
+                t('social.testingGuide.scenarios.postCreation.steps.8')
               ],
-              expectedResult: 'Post is created, displayed, and editable',
+              expectedResult: t('social.testingGuide.scenarios.postCreation.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'comment-interaction',
-              title: 'Comment Thread Testing',
-              description: 'Test commenting system and nested replies',
+              title: t('social.testingGuide.scenarios.commentInteraction.title'),
+              description: t('social.testingGuide.scenarios.commentInteraction.description'),
               steps: [
-                'Find a post with comments',
-                'Add a new comment',
-                'Reply to existing comment',
-                'Edit your comment',
-                'Delete a comment',
-                'Verify comment count updates',
-                'Test @mentions in comments'
+                t('social.testingGuide.scenarios.commentInteraction.steps.1'),
+                t('social.testingGuide.scenarios.commentInteraction.steps.2'),
+                t('social.testingGuide.scenarios.commentInteraction.steps.3'),
+                t('social.testingGuide.scenarios.commentInteraction.steps.4'),
+                t('social.testingGuide.scenarios.commentInteraction.steps.5'),
+                t('social.testingGuide.scenarios.commentInteraction.steps.6'),
+                t('social.testingGuide.scenarios.commentInteraction.steps.7')
               ],
-              expectedResult: 'All comment interactions work correctly',
+              expectedResult: t('social.testingGuide.scenarios.commentInteraction.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'like-reaction',
-              title: 'Like and Reaction System',
-              description: 'Test various reaction types and counts',
+              title: t('social.testingGuide.scenarios.likeReaction.title'),
+              description: t('social.testingGuide.scenarios.likeReaction.description'),
               steps: [
-                'Click like button on a post',
-                'Verify like count increases',
-                'Long press for reaction menu',
-                'Select different reaction (Love, Laugh, etc.)',
-                'Verify reaction changes',
-                'Unlike the post',
-                'Verify count decreases'
+                t('social.testingGuide.scenarios.likeReaction.steps.1'),
+                t('social.testingGuide.scenarios.likeReaction.steps.2'),
+                t('social.testingGuide.scenarios.likeReaction.steps.3'),
+                t('social.testingGuide.scenarios.likeReaction.steps.4'),
+                t('social.testingGuide.scenarios.likeReaction.steps.5'),
+                t('social.testingGuide.scenarios.likeReaction.steps.6'),
+                t('social.testingGuide.scenarios.likeReaction.steps.7')
               ],
-              expectedResult: 'Reactions update correctly and persist',
+              expectedResult: t('social.testingGuide.scenarios.likeReaction.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'story-functionality',
-              title: 'Stories Feature',
-              description: 'Test story creation and viewing',
+              title: t('social.testingGuide.scenarios.storyFunctionality.title'),
+              description: t('social.testingGuide.scenarios.storyFunctionality.description'),
               steps: [
-                'Click "Add Story" button',
-                'Upload image or video',
-                'Add text overlay',
-                'Set story duration',
-                'Publish story',
-                'View story in story bar',
-                'Check story analytics (views)',
-                'Verify 24-hour expiration'
+                t('social.testingGuide.scenarios.storyFunctionality.steps.1'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.2'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.3'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.4'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.5'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.6'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.7'),
+                t('social.testingGuide.scenarios.storyFunctionality.steps.8')
               ],
-              expectedResult: 'Stories upload and display correctly',
+              expectedResult: t('social.testingGuide.scenarios.storyFunctionality.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'share-functionality',
-              title: 'Share and Repost',
-              description: 'Test sharing posts to timeline or messages',
+              title: t('social.testingGuide.scenarios.shareFunctionality.title'),
+              description: t('social.testingGuide.scenarios.shareFunctionality.description'),
               steps: [
-                'Click share button on a post',
-                'Select "Share to Timeline"',
-                'Add your comment',
-                'Submit share',
-                'Verify shared post appears',
-                'Test "Share via Message"',
-                'Select recipients',
-                'Verify message sent'
+                t('social.testingGuide.scenarios.shareFunctionality.steps.1'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.2'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.3'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.4'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.5'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.6'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.7'),
+                t('social.testingGuide.scenarios.shareFunctionality.steps.8')
               ],
-              expectedResult: 'Posts share correctly to different destinations',
+              expectedResult: t('social.testingGuide.scenarios.shareFunctionality.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'infinite-scroll',
-              title: 'Feed Infinite Scroll',
-              description: 'Test feed loading and pagination',
+              title: t('social.testingGuide.scenarios.infiniteScroll.title'),
+              description: t('social.testingGuide.scenarios.infiniteScroll.description'),
               steps: [
-                'Scroll to bottom of feed',
-                'Verify loading indicator appears',
-                'Verify new posts load',
-                'Check for duplicate posts',
-                'Test pull-to-refresh',
-                'Verify new posts at top'
+                t('social.testingGuide.scenarios.infiniteScroll.steps.1'),
+                t('social.testingGuide.scenarios.infiniteScroll.steps.2'),
+                t('social.testingGuide.scenarios.infiniteScroll.steps.3'),
+                t('social.testingGuide.scenarios.infiniteScroll.steps.4'),
+                t('social.testingGuide.scenarios.infiniteScroll.steps.5'),
+                t('social.testingGuide.scenarios.infiniteScroll.steps.6')
               ],
-              expectedResult: 'Feed loads seamlessly without duplicates',
+              expectedResult: t('social.testingGuide.scenarios.infiniteScroll.expectedResult'),
               difficulty: 'hard'
             }
           ]}
           tips={[
-            'Test with different media types (images, videos, GIFs)',
-            'Verify timestamps update correctly ("just now", "5 mins ago")',
-            'Check notification triggers for interactions',
-            'Test privacy settings (Public, Friends, Only Me)',
-            'Verify real-time updates without page refresh',
-            'Test character limits for posts and comments'
+            t('social.testingGuide.tips.1'),
+            t('social.testingGuide.tips.2'),
+            t('social.testingGuide.tips.3'),
+            t('social.testingGuide.tips.4'),
+            t('social.testingGuide.tips.5'),
+            t('social.testingGuide.tips.6')
           ]}
           dataTestIds={[
-            { element: 'create-post-button', description: 'New post button' },
-            { element: 'post-text-input', description: 'Post text area' },
-            { element: 'like-button', description: 'Like/reaction button' },
-            { element: 'comment-input', description: 'Comment field' },
-            { element: 'share-button', description: 'Share post button' },
-            { element: 'story-add', description: 'Add story button' },
-            { element: 'post-privacy', description: 'Privacy selector' },
-            { element: 'feed-container', description: 'Main feed area' }
+            { element: 'create-post-button', description: t('social.testingGuide.testIds.createPostButton') },
+            { element: 'post-text-input', description: t('social.testingGuide.testIds.postTextInput') },
+            { element: 'like-button', description: t('social.testingGuide.testIds.likeButton') },
+            { element: 'comment-input', description: t('social.testingGuide.testIds.commentInput') },
+            { element: 'share-button', description: t('social.testingGuide.testIds.shareButton') },
+            { element: 'story-add', description: t('social.testingGuide.testIds.storyAdd') },
+            { element: 'post-privacy', description: t('social.testingGuide.testIds.postPrivacy') },
+            { element: 'feed-container', description: t('social.testingGuide.testIds.feedContainer') }
           ]}
         />
         
@@ -393,7 +395,7 @@ const SocialFeedPage = () => {
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to QA Testing Playground
+          {t('social.backButton')}
         </button>
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Left Sidebar */}

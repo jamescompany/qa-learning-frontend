@@ -6,8 +6,9 @@ import { about } from './about';
 import { dashboard } from './dashboard';
 import { todos } from './todos';
 import { banking } from './banking';
-import { qa } from './qa';
+import { qa as qaTranslations } from './qa';
 import { playground } from './playground';
+import { social } from './social';
 import { footer } from './footer';
 import { sidebar } from './sidebar';
 import { posts } from './posts';
@@ -27,7 +28,8 @@ const ko = {
   dashboard,
   todos,
   banking,
-  ...qa,
+  social,
+  ...qaTranslations,
   ...playground,
   footer,
   sidebar,
@@ -38,6 +40,8 @@ const ko = {
   profile,
   privacyPolicy: privacy,
   termsOfService: terms,
+  // Expose bookingSystem at root level
+  bookingSystem: qaTranslations.hub.bookingSystem,
   calendar: {
     title: '캘린더',
     months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
@@ -79,7 +83,7 @@ const ko = {
     },
   },
   // QAHub mapping for compatibility
-  qaHub: qa.qaHub,
+  qaHub: qaTranslations.qaHub,
   notFound: {
     title: '404',
     heading: '페이지를 찾을 수 없습니다',

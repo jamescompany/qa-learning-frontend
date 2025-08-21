@@ -122,7 +122,7 @@ const TestingGuide = ({ title, description, scenarios, tips, dataTestIds }: Test
         ))}
       </div>
 
-      {tips && tips.length > 0 && (
+      {tips && Array.isArray(tips) && tips.length > 0 && (
         <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
           <h3 className="font-semibold text-yellow-900 mb-2 flex items-center">
             <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -131,7 +131,7 @@ const TestingGuide = ({ title, description, scenarios, tips, dataTestIds }: Test
             {t('testingGuide.tips')}
           </h3>
           <ul className="space-y-1 text-sm text-yellow-800">
-            {tips.map((tip, index) => (
+            {Array.isArray(tips) && tips.map((tip, index) => (
               <li key={index} className="flex items-start">
                 <span className="mr-2">•</span>
                 <span>{tip}</span>
@@ -141,7 +141,7 @@ const TestingGuide = ({ title, description, scenarios, tips, dataTestIds }: Test
         </div>
       )}
 
-      {dataTestIds && dataTestIds.length > 0 && (
+      {dataTestIds && Array.isArray(dataTestIds) && dataTestIds.length > 0 && (
         <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
           <h3 className="font-semibold text-purple-900 mb-2">{t('testingGuide.availableTestIds')}</h3>
           <div className="grid grid-cols-2 gap-2 text-sm">

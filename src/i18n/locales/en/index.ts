@@ -6,8 +6,9 @@ import { about } from './about';
 import { dashboard } from './dashboard';
 import { todos } from './todos';
 import { banking } from './banking';
-import { qa } from './qa';
+import { qa as qaTranslations } from './qa';
 import { playground } from './playground';
+import { social } from './social';
 import { footer } from './footer';
 import { sidebar } from './sidebar';
 import { posts } from './posts';
@@ -27,7 +28,8 @@ const en = {
   dashboard,
   todos,
   banking,
-  ...qa,
+  social,
+  ...qaTranslations,
   ...playground,
   footer,
   sidebar,
@@ -38,6 +40,8 @@ const en = {
   profile,
   privacyPolicy: privacy,
   termsOfService: terms,
+  // Expose bookingSystem at root level
+  bookingSystem: qaTranslations.hub.bookingSystem,
   calendar: {
     title: 'Calendar',
     months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -79,7 +83,7 @@ const en = {
     },
   },
   // QAHub mapping for compatibility
-  qaHub: qa.qaHub,
+  qaHub: qaTranslations.qaHub,
   notFound: {
     title: '404',
     heading: 'Page Not Found',
