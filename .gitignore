@@ -50,6 +50,7 @@ Thumbs.db
 
 # Package files
 *.tgz
+package-lock.json
 
 # Yarn
 .yarn/*
