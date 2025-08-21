@@ -11,7 +11,7 @@ const AboutPage: React.FC = () => {
     <div className="max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">{t('about.title')}</h1>
       
-      <div className="prose prose-lg max-w-none">
+      <div>
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('about.mission.title')}</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
@@ -57,29 +57,39 @@ const AboutPage: React.FC = () => {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('about.getStarted.title')}</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {t('about.getStarted.description')}
-          </p>
-          <div className="flex gap-4">
-            {!isAuthenticated && (
-              <Link to="/signup" className="btn btn-primary">
-                {t('about.getStarted.signUpNow')}
-              </Link>
-            )}
-            <Link to="/component-playground" className="btn btn-secondary">
-              {t('about.getStarted.qaTestingPlayground')}
-            </Link>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow min-h-[250px] flex items-center">
+            <div className="p-8 w-full">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('about.getStarted.title')}</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                {t('about.getStarted.description')}
+              </p>
+              <div className="flex gap-4">
+                {!isAuthenticated && (
+                  <Link to="/signup" className="btn btn-primary">
+                    {t('about.getStarted.signUpNow')}
+                  </Link>
+                )}
+                <Link to="/qa" className="btn btn-secondary">
+                  {t('about.getStarted.qaTestingPlayground')}
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('about.contact.title')}</h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {t('about.contact.description')}
-            <br />
-            {t('about.contact.email')}
-          </p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow min-h-[250px] flex items-center">
+            <div className="p-8 w-full">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('about.contact.title')}</h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {t('about.contact.description')}
+                <br />
+                <a href="mailto:support@qalearningweb.com" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  support@qalearningweb.com
+                </a>
+              </p>
+            </div>
+          </div>
         </section>
       </div>
     </div>

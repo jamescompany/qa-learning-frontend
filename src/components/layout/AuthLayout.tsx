@@ -12,9 +12,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <Link to="/" className="inline-block group">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors">
-              {t('auth.brand')}
+          <Link to="/" className="inline-block">
+            <h1 className="text-3xl font-bold transition-colors">
+              <span className="text-blue-600 dark:text-blue-400">QA</span>
+              <span className="text-gray-900 dark:text-gray-100"> Learning Web</span>
             </h1>
           </Link>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">

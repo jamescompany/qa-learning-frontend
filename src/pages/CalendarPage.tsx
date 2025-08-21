@@ -92,7 +92,7 @@ const CalendarPage: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="max-w-6xl mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
           {/* Calendar Header */}
           <div className="flex justify-between items-center p-6 border-b">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -525,7 +525,7 @@ const CalendarPage: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
     </DashboardLayout>
   );
 };

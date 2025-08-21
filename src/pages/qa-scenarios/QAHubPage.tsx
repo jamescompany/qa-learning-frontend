@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/common/Header';
-import Navigation from '../../components/common/Navigation';
 import { useAuthStore } from '../../store/authStore';
 
 const QAHubPage = () => {
@@ -13,7 +12,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.componentPlayground.description'),
       path: '/playground',
       icon: '🧩',
-      tags: t('qaHub.scenarios.componentPlayground.tags', { returnObjects: true }) as string[],
+      tags: (t('qaHub.scenarios.componentPlayground.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-purple-500',
     },
     {
@@ -21,7 +20,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.ecommerce.description'),
       path: '/qa/ecommerce',
       icon: '🛍️',
-      tags: t('qaHub.scenarios.ecommerce.tags', { returnObjects: true }) as string[],
+      tags: (t('qaHub.scenarios.ecommerce.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-blue-500',
     },
     {
@@ -29,7 +28,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.banking.description'),
       path: '/qa/banking',
       icon: '💳',
-      tags: t('qaHub.scenarios.banking.tags', { returnObjects: true }) as string[],
+      tags: (t('qaHub.scenarios.banking.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-green-500',
     },
     {
@@ -37,7 +36,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.social.description'),
       path: '/qa/social',
       icon: '📱',
-      tags: t('qaHub.scenarios.social.tags', { returnObjects: true }) as string[],
+      tags: (t('qaHub.scenarios.social.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-pink-500',
     },
     {
@@ -45,7 +44,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.booking.description'),
       path: '/qa/booking',
       icon: '📅',
-      tags: t('qaHub.scenarios.booking.tags', { returnObjects: true }) as string[],
+      tags: (t('qaHub.scenarios.booking.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-orange-500',
     },
   ];
@@ -82,8 +81,6 @@ const QAHubPage = () => {
         onLogout={logout}
       />
       
-      {/* Navigation Menu */}
-      <Navigation isAuthenticated={isAuthenticated} />
       
       {/* Page Title Section */}
       <div className="bg-white dark:bg-gray-800 shadow-sm border-b">
@@ -139,6 +136,34 @@ const QAHubPage = () => {
                 </div>
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* Learning Support */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('qaHub.learningSupport')}</h2>
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6">
+            <div className="flex items-start">
+              <svg className="w-6 h-6 text-purple-600 mr-3 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+              </svg>
+              <div>
+                <p className="text-gray-800 mb-3">
+                  {t('qaHub.support.message')}
+                </p>
+                <a 
+                  href={`mailto:${t('qaHub.support.email')}`}
+                  className="inline-flex items-center text-purple-700 hover:text-purple-900 font-medium transition-colors"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                  {t('qaHub.support.email')}
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -225,34 +250,6 @@ const QAHubPage = () => {
                     <li key={idx}>{step}</li>
                   ))}
                 </ol>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Learning Support */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('qaHub.learningSupport')}</h2>
-          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-6">
-            <div className="flex items-start">
-              <svg className="w-6 h-6 text-purple-600 mr-3 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-              </svg>
-              <div>
-                <p className="text-gray-800 mb-3">
-                  {t('qaHub.support.message')}
-                </p>
-                <a 
-                  href={`mailto:${t('qaHub.support.email')}`}
-                  className="inline-flex items-center text-purple-700 hover:text-purple-900 font-medium transition-colors"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                  </svg>
-                  {t('qaHub.support.email')}
-                </a>
               </div>
             </div>
           </div>

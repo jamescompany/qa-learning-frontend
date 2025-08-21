@@ -22,6 +22,26 @@ export const todos = {
     submit: 'Add',
     update: 'Update',
     cancel: 'Cancel',
+    fields: {
+      title: 'Title',
+      titlePlaceholder: 'Enter todo title',
+      titleRequired: 'Title is required',
+      description: 'Description',
+      descriptionPlaceholder: 'Enter detailed description (optional)',
+      priority: 'Priority',
+      priorityLow: 'Low',
+      priorityMedium: 'Medium',
+      priorityHigh: 'High',
+      dueDate: 'Due Date',
+    },
+    buttons: {
+      saving: 'Saving...',
+      update: 'Update',
+      create: 'Add',
+    },
+    validation: {
+      titleMinLength: 'Title must be at least 3 characters',
+    },
   },
   actions: {
     edit: 'Edit',

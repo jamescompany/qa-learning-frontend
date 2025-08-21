@@ -31,6 +31,7 @@ export const about = {
     description: 'Join our community and take your QA skills to the next level. Whether you\'re a beginner looking to learn the basics or an experienced tester seeking advanced techniques, we have resources tailored for you.',
     signUpNow: 'Sign Up Now',
     browseResources: 'Browse Resources',
+    qaTestingPlayground: 'QA Testing Playground',
   },
   contact: {
     title: 'Contact',

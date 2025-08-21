@@ -4,12 +4,12 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 // You can use either structure:
 // Option 1: Single file (original)
-import en from './locales/en';
-import ko from './locales/ko';
+// import en from './locales/en';
+// import ko from './locales/ko';
 
 // Option 2: Modular files (new) - uncomment to use
-// import en from './locales/en/index';
-// import ko from './locales/ko/index';
+import en from './locales/en/index';
+import ko from './locales/ko/index';
 
 i18n
   .use(LanguageDetector)
@@ -31,6 +31,9 @@ i18n
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage'],
+    },
+    react: {
+      useSuspense: true,
     },
   });
 

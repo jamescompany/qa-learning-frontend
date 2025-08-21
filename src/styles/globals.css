@@ -24,6 +24,27 @@
   input:disabled, textarea:disabled, select:disabled {
     @apply dark:bg-gray-800 dark:text-gray-500;
   }
+  
+  /* Custom date input calendar icon styling */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    @apply cursor-pointer opacity-70 hover:opacity-100 transition-opacity;
+    filter: invert(0.5);
+  }
+  
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+  }
+  
+  /* Better date input appearance */
+  input[type="date"] {
+    @apply appearance-none;
+    position: relative;
+  }
+  
+  /* Firefox date input styling */
+  input[type="date"]::-moz-calendar-picker-indicator {
+    @apply cursor-pointer opacity-70 hover:opacity-100 transition-opacity;
+  }
 }
 
 @layer components {

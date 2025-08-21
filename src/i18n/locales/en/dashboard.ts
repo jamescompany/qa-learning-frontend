@@ -1,22 +1,36 @@
 export const dashboard = {
   title: 'Dashboard',
-  welcome: 'Welcome',
+  welcome: 'Welcome back, {{name}}!',
+  subtitle: 'Here\'s what\'s happening with your projects today.',
   stats: {
     totalTodos: 'Total Todos',
     completedTodos: 'Completed Todos',
     totalPosts: 'Total Posts',
     totalCalendarEvents: 'Calendar Events',
+    completed: 'Completed',
+    recentActivity: 'Recent Activity',
+    viewAllPosts: 'View all posts →',
+    manageTodos: 'Manage todos →',
+    lastDays: 'Last {{days}} days',
   },
   quickActions: {
     title: 'Quick Actions',
     createTodo: 'Create Todo',
+    addTodo: 'Add New Todo',
     createPost: 'Create Post',
     viewCalendar: 'View Calendar',
     startChat: 'Start Chat',
+    editProfile: 'Edit Profile',
   },
-  recentActivity: {
+  recentActivityFeed: {
     title: 'Recent Activity',
     noActivity: 'No recent activity',
+    createdPost: 'Created a new post',
+    completedTodos: 'Completed {{count}} todos',
+    updatedProfile: 'Updated profile information',
+    hoursAgo: '{{hours}} hours ago',
+    yesterday: 'Yesterday',
+    today: 'Today',
   },
   performance: {
     title: 'Performance Metrics',

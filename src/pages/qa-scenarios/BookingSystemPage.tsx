@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../../components/common/Header';
 import TestingGuide from '../../components/qa/TestingGuide';
 import { useAuthStore } from '../../store/authStore';
 import { createPlaceholderImage } from '../../utils/placeholderImage';
+import { formatCurrency, convertCurrency } from '../../utils/currency';
 
 interface TimeSlot {
   time: string;
@@ -23,6 +25,7 @@ interface Service {
 const BookingSystemPage = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [selectedService, setSelectedService] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -38,45 +41,50 @@ const BookingSystemPage = () => {
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
+  // Convert prices based on locale
+  const convertPrice = (usdPrice: number) => {
+    return convertCurrency(usdPrice, 'en', i18n.language);
+  };
+
   const services: Service[] = [
-    { id: 'haircut', name: 'Haircut & Style', duration: '45 min', price: 65, description: 'Professional haircut with styling' },
-    { id: 'color', name: 'Hair Color', duration: '2 hours', price: 120, description: 'Full color treatment' },
-    { id: 'highlights', name: 'Highlights', duration: '2.5 hours', price: 150, description: 'Partial or full highlights' },
-    { id: 'treatment', name: 'Deep Treatment', duration: '30 min', price: 45, description: 'Nourishing hair treatment' },
-    { id: 'blowdry', name: 'Blow Dry', duration: '30 min', price: 35, description: 'Professional blow dry and style' },
-    { id: 'consultation', name: 'Consultation', duration: '15 min', price: 0, description: 'Free consultation' },
+    { id: 'haircut', name: t('bookingSystem.services.haircut.name'), duration: '45 min', price: convertPrice(65), description: t('bookingSystem.services.haircut.description') },
+    { id: 'color', name: t('bookingSystem.services.color.name'), duration: '2 hours', price: convertPrice(120), description: t('bookingSystem.services.color.description') },
+    { id: 'highlights', name: t('bookingSystem.services.highlights.name'), duration: '2.5 hours', price: convertPrice(150), description: t('bookingSystem.services.highlights.description') },
+    { id: 'treatment', name: t('bookingSystem.services.treatment.name'), duration: '30 min', price: convertPrice(45), description: t('bookingSystem.services.treatment.description') },
+    { id: 'blowdry', name: t('bookingSystem.services.blowdry.name'), duration: '30 min', price: convertPrice(35), description: t('bookingSystem.services.blowdry.description') },
+    { id: 'consultation', name: t('bookingSystem.services.consultation.name'), duration: '15 min', price: 0, description: t('bookingSystem.services.consultation.description') },
   ];
 
   const staff = [
-    { id: '1', name: 'Emma Johnson', specialty: 'Color Specialist', rating: 4.9, image: createPlaceholderImage(60, 60, 'EJ') },
-    { id: '2', name: 'Michael Chen', specialty: 'Senior Stylist', rating: 4.8, image: createPlaceholderImage(60, 60, 'MC') },
-    { id: '3', name: 'Sarah Williams', specialty: 'Hair Designer', rating: 4.7, image: createPlaceholderImage(60, 60, 'SW') },
-    { id: '4', name: 'Any Available', specialty: 'First Available', rating: 0, image: createPlaceholderImage(60, 60, '?') },
+    { id: '1', name: 'Emma Johnson', specialty: t('bookingSystem.staff.colorSpecialist'), rating: 4.9, image: createPlaceholderImage(60, 60, 'EJ') },
+    { id: '2', name: 'Michael Chen', specialty: t('bookingSystem.staff.seniorStylist'), rating: 4.8, image: createPlaceholderImage(60, 60, 'MC') },
+    { id: '3', name: 'Sarah Williams', specialty: t('bookingSystem.staff.hairDesigner'), rating: 4.7, image: createPlaceholderImage(60, 60, 'SW') },
+    { id: '4', name: 'Any Available', specialty: t('bookingSystem.staff.anyAvailable'), rating: 0, image: createPlaceholderImage(60, 60, '?') },
   ];
 
   const addons = [
-    { id: 'shampoo', name: 'Premium Shampoo', price: 10 },
-    { id: 'massage', name: 'Scalp Massage', price: 15 },
-    { id: 'refreshment', name: 'Complimentary Refreshments', price: 0 },
+    { id: 'shampoo', name: t('bookingSystem.addons.shampoo'), price: convertPrice(10) },
+    { id: 'massage', name: t('bookingSystem.addons.massage'), price: convertPrice(15) },
+    { id: 'refreshment', name: t('bookingSystem.addons.refreshment'), price: 0 },
   ];
 
   const timeSlots: TimeSlot[] = [
-    { time: '09:00', available: true, price: 65 },
-    { time: '09:30', available: true, price: 65 },
-    { time: '10:00', available: false, price: 65 },
-    { time: '10:30', available: true, price: 65 },
-    { time: '11:00', available: true, price: 65 },
-    { time: '11:30', available: false, price: 65 },
-    { time: '12:00', available: true, price: 75 },
-    { time: '12:30', available: true, price: 75 },
-    { time: '14:00', available: true, price: 75 },
-    { time: '14:30', available: false, price: 75 },
-    { time: '15:00', available: true, price: 75 },
-    { time: '15:30', available: true, price: 75 },
-    { time: '16:00', available: true, price: 65 },
-    { time: '16:30', available: false, price: 65 },
-    { time: '17:00', available: true, price: 65 },
-    { time: '17:30', available: true, price: 65 },
+    { time: '09:00', available: true, price: convertPrice(65) },
+    { time: '09:30', available: true, price: convertPrice(65) },
+    { time: '10:00', available: false, price: convertPrice(65) },
+    { time: '10:30', available: true, price: convertPrice(65) },
+    { time: '11:00', available: true, price: convertPrice(65) },
+    { time: '11:30', available: false, price: convertPrice(65) },
+    { time: '12:00', available: true, price: convertPrice(75) },
+    { time: '12:30', available: true, price: convertPrice(75) },
+    { time: '14:00', available: true, price: convertPrice(75) },
+    { time: '14:30', available: false, price: convertPrice(75) },
+    { time: '15:00', available: true, price: convertPrice(75) },
+    { time: '15:30', available: true, price: convertPrice(75) },
+    { time: '16:00', available: true, price: convertPrice(65) },
+    { time: '16:30', available: false, price: convertPrice(65) },
+    { time: '17:00', available: true, price: convertPrice(65) },
+    { time: '17:30', available: true, price: convertPrice(65) },
   ];
 
   // Validation functions
@@ -135,44 +143,44 @@ const BookingSystemPage = () => {
 
   const handleNextStep = () => {
     if (currentStep === 1 && !selectedService) {
-      toast.error('Please select a service');
+      toast.error(t('bookingSystem.validation.selectService'));
       return;
     }
     if (currentStep === 2 && (!selectedDate || !selectedTime)) {
       if (!selectedDate) {
-        toast.error('Please select a date');
+        toast.error(t('bookingSystem.validation.selectDate'));
       } else if (!selectedTime) {
-        toast.error('Please select a time');
+        toast.error(t('bookingSystem.validation.selectTime'));
       }
       return;
     }
     if (currentStep === 3 && !selectedStaff) {
-      toast.error('Please select a specialist');
+      toast.error(t('bookingSystem.validation.selectSpecialist'));
       return;
     }
     if (currentStep === 4) {
       if (!customerName.trim()) {
-        toast.error('Please enter your name');
+        toast.error(t('bookingSystem.validation.enterName'));
         return;
       }
       if (!customerEmail.trim()) {
-        toast.error('Please enter your email');
+        toast.error(t('bookingSystem.validation.enterEmail'));
         return;
       }
       if (!validateEmail(customerEmail)) {
-        toast.error('Please enter a valid email address');
+        toast.error(t('bookingSystem.validation.invalidEmail'));
         return;
       }
       if (!customerPhone.trim()) {
-        toast.error('Please enter your phone number');
+        toast.error(t('bookingSystem.validation.enterPhone'));
         return;
       }
       if (!validatePhone(customerPhone)) {
-        toast.error('Please enter a valid phone number (at least 10 digits)');
+        toast.error(t('bookingSystem.validation.invalidPhone'));
         return;
       }
       if (!termsAccepted) {
-        toast.error('Please accept the terms and conditions');
+        toast.error(t('bookingSystem.validation.acceptTerms'));
         return;
       }
       handleBookingSubmit();
@@ -194,7 +202,7 @@ const BookingSystemPage = () => {
   };
 
   const handleConfirmBooking = () => {
-    toast.success(`Booking confirmed! Reference: ${bookingReference}`);
+    toast.success(t('bookingSystem.messages.bookingConfirmed', { reference: bookingReference }));
     setShowConfirmModal(false);
     // Reset form
     setCurrentStep(1);
@@ -241,15 +249,15 @@ const BookingSystemPage = () => {
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Luxury Salon & Spa</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Book your appointment online</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('bookingSystem.header.title')}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('bookingSystem.header.subtitle')}</p>
             </div>
             <div className="flex items-center space-x-4">
               <button className="text-blue-600 dark:text-blue-400 hover:underline" data-testid="view-bookings-btn">
-                My Bookings
+                {t('bookingSystem.header.myBookings')}
               </button>
               <button className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" data-testid="help-btn">
-                Help
+                {t('bookingSystem.header.help')}
               </button>
             </div>
           </div>
@@ -259,141 +267,72 @@ const BookingSystemPage = () => {
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Testing Guide */}
         <TestingGuide
-          title="Booking System Testing Guide"
-          description="Test multi-step booking flows, calendar interactions, and validation logic"
+          title={t('bookingSystem.testingGuide.title')}
+          description={t('bookingSystem.testingGuide.description')}
           scenarios={[
             {
               id: 'multi-step-flow',
-              title: 'Complete Booking Flow',
-              description: 'Test the entire multi-step booking process',
-              steps: [
-                'Select a service (e.g., Haircut & Style)',
-                'Click Next to proceed to step 2',
-                'Select a date from calendar',
-                'Choose an available time slot',
-                'Click Next to step 3',
-                'Select a staff member',
-                'Click Next to step 4',
-                'Fill in customer details',
-                'Submit booking',
-                'Verify confirmation and booking reference'
-              ],
-              expectedResult: 'Booking completes with confirmation number',
+              title: t('bookingSystem.scenarios.multiStepFlow.title'),
+              description: t('bookingSystem.scenarios.multiStepFlow.description'),
+              steps: t('bookingSystem.scenarios.multiStepFlow.steps', { returnObjects: true }) as string[],
+              expectedResult: t('bookingSystem.scenarios.multiStepFlow.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'calendar-navigation',
-              title: 'Calendar Date Selection',
-              description: 'Test calendar navigation and date restrictions',
-              steps: [
-                'Navigate to calendar step',
-                'Try selecting past date',
-                'Verify past dates are disabled',
-                'Navigate to next month',
-                'Select a weekend date',
-                'Check if weekends have different availability',
-                'Select a valid future date'
-              ],
-              expectedResult: 'Only valid future dates can be selected',
+              title: t('bookingSystem.scenarios.calendarNavigation.title'),
+              description: t('bookingSystem.scenarios.calendarNavigation.description'),
+              steps: t('bookingSystem.scenarios.calendarNavigation.steps', { returnObjects: true }) as string[],
+              expectedResult: t('bookingSystem.scenarios.calendarNavigation.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'time-slot-availability',
-              title: 'Time Slot Management',
-              description: 'Test time slot selection and availability',
-              steps: [
-                'Select a date',
-                'View available time slots',
-                'Try selecting unavailable slot (grayed out)',
-                'Verify it cannot be selected',
-                'Select available slot',
-                'Change date',
-                'Verify time slot resets'
-              ],
-              expectedResult: 'Only available slots can be selected',
+              title: t('bookingSystem.scenarios.timeSlotAvailability.title'),
+              description: t('bookingSystem.scenarios.timeSlotAvailability.description'),
+              steps: t('bookingSystem.scenarios.timeSlotAvailability.steps', { returnObjects: true }) as string[],
+              expectedResult: t('bookingSystem.scenarios.timeSlotAvailability.expectedResult'),
               difficulty: 'easy'
             },
             {
               id: 'form-validation',
-              title: 'Customer Information Validation',
-              description: 'Test form field validations',
-              steps: [
-                'Navigate to customer info step',
-                'Try submitting empty form',
-                'Verify required field errors',
-                'Enter invalid email format',
-                'Verify email validation error',
-                'Enter invalid phone number',
-                'Verify phone validation',
-                'Fill all fields correctly',
-                'Submit successfully'
-              ],
-              expectedResult: 'Form validates all inputs correctly',
+              title: t('bookingSystem.scenarios.formValidation.title'),
+              description: t('bookingSystem.scenarios.formValidation.description'),
+              steps: t('bookingSystem.scenarios.formValidation.steps', { returnObjects: true }) as string[],
+              expectedResult: t('bookingSystem.scenarios.formValidation.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'step-navigation',
-              title: 'Step Navigation Control',
-              description: 'Test moving between booking steps',
-              steps: [
-                'Complete step 1',
-                'Click Next',
-                'Click Back button',
-                'Verify data persists',
-                'Try skipping to step 3',
-                'Verify cannot skip steps',
-                'Complete all steps in order'
-              ],
-              expectedResult: 'Steps must be completed in order',
+              title: t('bookingSystem.scenarios.stepNavigation.title'),
+              description: t('bookingSystem.scenarios.stepNavigation.description'),
+              steps: t('bookingSystem.scenarios.stepNavigation.steps', { returnObjects: true }) as string[],
+              expectedResult: t('bookingSystem.scenarios.stepNavigation.expectedResult'),
               difficulty: 'medium'
             },
             {
               id: 'addon-selection',
-              title: 'Service Add-ons',
-              description: 'Test adding additional services',
-              steps: [
-                'Select main service',
-                'Check available add-ons',
-                'Select multiple add-ons',
-                'Verify price updates',
-                'Verify duration updates',
-                'Remove an add-on',
-                'Verify price recalculation'
-              ],
-              expectedResult: 'Add-ons correctly update price and duration',
+              title: t('bookingSystem.scenarios.addonSelection.title'),
+              description: t('bookingSystem.scenarios.addonSelection.description'),
+              steps: t('bookingSystem.scenarios.addonSelection.steps', { returnObjects: true }) as string[],
+              expectedResult: t('bookingSystem.scenarios.addonSelection.expectedResult'),
               difficulty: 'hard'
             }
           ]}
-          tips={[
-            'Test with different time zones if applicable',
-            'Verify booking confirmation email format',
-            'Check calendar for holidays and special hours',
-            'Test maximum booking limits per day',
-            'Verify cancellation and rescheduling options',
-            'Test with various guest counts for group bookings'
-          ]}
-          dataTestIds={[
-            { element: 'service-card', description: 'Service selection cards' },
-            { element: 'calendar-date', description: 'Calendar date cells' },
-            { element: 'time-slot', description: 'Time slot buttons' },
-            { element: 'staff-card', description: 'Staff member cards' },
-            { element: 'next-step-btn', description: 'Next step button' },
-            { element: 'back-step-btn', description: 'Previous step button' },
-            { element: 'submit-booking', description: 'Final submit button' },
-            { element: 'booking-reference', description: 'Confirmation number' }
-          ]}
+          tips={t('bookingSystem.tips', { returnObjects: true }) as string[]}
+          dataTestIds={t('bookingSystem.testIds', { returnObjects: true }) as Array<{ element: string; description: string }>}
         />
         
         {/* Back Button */}
         <button
           onClick={() => navigate('/qa')}
-          className="mb-6 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="mb-6 inline-flex items-center px-5 py-3 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-md hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
           data-testid="back-to-qa-hub"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to QA Testing Playground
+          {t('bookingSystem.backButton')}
         </button>
         
         {/* Progress Steps */}
@@ -423,10 +362,10 @@ const BookingSystemPage = () => {
           </div>
           <div className="flex justify-center mt-2 text-sm">
             <div className="flex space-x-16">
-              <span className={currentStep >= 1 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>Service</span>
-              <span className={currentStep >= 2 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>Date & Time</span>
-              <span className={currentStep >= 3 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>Staff</span>
-              <span className={currentStep >= 4 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>Details</span>
+              <span className={currentStep >= 1 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>{t('bookingSystem.steps.service')}</span>
+              <span className={currentStep >= 2 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>{t('bookingSystem.steps.dateTime')}</span>
+              <span className={currentStep >= 3 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>{t('bookingSystem.steps.staff')}</span>
+              <span className={currentStep >= 4 ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-gray-400'}>{t('bookingSystem.steps.details')}</span>
             </div>
           </div>
         </div>
@@ -438,7 +377,7 @@ const BookingSystemPage = () => {
               {/* Step 1: Select Service */}
               {currentStep === 1 && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Select a Service</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('bookingSystem.serviceSelection.title')}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {services.map((service) => (
                       <div
@@ -458,11 +397,11 @@ const BookingSystemPage = () => {
                               : 'text-gray-900 dark:text-gray-100'
                           }`}>{service.name}</h3>
                           <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                            {service.price === 0 ? 'Free' : `$${service.price}`}
+                            {service.price === 0 ? t('bookingSystem.serviceSelection.free') : formatCurrency(service.price, i18n.language)}
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{service.description}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Duration: {service.duration}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('bookingSystem.serviceSelection.duration')}: {service.duration}</p>
                       </div>
                     ))}
                   </div>
@@ -470,7 +409,7 @@ const BookingSystemPage = () => {
                   {/* Add-ons */}
                   {selectedService && (
                     <div className="mt-6">
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Optional Add-ons</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">{t('bookingSystem.serviceSelection.optionalAddons')}</h3>
                       <div className="space-y-2">
                         {addons.map((addon) => (
                           <label
@@ -488,7 +427,7 @@ const BookingSystemPage = () => {
                               <span className="text-gray-900 dark:text-gray-100">{addon.name}</span>
                             </div>
                             <span className="font-medium text-gray-900 dark:text-gray-100">
-                              {addon.price === 0 ? 'Free' : `+$${addon.price}`}
+                              {addon.price === 0 ? t('bookingSystem.serviceSelection.free') : `+${formatCurrency(addon.price, i18n.language)}`}
                             </span>
                           </label>
                         ))}
@@ -501,11 +440,11 @@ const BookingSystemPage = () => {
               {/* Step 2: Select Date & Time */}
               {currentStep === 2 && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Select Date & Time</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('bookingSystem.dateTimeSelection.title')}</h2>
                   
                   {/* Calendar */}
                   <div className="mb-6">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Choose a Date</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('bookingSystem.dateTimeSelection.chooseDate')}</h3>
                     <div className="grid grid-cols-7 gap-2">
                       {getDaysInMonth().slice(0, 14).map((date, index) => {
                         const dateStr = date.toISOString().split('T')[0];
@@ -546,7 +485,7 @@ const BookingSystemPage = () => {
                   {/* Time Slots */}
                   {selectedDate && (
                     <div>
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Available Time Slots</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('bookingSystem.dateTimeSelection.availableTimeSlots')}</h3>
                       <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                         {timeSlots.map((slot) => (
                           <button
@@ -568,13 +507,13 @@ const BookingSystemPage = () => {
                                 selectedTime === slot.time 
                                   ? 'text-white' 
                                   : 'text-gray-600 dark:text-gray-400'
-                              }`}>${slot.price}</div>
+                              }`}>{formatCurrency(slot.price || 0, i18n.language)}</div>
                             )}
                           </button>
                         ))}
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-                        Peak hours (12:00-15:00) have premium pricing
+                        {t('bookingSystem.dateTimeSelection.peakHoursPricing')}
                       </p>
                     </div>
                   )}
@@ -584,7 +523,7 @@ const BookingSystemPage = () => {
               {/* Step 3: Select Staff */}
               {currentStep === 3 && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Choose Your Specialist</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('bookingSystem.staffSelection.title')}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {staff.map((member) => (
                       <div
@@ -629,11 +568,11 @@ const BookingSystemPage = () => {
               {/* Step 4: Contact Details */}
               {currentStep === 4 && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Details</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('bookingSystem.customerDetails.title')}</h2>
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Full Name *
+                        {t('bookingSystem.customerDetails.fullName')}
                       </label>
                       <input
                         type="text"
@@ -644,16 +583,16 @@ const BookingSystemPage = () => {
                             ? 'border-red-500 dark:border-red-400'
                             : 'border-gray-300 dark:border-gray-600'
                         }`}
-                        placeholder="John Doe"
+                        placeholder={t('bookingSystem.customerDetails.placeholders.name')}
                         data-testid="customer-name"
                       />
                       {customerName && !customerName.trim() && (
-                        <p className="text-sm text-red-500 dark:text-red-400 mt-1">Name is required</p>
+                        <p className="text-sm text-red-500 dark:text-red-400 mt-1">{t('bookingSystem.validation.nameRequired')}</p>
                       )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Email Address *
+                        {t('bookingSystem.customerDetails.email')}
                       </label>
                       <input
                         type="email"
@@ -664,16 +603,16 @@ const BookingSystemPage = () => {
                             ? 'border-red-500 dark:border-red-400'
                             : 'border-gray-300 dark:border-gray-600'
                         }`}
-                        placeholder="john@example.com"
+                        placeholder={t('bookingSystem.customerDetails.placeholders.email')}
                         data-testid="customer-email"
                       />
                       {customerEmail && !validateEmail(customerEmail) && (
-                        <p className="text-sm text-red-500 dark:text-red-400 mt-1">Please enter a valid email address</p>
+                        <p className="text-sm text-red-500 dark:text-red-400 mt-1">{t('bookingSystem.validation.emailRequired')}</p>
                       )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Phone Number *
+                        {t('bookingSystem.customerDetails.phone')}
                       </label>
                       <input
                         type="tel"
@@ -684,16 +623,16 @@ const BookingSystemPage = () => {
                             ? 'border-red-500 dark:border-red-400'
                             : 'border-gray-300 dark:border-gray-600'
                         }`}
-                        placeholder="+1 (555) 000-0000"
+                        placeholder={t('bookingSystem.customerDetails.placeholders.phone')}
                         data-testid="customer-phone"
                       />
                       {customerPhone && !validatePhone(customerPhone) && (
-                        <p className="text-sm text-red-500 dark:text-red-400 mt-1">Please enter at least 10 digits</p>
+                        <p className="text-sm text-red-500 dark:text-red-400 mt-1">{t('bookingSystem.validation.phoneRequired')}</p>
                       )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Number of Guests
+                        {t('bookingSystem.customerDetails.guestCount')}
                       </label>
                       <select
                         value={guestCount}
@@ -702,20 +641,20 @@ const BookingSystemPage = () => {
                         data-testid="guest-count"
                       >
                         {[1, 2, 3, 4, 5].map(num => (
-                          <option key={num} value={num}>{num} {num === 1 ? 'Person' : 'People'}</option>
+                          <option key={num} value={num}>{num} {num === 1 ? t('bookingSystem.customerDetails.person') : t('bookingSystem.customerDetails.people')}</option>
                         ))}
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Special Requests (Optional)
+                        {t('bookingSystem.customerDetails.specialRequests')}
                       </label>
                       <textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         rows={3}
-                        placeholder="Any special requirements or preferences..."
+                        placeholder={t('bookingSystem.customerDetails.placeholders.requests')}
                         data-testid="special-requests"
                       />
                     </div>
@@ -729,7 +668,7 @@ const BookingSystemPage = () => {
                         data-testid="terms-checkbox"
                       />
                       <label htmlFor="terms" className={`text-sm ${termsAccepted ? 'text-gray-600 dark:text-gray-400' : 'text-red-500 dark:text-red-400'}`.trim()}>
-                        I agree to the terms and conditions and cancellation policy *
+                        {t('bookingSystem.customerDetails.termsAndConditions')}
                       </label>
                     </div>
                   </div>
@@ -748,7 +687,7 @@ const BookingSystemPage = () => {
                   }`}
                   data-testid="previous-btn"
                 >
-                  Previous
+                  {t('bookingSystem.navigation.previous')}
                 </button>
                 <button
                   onClick={handleNextStep}
@@ -760,7 +699,7 @@ const BookingSystemPage = () => {
                   }`}
                   data-testid="next-btn"
                 >
-                  {currentStep === 4 ? 'Book Appointment' : 'Next'}
+                  {currentStep === 4 ? t('bookingSystem.navigation.bookAppointment') : t('bookingSystem.navigation.next')}
                 </button>
               </div>
             </div>
@@ -769,12 +708,12 @@ const BookingSystemPage = () => {
           {/* Booking Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 sticky top-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Booking Summary</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('bookingSystem.summary.title')}</h3>
               
               {selectedService && (
                 <div className="space-y-3 text-sm">
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400">Service</p>
+                    <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.service')}</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                       {services.find(s => s.id === selectedService)?.name}
                     </p>
@@ -782,7 +721,7 @@ const BookingSystemPage = () => {
                   
                   {selectedDate && (
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">Date</p>
+                      <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.date')}</p>
                       <p className="font-medium text-gray-900 dark:text-gray-100">
                         {formatDate(new Date(selectedDate))}
                       </p>
@@ -791,14 +730,14 @@ const BookingSystemPage = () => {
                   
                   {selectedTime && (
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">Time</p>
+                      <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.time')}</p>
                       <p className="font-medium text-gray-900 dark:text-gray-100">{selectedTime}</p>
                     </div>
                   )}
                   
                   {selectedStaff && (
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">Specialist</p>
+                      <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.specialist')}</p>
                       <p className="font-medium text-gray-900 dark:text-gray-100">
                         {staff.find(s => s.id === selectedStaff)?.name}
                       </p>
@@ -807,7 +746,7 @@ const BookingSystemPage = () => {
 
                   {selectedAddons.length > 0 && (
                     <div>
-                      <p className="text-gray-500 dark:text-gray-400">Add-ons</p>
+                      <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.addons')}</p>
                       {selectedAddons.map(addonId => {
                         const addon = addons.find(a => a.id === addonId);
                         return addon ? (
@@ -821,9 +760,9 @@ const BookingSystemPage = () => {
                   
                   <div className="border-t dark:border-gray-600 pt-3">
                     <div className="flex justify-between">
-                      <p className="text-gray-500 dark:text-gray-400">Total</p>
+                      <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.total')}</p>
                       <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                        ${calculateTotal()}
+                        {formatCurrency(calculateTotal(), i18n.language)}
                       </p>
                     </div>
                   </div>
@@ -832,15 +771,15 @@ const BookingSystemPage = () => {
 
               {!selectedService && (
                 <p className="text-gray-500 dark:text-gray-400 text-sm">
-                  Select a service to see booking details
+                  {t('bookingSystem.summary.selectService')}
                 </p>
               )}
 
               {/* Policies */}
               <div className="mt-6 space-y-2 text-xs text-gray-500 dark:text-gray-400">
-                <p>✓ Free cancellation up to 24 hours before</p>
-                <p>✓ Instant confirmation via email</p>
-                <p>✓ Secure payment processing</p>
+                <p>✓ {t('bookingSystem.summary.policies.cancellation')}</p>
+                <p>✓ {t('bookingSystem.summary.policies.confirmation')}</p>
+                <p>✓ {t('bookingSystem.summary.policies.payment')}</p>
               </div>
             </div>
           </div>
@@ -857,18 +796,18 @@ const BookingSystemPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Booking Confirmed!</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{t('bookingSystem.confirmationModal.title')}</h3>
               <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Your appointment has been successfully booked.
+                {t('bookingSystem.confirmationModal.message')}
               </p>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Booking Reference</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('bookingSystem.confirmationModal.reference')}</p>
                 <p className="text-lg font-bold text-gray-900 dark:text-gray-100" data-testid="booking-reference">
                   {bookingReference}
                 </p>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                A confirmation email has been sent to {customerEmail}
+                {t('bookingSystem.confirmationModal.emailSent', { email: customerEmail })}
               </p>
               <div className="flex space-x-3">
                 <button
@@ -876,14 +815,14 @@ const BookingSystemPage = () => {
                   className="flex-1 px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
                   data-testid="confirm-ok"
                 >
-                  OK
+                  {t('bookingSystem.confirmationModal.ok')}
                 </button>
                 <button
                   onClick={() => window.print()}
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
                   data-testid="print-btn"
                 >
-                  Print
+                  {t('bookingSystem.confirmationModal.print')}
                 </button>
               </div>
             </div>

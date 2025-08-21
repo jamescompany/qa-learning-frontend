@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface FormInputProps {
@@ -30,8 +30,7 @@ const FormInput: React.FC<FormInputProps> = ({
   multiline = false,
   rows = 4,
 }) => {
-  const { i18n, t } = useTranslation();
-  const [isFocused, setIsFocused] = useState(false);
+  const { i18n } = useTranslation();
   
   const inputClasses = `
     w-full px-3 py-2 border rounded-md
@@ -39,11 +38,8 @@ const FormInput: React.FC<FormInputProps> = ({
     ${error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
     ${disabled ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : 'bg-white dark:bg-gray-700'}
     text-gray-900 dark:text-gray-100
+    ${type === 'date' ? 'date-input' : ''}
   `;
-
-  // For date inputs, show a text input with placeholder when empty
-  const isDateInput = type === 'date';
-  const showDatePlaceholder = isDateInput && !value && !isFocused;
 
   return (
     <div className="mb-4">
@@ -64,30 +60,19 @@ const FormInput: React.FC<FormInputProps> = ({
           className={inputClasses}
         />
       ) : (
-        <div className="relative">
-          {showDatePlaceholder && (
-            <div className="absolute inset-0 flex items-center px-3 pointer-events-none">
-              <span className="text-gray-400 dark:text-gray-500">{t('common.datePlaceholder')}</span>
-            </div>
-          )}
-          <input
-            id={name}
-            type={showDatePlaceholder ? 'text' : type}
-            name={name}
-            value={value}
-            onChange={onChange}
-            onBlur={(e) => {
-              setIsFocused(false);
-              onBlur?.(e);
-            }}
-            onFocus={() => setIsFocused(true)}
-            placeholder={!isDateInput ? placeholder : undefined}
-            disabled={disabled}
-            className={`${inputClasses} ${showDatePlaceholder ? 'text-transparent' : ''}`}
-            lang={i18n.language}
-            autoComplete={type === 'password' ? 'current-password' : type === 'email' ? 'email' : 'off'}
-          />
-        </div>
+        <input
+          id={name}
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={inputClasses}
+          lang={i18n.language}
+          autoComplete={type === 'password' ? 'current-password' : type === 'email' ? 'email' : 'off'}
+        />
       )}
       
       {error && (

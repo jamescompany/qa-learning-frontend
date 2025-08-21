@@ -19,31 +19,16 @@ const HomePageKo: React.FC = () => {
               QA 전문가를 위한 대화형 학습 플랫폼<br />
               테스팅 방법론, 자동화 도구 및 모범 사례를 배우세요.
             </p>
-            <div className="flex gap-4 justify-center">
-              {isAuthenticated ? (
+            {isAuthenticated && (
+              <div className="flex gap-4 justify-center">
                 <Link
                   to="/dashboard"
                   className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   대시보드로 이동
                 </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                  >
-                    로그인
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="px-6 py-2.5 bg-white dark:bg-gray-800 text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-                  >
-                    회원가입
-                  </Link>
-                </>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -56,7 +41,7 @@ const HomePageKo: React.FC = () => {
               <span className="text-3xl">🧪</span>
             </div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              QA 테스팅 플레이그라운드QA 테스팅 플레이그라운드
+              QA 테스팅 플레이그라운드
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-6 whitespace-pre-line">
               이커머스, 뱅킹, 소셜 미디어, 예약 시스템을 포함한 실제 애플리케이션 시나리오에서 자동화 테스팅을 연습하세요.{'\n'}Playwright, Cypress, Selenium 테스팅에 완벽합니다.
@@ -78,13 +63,13 @@ const HomePageKo: React.FC = () => {
                     to="/login"
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                   >
-                    로그인하여 접속
+                    로그인
                   </Link>
                   <Link
                     to="/signup"
                     className="px-6 py-2 bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    계정 만들기
+                    회원가입
                   </Link>
                 </div>
               </div>
@@ -140,7 +125,7 @@ const HomePageKo: React.FC = () => {
           </p>
           {!isAuthenticated && (
             <Link
-              to="/signup"
+              to="/login"
               className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               오늘 학습 시작하기

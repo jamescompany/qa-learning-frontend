@@ -19,31 +19,16 @@ const HomePageEn: React.FC = () => {
               Interactive learning platform for QA professionals.<br />
               Learn testing methodologies, automation tools, and best practices.
             </p>
-            <div className="flex gap-4 justify-center">
-              {isAuthenticated ? (
+            {isAuthenticated && (
+              <div className="flex gap-4 justify-center">
                 <Link
                   to="/dashboard"
                   className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   Go to Dashboard
                 </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="px-6 py-2.5 bg-white dark:bg-gray-800 text-blue-600 border-2 border-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-                  >
-                    Sign Up
-                  </Link>
-                </>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -140,7 +125,7 @@ const HomePageEn: React.FC = () => {
           </p>
           {!isAuthenticated && (
             <Link
-              to="/signup"
+              to="/login"
               className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
               Start Learning Today

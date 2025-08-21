@@ -64,7 +64,12 @@ const PrivacyPolicyPage: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             {t('privacyPolicy.section6.description')}
             <br />
-            {t('privacyPolicy.section6.email')}
+            <a 
+              href={`mailto:${t('privacyPolicy.section6.email')}`}
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              {t('privacyPolicy.section6.email')}
+            </a>
           </p>
         </section>
 
