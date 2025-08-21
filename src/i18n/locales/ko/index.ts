@@ -21,13 +21,13 @@ import { terms } from './terms';
 // Combine all translations
 const ko = {
   ...common,
-  home,
+  ...home,
   auth,
   about,
   dashboard,
   todos,
   banking,
-  qa,
+  ...qa,
   ...playground,
   footer,
   sidebar,
@@ -79,46 +79,7 @@ const ko = {
     },
   },
   // QAHub mapping for compatibility
-  qaHub: {
-    ...qa.hub,
-    scenarios: {
-      componentPlayground: {
-        title: qa.hub.scenarios.playground.title,
-        description: qa.hub.scenarios.playground.description,
-        tags: ['폼', '버튼', '모달', '드래그 앤 드롭']
-      },
-      ecommerce: {
-        title: qa.hub.scenarios.ecommerce.title,
-        description: qa.hub.scenarios.ecommerce.description,
-        tags: ['장바구니', '리뷰', '필터', '이미지 갤러리']
-      },
-      banking: {
-        title: qa.hub.scenarios.banking.title,
-        description: qa.hub.scenarios.banking.description,
-        tags: ['거래내역', '보안', '차트', '모달']
-      },
-      social: {
-        title: qa.hub.scenarios.social.title,
-        description: qa.hub.scenarios.social.description,
-        tags: ['게시물', '댓글', '스토리', '실시간']
-      },
-      booking: {
-        title: qa.hub.scenarios.booking.title,
-        description: qa.hub.scenarios.booking.description,
-        tags: ['캘린더', '다단계', '유효성 검사', '시간 슬롯']
-      }
-    },
-    testScenarios: qa.hub.scenarios.title,
-    startTesting: qa.hub.scenarios.startTesting,
-    tips: qa.hub.tips,
-    features: qa.hub.features,
-    quickStart: qa.hub.quickStart,
-    support: qa.hub.support,
-    learningSupport: qa.hub.learningSupport,
-    testingTips: qa.hub.testingTips,
-    featuresForTesting: qa.hub.featuresForTesting,
-    quickStartGuide: qa.hub.quickStartGuide
-  },
+  qaHub: qa.qaHub,
   notFound: {
     title: '404',
     heading: '페이지를 찾을 수 없습니다',

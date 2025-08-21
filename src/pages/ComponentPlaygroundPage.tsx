@@ -163,7 +163,7 @@ const ComponentPlaygroundPage = () => {
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          {t('buttons.back')}
+          {t('back')}
         </button>
         
         <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8" data-testid="playground-title">

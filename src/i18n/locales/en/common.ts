@@ -1,4 +1,8 @@
 export const common = {
+  home: 'Home',
+  star: 'star',
+  report: 'Report',
+  back: 'Back to QA Hub',
   testingGuide: {
     showGuide: 'Show Testing Guide',
   },
@@ -37,7 +41,6 @@ export const common = {
     update: 'Update',
     submit: 'Submit',
     close: 'Close',
-    back: 'Back',
     next: 'Next',
     previous: 'Previous',
     confirm: 'Confirm',

@@ -21,13 +21,13 @@ import { terms } from './terms';
 // Combine all translations
 const en = {
   ...common,
-  home,
+  ...home,
   auth,
   about,
   dashboard,
   todos,
   banking,
-  qa,
+  ...qa,
   ...playground,
   footer,
   sidebar,
@@ -79,46 +79,7 @@ const en = {
     },
   },
   // QAHub mapping for compatibility
-  qaHub: {
-    ...qa.hub,
-    scenarios: {
-      componentPlayground: {
-        title: qa.hub.scenarios.playground.title,
-        description: qa.hub.scenarios.playground.description,
-        tags: ['Forms', 'Buttons', 'Modals', 'Drag & Drop']
-      },
-      ecommerce: {
-        title: qa.hub.scenarios.ecommerce.title,
-        description: qa.hub.scenarios.ecommerce.description,
-        tags: ['Shopping Cart', 'Reviews', 'Filters', 'Image Gallery']
-      },
-      banking: {
-        title: qa.hub.scenarios.banking.title,
-        description: qa.hub.scenarios.banking.description,
-        tags: ['Transactions', 'Security', 'Charts', 'Modals']
-      },
-      social: {
-        title: qa.hub.scenarios.social.title,
-        description: qa.hub.scenarios.social.description,
-        tags: ['Posts', 'Comments', 'Stories', 'Real-time']
-      },
-      booking: {
-        title: qa.hub.scenarios.booking.title,
-        description: qa.hub.scenarios.booking.description,
-        tags: ['Calendar', 'Multi-step', 'Validation', 'Time Slots']
-      }
-    },
-    testScenarios: qa.hub.scenarios.title,
-    startTesting: qa.hub.scenarios.startTesting,
-    tips: qa.hub.tips,
-    features: qa.hub.features,
-    quickStart: qa.hub.quickStart,
-    support: qa.hub.support,
-    learningSupport: qa.hub.learningSupport,
-    testingTips: qa.hub.testingTips,
-    featuresForTesting: qa.hub.featuresForTesting,
-    quickStartGuide: qa.hub.quickStartGuide
-  },
+  qaHub: qa.qaHub,
   notFound: {
     title: '404',
     heading: 'Page Not Found',

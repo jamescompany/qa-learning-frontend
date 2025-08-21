@@ -1,4 +1,8 @@
 export const common = {
+  home: '홈',
+  star: '별',
+  report: '신고',
+  back: 'QA 테스팅 플레이그라운드로 돌아가기',
   testingGuide: {
     showGuide: '테스팅 가이드 보기',
   },
@@ -63,7 +67,6 @@ export const common = {
     update: '업데이트',
     submit: '제출',
     close: '닫기',
-    back: '뒤로',
     next: '다음',
     previous: '이전',
     confirm: '확인',

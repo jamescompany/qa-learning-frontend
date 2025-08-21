@@ -160,7 +160,7 @@ const EcommercePage = () => {
       <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700" data-testid="breadcrumb">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <ol className="flex items-center space-x-2 text-sm">
-            <li><a href="/" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">{t('common.home')}</a></li>
+            <li><a href="/" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">{t('home')}</a></li>
             <li><span className="text-gray-400 dark:text-gray-500">/</span></li>
             <li><a href="/electronics" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">{t('qaPages.ecommerce.breadcrumb.electronics')}</a></li>
             <li><span className="text-gray-400 dark:text-gray-500">/</span></li>
@@ -294,7 +294,7 @@ const EcommercePage = () => {
           <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          {t('common.back')}
+          {t('back')}
         </button>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
@@ -671,7 +671,7 @@ const EcommercePage = () => {
                 <div className="col-span-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center mb-2">
-                      <span className="text-sm w-12 text-gray-700 dark:text-gray-300">{rating} {t('common.star')}</span>
+                      <span className="text-sm w-12 text-gray-700 dark:text-gray-300">{rating} {t('star')}</span>
                       <div className="flex-1 mx-3 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <div
                           className="bg-yellow-400 h-2 rounded-full"
@@ -719,7 +719,7 @@ const EcommercePage = () => {
                         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                           <span>{review.date}</span>
                           <button className="hover:text-blue-600 dark:hover:text-blue-400">{t('qaPages.ecommerce.reviews.helpful')} ({review.helpful})</button>
-                          <button className="hover:text-blue-600 dark:hover:text-blue-400">{t('common.report')}</button>
+                          <button className="hover:text-blue-600 dark:hover:text-blue-400">{t('report')}</button>
                         </div>
                       </div>
                     </div>

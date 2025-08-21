@@ -12,7 +12,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.componentPlayground.description'),
       path: '/playground',
       icon: '🧩',
-      tags: t('qaHub.scenarios.componentPlayground.tags', { returnObjects: true, defaultValue: [] }) || [],
+      tags: (t('qaHub.scenarios.componentPlayground.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-purple-500',
     },
     {
@@ -20,7 +20,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.ecommerce.description'),
       path: '/qa/ecommerce',
       icon: '🛍️',
-      tags: t('qaHub.scenarios.ecommerce.tags', { returnObjects: true, defaultValue: [] }) || [],
+      tags: (t('qaHub.scenarios.ecommerce.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-blue-500',
     },
     {
@@ -28,7 +28,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.banking.description'),
       path: '/qa/banking',
       icon: '💳',
-      tags: t('qaHub.scenarios.banking.tags', { returnObjects: true, defaultValue: [] }) || [],
+      tags: (t('qaHub.scenarios.banking.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-green-500',
     },
     {
@@ -36,7 +36,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.social.description'),
       path: '/qa/social',
       icon: '📱',
-      tags: t('qaHub.scenarios.social.tags', { returnObjects: true, defaultValue: [] }) || [],
+      tags: (t('qaHub.scenarios.social.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-pink-500',
     },
     {
@@ -44,7 +44,7 @@ const QAHubPage = () => {
       description: t('qaHub.scenarios.booking.description'),
       path: '/qa/booking',
       icon: '📅',
-      tags: t('qaHub.scenarios.booking.tags', { returnObjects: true, defaultValue: [] }) || [],
+      tags: (t('qaHub.scenarios.booking.tags', { returnObjects: true, defaultValue: [] }) as string[]) || [],
       color: 'bg-orange-500',
     },
   ];
