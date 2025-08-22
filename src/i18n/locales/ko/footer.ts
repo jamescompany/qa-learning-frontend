@@ -5,7 +5,7 @@ export const footer = {
   about: '소개',
   privacyPolicy: '개인정보 처리방침',
   termsOfService: '이용약관',
-  contact: '문의',
+  contact: '문의하기',
   copyright: '© {{year}} QA Learning Web. All rights reserved.',
   resources: '리소스',
   documentation: '문서',
