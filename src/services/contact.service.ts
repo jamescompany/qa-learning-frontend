@@ -15,7 +15,10 @@ export interface ContactResponse {
 
 class ContactService {
   async sendMessage(data: ContactData): Promise<ContactResponse> {
-    const response = await api.post<ContactResponse>('/contact', data);
+    // Use longer timeout for email operations
+    const response = await api.post<ContactResponse>('/contact', data, {
+      timeout: 60000 // 60 seconds for email sending
+    });
     return response.data;
   }
 

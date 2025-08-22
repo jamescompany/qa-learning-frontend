@@ -9,7 +9,7 @@ class ApiService {
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: API_BASE_URL,
-      timeout: 10000,
+      timeout: 30000, // Increased to 30 seconds for email operations
       headers: {
         'Content-Type': 'application/json',
       },
