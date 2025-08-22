@@ -5,7 +5,7 @@ export const footer = {
   about: 'About',
   privacyPolicy: 'Privacy Policy',
   termsOfService: 'Terms of Service',
-  contact: 'Contact',
+  contact: 'Contact Us',
   copyright: '© {{year}} QA Learning Web. All rights reserved.',
   resources: 'Resources',
   documentation: 'Documentation',

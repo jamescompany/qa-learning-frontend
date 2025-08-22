@@ -19,11 +19,24 @@ const ContactPage: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Email validation regex
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Check if form is valid
+  const isFormValid = formData.name && 
+                      formData.email && 
+                      isValidEmail(formData.email) &&
+                      formData.subject && 
+                      formData.message;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form
-    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+    if (!isFormValid) {
       toast.error(t('about.contact.form.fillAllFields'));
       return;
     }
@@ -106,12 +119,13 @@ const ContactPage: React.FC = () => {
             />
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={!isFormValid || isSubmitting}
               className={`w-full py-2 px-4 rounded-lg text-white transition-colors ${
-                isSubmitting
+                !isFormValid || isSubmitting
                   ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
                   : 'bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600'
               }`}
+              title={!isFormValid ? t('about.contact.form.fillAllFields') : ''}
             >
               {isSubmitting ? t('about.contact.form.submitting') : t('about.contact.form.submit')}
             </button>
