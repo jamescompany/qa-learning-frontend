@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuthStore } from '../store/authStore';
+import { API_CONFIG } from '../config/api.config';
 
 interface UseWebSocketOptions {
   url?: string;
@@ -29,7 +30,7 @@ interface UseWebSocketReturn {
 
 export const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketReturn => {
   const {
-    url = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws',
+    url = API_CONFIG.WS_URL,
     reconnect = true,
     reconnectInterval = 3000,
     reconnectAttempts = 5,
@@ -271,7 +272,7 @@ export const useChatWebSocket = (roomId: string) => {
   }, []);
 
   const ws = useWebSocket({
-    url: `${import.meta.env.VITE_WS_URL}/chat/${roomId}`,
+    url: `${API_CONFIG.WS_URL}/chat/${roomId}`,
     onMessage: handleMessage,
     onOpen: () => {
       console.log(`Connected to chat room: ${roomId}`);
@@ -339,7 +340,7 @@ export const useNotificationWebSocket = () => {
   }, []);
 
   const ws = useWebSocket({
-    url: `${import.meta.env.VITE_WS_URL}/notifications`,
+    url: `${API_CONFIG.WS_URL}/notifications`,
     onMessage: handleNotification,
   });
 
@@ -424,7 +425,7 @@ export const useCollaborationWebSocket = (documentId: string) => {
   }, []);
 
   const ws = useWebSocket({
-    url: `${import.meta.env.VITE_WS_URL}/collaborate/${documentId}`,
+    url: `${API_CONFIG.WS_URL}/collaborate/${documentId}`,
     onMessage: handleCollaboration,
   });
 
@@ -479,7 +480,7 @@ export const useLiveDataWebSocket = (channel: string) => {
   }, []);
 
   const ws = useWebSocket({
-    url: `${import.meta.env.VITE_WS_URL}/stream/${channel}`,
+    url: `${API_CONFIG.WS_URL}/stream/${channel}`,
     onMessage: handleData,
   });
 
