@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { API_CONFIG } from '../config/api.config';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = API_CONFIG.API_URL;
 
 class ApiService {
   private axiosInstance: AxiosInstance;
