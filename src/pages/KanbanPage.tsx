@@ -1,17 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useKanbanStore } from '../store/kanbanStore';
+import authService from '../services/auth.service';
+import { User } from '../types/user.types';
+import { KanbanCard } from '../services/kanban.service';
 
 const KanbanPage: React.FC = () => {
   const { t } = useTranslation();
-  const { getUserTasks, moveTask, addTask, deleteTask, updateTask } = useKanbanStore();
-  const tasks = getUserTasks(); // 현재 사용자의 작업만 가져오기
+  const { 
+    currentBoard, 
+    fetchBoards,
+    fetchBoard,
+    createBoard,
+    createColumn,
+    createCard: createCardStore, 
+    deleteCard: deleteCardStore, 
+    updateCard: updateCardStore, 
+    moveCard: moveCardStore,
+    isLoading,
+    error 
+  } = useKanbanStore();
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<'todo' | 'inProgress' | 'review' | 'done'>('todo');
-  const [formData, setFormData] = useState({ title: '', description: '', priority: 'medium', assignee: '' });
-  const [editingTask, setEditingTask] = useState<any>(null);
+  const [formData, setFormData] = useState({ title: '', description: '', priority: 'medium', assigneeId: '' });
+  const [editingTask, setEditingTask] = useState<KanbanCard | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    const initializeBoard = async () => {
+      try {
+        await fetchBoards();
+        const boards = useKanbanStore.getState().boards;
+        
+        if (boards && boards.length > 0) {
+          await fetchBoard(boards[0].id);
+          
+          // Update column titles to use translations if they're in English
+          const board = useKanbanStore.getState().currentBoard;
+          if (board) {
+            const englishToKorean = {
+              'todo': t('kanban.columns.todo'),
+              'To Do': t('kanban.columns.todo'),
+              'inProgress': t('kanban.columns.inProgress'),
+              'In Progress': t('kanban.columns.inProgress'),
+              'review': t('kanban.columns.review'),
+              'Review': t('kanban.columns.review'),
+              'done': t('kanban.columns.done'),
+              'Done': t('kanban.columns.done')
+            };
+            
+            // Check if columns need translation updates
+            for (const column of board.columns) {
+              const translatedTitle = englishToKorean[column.title];
+              if (translatedTitle && translatedTitle !== column.title) {
+                // Note: In a real app, you'd update via API
+                column.title = translatedTitle;
+              }
+            }
+          }
+        } else {
+          // Create new board with translated column names
+          const newBoard = await createBoard('My Kanban Board', 'Personal task management board');
+          await createColumn(newBoard.id, t('kanban.columns.todo'), 0);
+          await createColumn(newBoard.id, t('kanban.columns.inProgress'), 1);
+          await createColumn(newBoard.id, t('kanban.columns.review'), 2);
+          await createColumn(newBoard.id, t('kanban.columns.done'), 3);
+          await fetchBoard(newBoard.id);
+        }
+      } catch (error) {
+        console.error('Failed to initialize board:', error);
+      }
+    };
+
+    initializeBoard();
+  }, [t]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const userList = await authService.getAllUsers();
+        setUsers(userList);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        setUsers([]);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const columns = [
     { id: 'todo', title: t('kanban.columns.todo'), color: 'bg-gray-100' },
@@ -28,12 +105,63 @@ const KanbanPage: React.FC = () => {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent, status: 'todo' | 'inProgress' | 'review' | 'done') => {
+  const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
-    if (draggedTaskId) {
-      moveTask(draggedTaskId, status);
+    if (draggedTaskId && currentBoard) {
+      const targetColumn = currentBoard.columns.find(col => col.id === targetColumnId);
+      if (targetColumn) {
+        await moveCardStore(draggedTaskId, targetColumn.id);
+      }
       setDraggedTaskId(null);
     }
+  };
+
+  const deleteTask = async (taskId: string) => {
+    await deleteCardStore(taskId);
+  };
+
+  const addTask = async (taskData: any) => {
+    if (!currentBoard) return;
+    
+    const columnTranslations = {
+      'todo': t('kanban.columns.todo'),
+      'inProgress': t('kanban.columns.inProgress'),
+      'review': t('kanban.columns.review'),
+      'done': t('kanban.columns.done')
+    };
+    
+    const targetColumnTitle = columnTranslations[selectedColumn];
+    const targetColumn = currentBoard.columns.find(col => col.title === targetColumnTitle);
+    
+    if (targetColumn) {
+      await createCardStore(targetColumn.id, {
+        title: taskData.title,
+        description: taskData.description,
+        priority: taskData.priority,
+        assignee: taskData.assigneeId || undefined
+      });
+    }
+  };
+
+  const updateTask = async (taskId: string, updates: any) => {
+    const columnTranslations = {
+      'todo': t('kanban.columns.todo'),
+      'inProgress': t('kanban.columns.inProgress'),
+      'review': t('kanban.columns.review'),
+      'done': t('kanban.columns.done')
+    };
+    
+    const targetColumnTitle = updates.status ? columnTranslations[updates.status] : undefined;
+    const targetColumn = targetColumnTitle ? 
+      currentBoard?.columns.find(col => col.title === targetColumnTitle) : undefined;
+    
+    await updateCardStore(taskId, {
+      title: updates.title,
+      description: updates.description,
+      priority: updates.priority,
+      assigneeId: updates.assigneeId || undefined,
+      columnId: targetColumn?.id
+    });
   };
 
   const getPriorityColor = (priority: string) => {
@@ -62,58 +190,84 @@ const KanbanPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {columns.map(column => (
-            <div key={column.id} className="flex flex-col">
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {column.title}
-                </h2>
-                <div className="text-sm text-gray-500 mt-1">
-                  {t('kanban.tasks', { count: tasks.filter(t => t.status === column.id).length })}
+          {currentBoard?.columns.map(column => {
+            const columnTasks = column.cards || [];
+            
+            // Map English column titles to translation keys
+            const titleToKey = {
+              'todo': 'todo',
+              'To Do': 'todo',
+              'inProgress': 'inProgress',
+              'In Progress': 'inProgress',
+              'review': 'review',
+              'Review': 'review',
+              'done': 'done',
+              'Done': 'done',
+              // Also check for already translated titles
+              [t('kanban.columns.todo')]: 'todo',
+              [t('kanban.columns.inProgress')]: 'inProgress',
+              [t('kanban.columns.review')]: 'review',
+              [t('kanban.columns.done')]: 'done'
+            };
+            
+            const columnKey = titleToKey[column.title] || 'todo';
+            const displayTitle = t(`kanban.columns.${columnKey}`);
+            const columnConfig = columns.find(c => c.id === columnKey) || columns[0];
+            
+            return (
+              <div key={column.id} className="flex flex-col">
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {displayTitle}
+                  </h2>
+                  <div className="text-sm text-gray-500 mt-1">
+                    {t('kanban.tasks', { count: columnTasks.length })}
+                  </div>
                 </div>
-              </div>
-              
-              <div
-                className={`flex-1 ${column.color} rounded-lg p-4 min-h-[400px] relative`}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, column.id as 'todo' | 'inProgress' | 'review' | 'done')}
-              >
-                <button
-                  onClick={() => {
-                    setSelectedColumn(column.id as 'todo' | 'inProgress' | 'review' | 'done');
-                    setShowAddForm(true);
-                  }}
-                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-300"
-                  title={t('kanban.addToColumn')}
+                
+                <div
+                  className={`flex-1 ${columnConfig.color} rounded-lg p-4 min-h-[400px] relative`}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, column.id)}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </button>
-                <div className="space-y-3">
-                  {tasks
-                    .filter(task => task.status === column.id)
-                    .map(task => (
+                  <button
+                    onClick={() => {
+                      setSelectedColumn(columnKey as 'todo' | 'inProgress' | 'review' | 'done');
+                      setShowAddForm(true);
+                    }}
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-300"
+                    title={t('kanban.addToColumn')}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                  <div className="space-y-3">
+                    {columnTasks.map(task => (
                       <div
                         key={task.id}
                         draggable
                         onDragStart={() => handleDragStart(task.id)}
-                        className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group"
+                        className={`rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group ${
+                          columnKey === 'todo' ? 'bg-white dark:bg-gray-800 border-l-4 border-gray-500' :
+                          columnKey === 'inProgress' || columnKey === 'review' ? 'bg-blue-50 dark:bg-blue-950 border-l-4 border-blue-500' :
+                          'bg-green-50 dark:bg-green-950 border-l-4 border-green-500'
+                        }`}
                       >
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="font-medium text-gray-900 dark:text-gray-100">{task.title}</h3>
                           <div className="flex items-center space-x-2">
-                            <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority)}`}></div>
+                            <div className={`w-2 h-2 rounded-full ${getPriorityColor(task.priority || 'medium')}`}></div>
                             <button
                               onClick={() => {
                                 setEditingTask(task);
                                 setFormData({
                                   title: task.title,
-                                  description: task.description,
-                                  priority: task.priority,
-                                  assignee: task.assignee
+                                  description: task.description || '',
+                                  priority: task.priority || 'medium',
+                                  assigneeId: task.assigneeId || ''
                                 });
-                                setSelectedColumn(task.status);
+                                setSelectedColumn(columnKey as 'todo' | 'inProgress' | 'review' | 'done');
                                 setShowAddForm(true);
                               }}
                               className="opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-700 transition-opacity"
@@ -136,23 +290,30 @@ const KanbanPage: React.FC = () => {
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{task.description}</p>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">{t('kanban.assignedTo', { assignee: task.assignee })}</span>
                           <span className={`text-xs px-2 py-1 rounded ${
                             task.priority === 'high' ? 'bg-red-100 text-red-700' :
                             task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
                             'bg-green-100 text-green-700'
                           }`}>
-                            {t(`kanban.priority.${task.priority}`)}
+                            {t(`kanban.priority.${task.priority || 'medium'}`)}
                           </span>
+                          {task.assignee && (
+                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                              <span>{task.assignee.name}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    ))
-                  }
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-      </div>
+            );
+          })}
+        </div>
       
       {/* Add Task Modal */}
       {showAddForm && (
@@ -160,28 +321,28 @@ const KanbanPage: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
             <h2 className="text-xl font-semibold mb-4">{editingTask ? t('kanban.form.editTitle') : t('kanban.form.title')}</h2>
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (editingTask) {
-                  updateTask(editingTask.id, {
+                  await updateTask(editingTask.id, {
                     title: formData.title,
                     description: formData.description,
                     status: selectedColumn,
                     priority: formData.priority as 'low' | 'medium' | 'high',
-                    assignee: formData.assignee,
+                    assigneeId: formData.assigneeId,
                   });
                 } else {
-                  addTask({
+                  await addTask({
                     title: formData.title,
                     description: formData.description,
                     status: selectedColumn,
                     priority: formData.priority as 'low' | 'medium' | 'high',
-                    assignee: formData.assignee,
+                    assigneeId: formData.assigneeId,
                   });
                 }
                 setShowAddForm(false);
                 setEditingTask(null);
-                setFormData({ title: '', description: '', priority: 'medium', assignee: '' });
+                setFormData({ title: '', description: '', priority: 'medium', assigneeId: '' });
               }}
             >
               <div className="space-y-4">
@@ -234,17 +395,20 @@ const KanbanPage: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {t('kanban.form.fields.assignee')}
-                    <span className="text-red-500 ml-1">*</span>
                   </label>
-                  <input
-                    type="text"
-                    name="assignee"
-                    value={formData.assignee}
-                    onChange={(e) => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
-                    required
-                    placeholder={t('kanban.form.fields.assigneePlaceholder')}
+                  <select
+                    name="assigneeId"
+                    value={formData.assigneeId}
+                    onChange={(e) => setFormData(prev => ({ ...prev, assigneeId: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  >
+                    <option value="">{t('kanban.form.fields.assigneeNone', { defaultValue: 'No assignee' })}</option>
+                    {users.map(user => (
+                      <option key={user.id} value={user.id}>
+                        {user.username || user.name || user.email}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 
                 <div>
@@ -281,7 +445,7 @@ const KanbanPage: React.FC = () => {
                   onClick={() => {
                     setShowAddForm(false);
                     setEditingTask(null);
-                    setFormData({ title: '', description: '', priority: 'medium', assignee: '' });
+                    setFormData({ title: '', description: '', priority: 'medium', assigneeId: '' });
                   }}
                   className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
                 >

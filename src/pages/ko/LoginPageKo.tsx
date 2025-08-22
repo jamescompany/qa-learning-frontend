@@ -59,16 +59,16 @@ const LoginPageKo: React.FC = () => {
           <Link to="/" className="block text-center">
             <h1 className="text-3xl font-bold transition-colors">
               <span className="text-blue-600 dark:text-blue-400">QA</span>
-              <span className="text-gray-900 dark:text-gray-100"> Learning Web</span>
+              <span className="text-gray-900 dark:text-gray-100"> Learning 101</span>
             </h1>
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-            계정에 로그인
+            로그인
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             또는{' '}
             <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-              무료로 계정 만들기
+              회원 가입
             </Link>
           </p>
         </div>

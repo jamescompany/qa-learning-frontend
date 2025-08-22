@@ -29,12 +29,15 @@ i18n
       escapeValue: false,
     },
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage', 'querystring', 'navigator'],
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
     react: {
-      useSuspense: true,
+      useSuspense: false,
     },
+    supportedLngs: ['en', 'ko'],
+    load: 'languageOnly',
   });
 
 export default i18n;

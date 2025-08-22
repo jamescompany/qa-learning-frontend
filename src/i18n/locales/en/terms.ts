@@ -3,7 +3,7 @@ export const terms = {
   lastUpdated: 'Last updated: December 2024',
   section1: {
     title: '1. Acceptance of Terms',
-    description: 'By accessing or using QA Learning Web, you agree to be bound by these Terms of Service.',
+    description: 'By accessing or using QA Learning 101, you agree to be bound by these Terms of Service.',
   },
   section2: {
     title: '2. Use of Services',
@@ -32,7 +32,7 @@ export const terms = {
   },
   section5: {
     title: '5. Intellectual Property',
-    description: 'The service and its original content, features, and functionality are owned by QA Learning Web and are protected by international copyright, trademark, and other intellectual property laws.',
+    description: 'The service and its original content, features, and functionality are owned by QA Learning 101 and are protected by international copyright, trademark, and other intellectual property laws.',
   },
   section6: {
     title: '6. Disclaimer',
@@ -40,7 +40,7 @@ export const terms = {
   },
   section7: {
     title: '7. Limitation of Liability',
-    description: 'In no event shall QA Learning Web be liable for any indirect, incidental, special, consequential, or punitive damages.',
+    description: 'In no event shall QA Learning 101 be liable for any indirect, incidental, special, consequential, or punitive damages.',
   },
   section8: {
     title: '8. Termination',

@@ -12,7 +12,10 @@ const ComponentPlaygroundPage = () => {
   const [showGuide, setShowGuide] = useState(true);
   const [textInput, setTextInput] = useState('');
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState<'weak' | 'medium' | 'strong' | ''>('');
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const [checkbox, setCheckbox] = useState(false);
   const [radio, setRadio] = useState('option1');
   const [selectValue, setSelectValue] = useState('');
@@ -35,6 +38,23 @@ const ComponentPlaygroundPage = () => {
   const [tabActive, setTabActive] = useState(0);
   const [counter, setCounter] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Table state for sorting, filtering, pagination
+  const [tableData, setTableData] = useState([
+    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Inactive' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Active' },
+    { id: 4, name: 'Alice Brown', email: 'alice@example.com', status: 'Active' },
+    { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Inactive' },
+    { id: 6, name: 'Diana Prince', email: 'diana@example.com', status: 'Active' },
+  ]);
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [filterText, setFilterText] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+  const [acceptedFileTypes] = useState('.pdf,.jpg,.png,.doc,.docx,.txt');
+  const [fileError, setFileError] = useState('');
 
   // Initialize drag items with translations
   useEffect(() => {
@@ -46,15 +66,67 @@ const ComponentPlaygroundPage = () => {
     ]);
   }, [t]);
 
+  // Password strength checker
+  const checkPasswordStrength = (pwd: string) => {
+    if (!pwd) return '';
+    if (pwd.length < 6) return 'weak';
+    if (pwd.length >= 8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd) && /[!@#$%^&*]/.test(pwd)) {
+      return 'strong';
+    }
+    return 'medium';
+  };
+
+  const validateForm = () => {
+    const errors: {[key: string]: string} = {};
+    
+    // Required field validation
+    if (!textInput.trim()) errors.textInput = 'This field is required';
+    if (!email.trim()) errors.email = 'Email is required';
+    if (!password.trim()) errors.password = 'Password is required';
+    if (!selectValue) errors.select = 'Please select an option';
+    if (!checkbox) errors.checkbox = 'You must accept the terms';
+    
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(t('componentPlayground.messages.formSubmitted'));
+    
+    if (validateForm() && !emailError) {
+      toast.success(t('componentPlayground.messages.formSubmitted'));
+      // Reset form
+      setTextInput('');
+      setEmail('');
+      setPassword('');
+      setPasswordStrength('');
+      setSelectValue('');
+      setCheckbox(false);
+      setFormErrors({});
+    } else {
+      toast.error('Please fix all errors before submitting');
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      toast.success(t('componentPlayground.messages.fileSelected', { fileName: e.target.files[0].name }));
+      const selectedFile = e.target.files[0];
+      const fileExtension = '.' + selectedFile.name.split('.').pop()?.toLowerCase();
+      const allowedTypes = acceptedFileTypes.split(',');
+      
+      if (!allowedTypes.includes(fileExtension)) {
+        setFileError(`Invalid file type. Allowed types: ${acceptedFileTypes}`);
+        setFile(null);
+        toast.error('Invalid file type');
+      } else if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+        setFileError('File size must be less than 5MB');
+        setFile(null);
+        toast.error('File too large');
+      } else {
+        setFile(selectedFile);
+        setFileError('');
+        toast.success(t('componentPlayground.messages.fileSelected', { fileName: selectedFile.name }));
+      }
     }
   };
 
@@ -85,6 +157,39 @@ const ComponentPlaygroundPage = () => {
     ]);
     setDropZone([]);
   };
+
+  // Table sorting function
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
+  // Filter and sort table data
+  const filteredData = tableData.filter(row =>
+    Object.values(row).some(value =>
+      value.toString().toLowerCase().includes(filterText.toLowerCase())
+    )
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortColumn) return 0;
+    
+    const aVal = a[sortColumn as keyof typeof a];
+    const bVal = b[sortColumn as keyof typeof b];
+    
+    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = sortedData.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -179,49 +284,125 @@ const ComponentPlaygroundPage = () => {
                 {/* Text Input */}
                 <div>
                   <label htmlFor="text-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('componentPlayground.labels.textInput')}
+                    {t('componentPlayground.labels.textInput')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     id="text-input"
                     data-testid="text-input"
                     value={textInput}
-                    onChange={(e) => setTextInput(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    onChange={(e) => {
+                      setTextInput(e.target.value);
+                      if (formErrors.textInput) {
+                        setFormErrors({...formErrors, textInput: ''});
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={!!formErrors.textInput}
+                    aria-describedby={formErrors.textInput ? "text-input-error" : undefined}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      formErrors.textInput ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500'
+                    }`}
                     placeholder={t('componentPlayground.labels.enterText')}
                   />
+                  {formErrors.textInput && (
+                    <p id="text-input-error" className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="text-input-error">
+                      {formErrors.textInput}
+                    </p>
+                  )}
                 </div>
 
                 {/* Email Input */}
                 <div>
                   <label htmlFor="email-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('componentPlayground.labels.emailInput')}
+                    {t('componentPlayground.labels.emailInput')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     id="email-input"
                     data-testid="email-input"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      // Validate email format
+                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      if (e.target.value && !emailRegex.test(e.target.value)) {
+                        setEmailError('Invalid email format');
+                      } else {
+                        setEmailError('');
+                      }
+                    }}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      emailError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500'
+                    }`}
                     placeholder={t('componentPlayground.labels.enterEmail')}
                   />
+                  {emailError && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="email-error">
+                      {emailError}
+                    </p>
+                  )}
                 </div>
 
                 {/* Password Input */}
                 <div>
                   <label htmlFor="password-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('componentPlayground.labels.passwordInput')}
+                    {t('componentPlayground.labels.passwordInput')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="password"
                     id="password-input"
                     data-testid="password-input"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordStrength(checkPasswordStrength(e.target.value));
+                      if (formErrors.password) {
+                        setFormErrors({...formErrors, password: ''});
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={!!formErrors.password}
+                    aria-describedby="password-strength"
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      formErrors.password ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500'
+                    }`}
                     placeholder={t('componentPlayground.labels.enterPassword')}
                   />
+                  {passwordStrength && (
+                    <div className="mt-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Password strength:</span>
+                        <span 
+                          data-testid="password-strength"
+                          id="password-strength"
+                          className={`text-sm font-medium ${
+                            passwordStrength === 'weak' ? 'text-red-600' :
+                            passwordStrength === 'medium' ? 'text-yellow-600' :
+                            'text-green-600'
+                          }`}
+                        >
+                          {passwordStrength.charAt(0).toUpperCase() + passwordStrength.slice(1)}
+                        </span>
+                      </div>
+                      <div className="mt-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full transition-all ${
+                            passwordStrength === 'weak' ? 'w-1/3 bg-red-500' :
+                            passwordStrength === 'medium' ? 'w-2/3 bg-yellow-500' :
+                            'w-full bg-green-500'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {formErrors.password && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="password-error">
+                      {formErrors.password}
+                    </p>
+                  )}
                 </div>
 
                 {/* Number Input */}
@@ -335,20 +516,35 @@ const ComponentPlaygroundPage = () => {
                 {/* Select Dropdown */}
                 <div>
                   <label htmlFor="select-dropdown" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('componentPlayground.labels.selectDropdown')}
+                    {t('componentPlayground.labels.selectDropdown')} <span className="text-red-500">*</span>
                   </label>
                   <select
                     id="select-dropdown"
                     data-testid="select-dropdown"
                     value={selectValue}
-                    onChange={(e) => setSelectValue(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    onChange={(e) => {
+                      setSelectValue(e.target.value);
+                      if (formErrors.select) {
+                        setFormErrors({...formErrors, select: ''});
+                      }
+                    }}
+                    required
+                    aria-required="true"
+                    aria-invalid={!!formErrors.select}
+                    className={`mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${
+                      formErrors.select ? 'border-red-500 focus:border-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500'
+                    }`}
                   >
                     <option value="">{t('componentPlayground.labels.chooseOption')}</option>
                     <option value="option1">{t('componentPlayground.labels.option1')}</option>
                     <option value="option2">{t('componentPlayground.labels.option2')}</option>
                     <option value="option3">{t('componentPlayground.labels.option3')}</option>
                   </select>
+                  {formErrors.select && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="select-error">
+                      {formErrors.select}
+                    </p>
+                  )}
                 </div>
 
                 {/* File Input */}
@@ -361,7 +557,9 @@ const ComponentPlaygroundPage = () => {
                     id="file-input"
                     ref={fileInputRef}
                     data-testid="file-input"
+                    accept={acceptedFileTypes}
                     onChange={handleFileChange}
+                    aria-describedby="file-help"
                     className="mt-1 block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-full file:border-0
@@ -369,7 +567,15 @@ const ComponentPlaygroundPage = () => {
                       file:bg-indigo-50 file:text-indigo-700
                       hover:file:bg-indigo-100"
                   />
-                  {file && (
+                  <p id="file-help" className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Accepted: {acceptedFileTypes} (Max 5MB)
+                  </p>
+                  {fileError && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="file-error">
+                      {fileError}
+                    </p>
+                  )}
+                  {file && !fileError && (
                     <p className="mt-2 text-sm text-gray-600" data-testid="file-name">
                       {t('componentPlayground.labels.selectedFile', { fileName: file.name })}
                     </p>
@@ -410,18 +616,32 @@ const ComponentPlaygroundPage = () => {
                 </div>
 
                 {/* Checkbox */}
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="checkbox"
-                    data-testid="checkbox"
-                    checked={checkbox}
-                    onChange={(e) => setCheckbox(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 dark:bg-gray-700 dark:checked:bg-indigo-600 dark:checked:border-indigo-600"
-                  />
-                  <label htmlFor="checkbox" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
-                    {t('componentPlayground.labels.checkboxOption')}
-                  </label>
+                <div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="checkbox"
+                      data-testid="checkbox"
+                      checked={checkbox}
+                      onChange={(e) => {
+                        setCheckbox(e.target.checked);
+                        if (formErrors.checkbox) {
+                          setFormErrors({...formErrors, checkbox: ''});
+                        }
+                      }}
+                      aria-required="true"
+                      aria-invalid={!!formErrors.checkbox}
+                      className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 dark:bg-gray-700 dark:checked:bg-indigo-600 dark:checked:border-indigo-600"
+                    />
+                    <label htmlFor="checkbox" className="ml-2 block text-sm text-gray-900 dark:text-gray-100">
+                      Accept terms and conditions <span className="text-red-500">*</span>
+                    </label>
+                  </div>
+                  {formErrors.checkbox && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400" data-testid="checkbox-error">
+                      {formErrors.checkbox}
+                    </p>
+                  )}
                 </div>
 
                 {/* Radio Buttons */}
@@ -736,21 +956,65 @@ const ComponentPlaygroundPage = () => {
           {/* Table */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4" data-testid="table-section-title">{t('componentPlayground.sections.tables.title')}</h2>
+            
+            {/* Filter Input */}
+            <div className="mb-4">
+              <input
+                type="text"
+                data-testid="table-filter"
+                placeholder="Filter table..."
+                value={filterText}
+                onChange={(e) => {
+                  setFilterText(e.target.value);
+                  setCurrentPage(1); // Reset to first page when filtering
+                }}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              />
+            </div>
+            
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600" data-testid="data-table">
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('id')}
+                      data-testid="sort-id"
+                    >
                       {t('componentPlayground.labels.tableId')}
+                      {sortColumn === 'id' && (
+                        <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                      )}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('name')}
+                      data-testid="sort-name"
+                    >
                       {t('componentPlayground.labels.tableName')}
+                      {sortColumn === 'name' && (
+                        <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                      )}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('email')}
+                      data-testid="sort-email"
+                    >
                       {t('componentPlayground.labels.tableEmail')}
+                      {sortColumn === 'email' && (
+                        <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                      )}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+                      onClick={() => handleSort('status')}
+                      data-testid="sort-status"
+                    >
                       {t('componentPlayground.labels.tableStatus')}
+                      {sortColumn === 'status' && (
+                        <span className="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                      )}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       {t('componentPlayground.labels.tableActions')}
@@ -758,18 +1022,14 @@ const ComponentPlaygroundPage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
-                  {[
-                    { id: 1, name: t('componentPlayground.labels.johnDoe'), email: 'john@example.com', status: t('componentPlayground.labels.active') },
-                    { id: 2, name: t('componentPlayground.labels.janeSmith'), email: 'jane@example.com', status: t('componentPlayground.labels.inactive') },
-                    { id: 3, name: t('componentPlayground.labels.bobJohnson'), email: 'bob@example.com', status: t('componentPlayground.labels.active') },
-                  ].map((row) => (
+                  {paginatedData.map((row) => (
                     <tr key={row.id} data-testid={`table-row-${row.id}`}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{row.id}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{row.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{row.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          row.status === t('componentPlayground.labels.active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          row.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {row.status}
                         </span>
@@ -777,14 +1037,14 @@ const ComponentPlaygroundPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           data-testid={`edit-button-${row.id}`}
-                          onClick={() => toast.success(t('componentPlayground.messages.editUser', { name: row.name }))}
+                          onClick={() => toast.success(`Editing ${row.name}`)}
                           className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3"
                         >
                           {t('componentPlayground.labels.edit')}
                         </button>
                         <button
                           data-testid={`delete-button-${row.id}`}
-                          onClick={() => toast.error(t('componentPlayground.messages.deleteUser', { name: row.name }))}
+                          onClick={() => toast.error(`Deleting ${row.name}`)}
                           className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                         >
                           {t('componentPlayground.labels.delete')}
@@ -794,6 +1054,34 @@ const ComponentPlaygroundPage = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+            
+            {/* Pagination Controls */}
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedData.length)} of {sortedData.length} entries
+              </div>
+              <div className="flex gap-2">
+                <button
+                  data-testid="prev-page"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 text-gray-900 dark:text-gray-100" data-testid="page-info">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  data-testid="next-page"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
 

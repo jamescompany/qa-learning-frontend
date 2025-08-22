@@ -14,13 +14,16 @@ interface TodoFormData {
 
 const TodoPageKo: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { getUserTodos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
+  const { getUserTodos, addTodo, toggleTodo, deleteTodo, updateTodo, fetchTodos, isLoading } = useTodoStore();
   const todos = getUserTodos(); // 현재 사용자의 todos만 가져오기
-  const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'incomplete' | 'completed'>('all');
   const [deletingTodoId, setDeletingTodoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
   useEffect(() => {
     if (searchParams.get('add') === 'true') {
@@ -33,14 +36,17 @@ const TodoPageKo: React.FC = () => {
   const editingTodo = todos.find(t => t.id === editingTodoId) || null;
 
   const handleSubmit = (data: TodoFormData) => {
+    console.log('TodoPage handleSubmit data:', data);
     if (editingTodoId) {
+      console.log('Updating todo with dueDate:', data.dueDate);
       updateTodo(editingTodoId, {
         title: data.title,
         description: data.description,
-        priority: data.priority,
+        priority: (data.priority as any),
         dueDate: data.dueDate,
-      });
+      } as any);
     } else {
+      console.log('Creating todo with dueDate:', data.dueDate);
       addTodo(data.title, data.description, data.priority, data.dueDate);
     }
     setShowForm(false);
@@ -48,6 +54,9 @@ const TodoPageKo: React.FC = () => {
   };
 
   const handleEdit = (id: string) => {
+    const todoToEdit = todos.find(t => t.id === id);
+    console.log('Editing todo:', todoToEdit);
+    console.log('Due date:', todoToEdit?.dueDate);
     setEditingTodoId(id);
     setShowForm(true);
   };
@@ -179,7 +188,7 @@ const TodoPageKo: React.FC = () => {
                 initialData={editingTodo ? {
                   title: editingTodo.title,
                   description: editingTodo.description || '',
-                  priority: editingTodo.priority,
+                  priority: (editingTodo.priority as any) as 'low' | 'medium' | 'high',
                   dueDate: editingTodo.dueDate,
                 } : undefined}
                 onSubmit={handleSubmit}
@@ -203,14 +212,20 @@ const TodoPageKo: React.FC = () => {
               <p className="text-gray-500 dark:text-gray-400">할 일이 없습니다</p>
             </div>
           ) : (
-            filteredTodos.map(todo => (
+            filteredTodos.map(todo => {
+              console.log('Rendering todo:', todo);
+              return (
               <div
                 key={todo.id}
                 className={`rounded-lg shadow p-4 transition-all ${
                   deletingTodoId === todo.id ? 'opacity-50 scale-95' : ''
                 } ${
                   isOverdue(todo.dueDate) && !todo.completed
-                    ? 'bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700'
+                    ? 'bg-red-50 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 animate-pulse-slow'
+                    : getDaysRemaining(todo.dueDate) === 0 && !todo.completed
+                    ? 'bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-300 dark:border-orange-700'
+                    : getDaysRemaining(todo.dueDate) !== null && getDaysRemaining(todo.dueDate)! <= 3 && !todo.completed
+                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700'
                     : 'bg-white dark:bg-gray-800'
                 }`}
                 data-testid={`todo-item-${todo.id}`}
@@ -229,23 +244,42 @@ const TodoPageKo: React.FC = () => {
                         {todo.description}
                       </p>
                     )}
-                    <div className="mt-2 flex items-center space-x-4 text-sm">
+                    <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                       <span className={`px-2 py-1 rounded-full ${getPriorityColor(todo.priority)}`}>
                         {getPriorityLabel(todo.priority)}
                       </span>
-                      {todo.dueDate && (
-                        <span className={`${
-                          isOverdue(todo.dueDate) && !todo.completed
-                            ? 'text-red-600 dark:text-red-400 font-semibold'
+                      {todo.dueDate && !todo.completed && (
+                        <span className={`font-bold ${
+                          isOverdue(todo.dueDate)
+                            ? 'text-red-600 dark:text-red-400'
                             : getDaysRemaining(todo.dueDate) === 0
-                            ? 'text-orange-600 dark:text-orange-400 font-semibold'
+                            ? 'text-orange-600 dark:text-orange-400'
                             : getDaysRemaining(todo.dueDate)! <= 3
                             ? 'text-yellow-600 dark:text-yellow-400'
-                            : 'text-gray-500 dark:text-gray-400'
+                            : 'text-blue-600 dark:text-blue-400'
                         }`}>
-                          마감: {new Date(todo.dueDate).toLocaleDateString('ko-KR')}
-                          {!todo.completed && getDayLabel(todo.dueDate)}
+                          {getDayLabel(todo.dueDate).trim()}
                         </span>
+                      )}
+                      {todo.dueDate && (
+                        <div className="flex items-center gap-1">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {new Date(todo.dueDate).toISOString().split('T')[0]}
+                          </span>
+                        </div>
+                      )}
+                      {todo.completed && todo.completedAt && (
+                        <div className="flex items-center gap-1">
+                          <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-green-600 dark:text-green-400">
+                            완료: {new Date(todo.completedAt).toISOString().split('T')[0]}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -265,7 +299,7 @@ const TodoPageKo: React.FC = () => {
                         className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
                         data-testid={`todo-uncomplete-${todo.id}`}
                       >
-                        완료 취소
+                        재시작
                       </button>
                     )}
                     <button
@@ -285,7 +319,7 @@ const TodoPageKo: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ))
+            )})
           )}
         </div>
       </div>

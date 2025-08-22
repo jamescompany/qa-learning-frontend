@@ -78,7 +78,7 @@ export const common = {
     offline: 'Offline',
   },
   messages: {
-    welcome: 'Welcome to QA Learning Web',
+    welcome: 'Welcome to QA Learning 101',
     confirmDelete: 'Are you sure you want to delete this item?',
     saveSuccess: 'Saved successfully',
     saveError: 'Failed to save',

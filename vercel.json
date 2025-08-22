@@ -4,5 +4,9 @@
       "source": "/(.*)",
       "destination": "/"
     }
-  ]
+  ],
+  "installCommand": "yarn install --network-timeout 300000 --network-concurrency 8",
+  "buildCommand": "yarn build",
+  "framework": "vite",
+  "outputDirectory": "dist"
 }

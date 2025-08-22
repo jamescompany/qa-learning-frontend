@@ -1,8 +1,8 @@
 export const about = {
-  title: 'QA Learning Web 소개',
+  title: 'QA Learning 101 소개',
   mission: {
     title: '우리의 사명',
-    description: 'QA Learning Web은 품질 보증 전문가들이 기술을 향상시키고, 지식을 공유하며, 테스팅 모범 사례에 대해 협업할 수 있도록 돕는 데 전념하고 있습니다. 우리는 지속적인 학습과 커뮤니티 주도 교육의 힘을 믿습니다.',
+    description: 'QA Learning 101은 품질 보증 전문가들이 기술을 향상시키고, 지식을 공유하며, 테스팅 모범 사례에 대해 협업할 수 있도록 돕는 데 전념하고 있습니다. 우리는 지속적인 학습과 커뮤니티 주도 교육의 힘을 믿습니다.',
   },
   features: {
     learning: {

@@ -26,7 +26,7 @@ const PostForm: React.FC<PostFormProps> = ({
     title: '',
     content: '',
     tags: [],
-    published: false,
+    published: true, // Always publish immediately
   });
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -47,12 +47,25 @@ const PostForm: React.FC<PostFormProps> = ({
   };
 
   const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()],
-      }));
-      setTagInput('');
+    const trimmedTag = tagInput.trim();
+    if (trimmedTag) {
+      if (formData.tags.includes(trimmedTag)) {
+        // Show error for duplicate tag
+        setErrors((prev) => ({ ...prev, tags: t('posts.form.tagAlreadyExists') }));
+        setTimeout(() => {
+          setErrors((prev) => ({ ...prev, tags: '' }));
+        }, 3000);
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          tags: [...prev.tags, trimmedTag],
+        }));
+        setTagInput('');
+        // Clear any existing tag error
+        if (errors.tags) {
+          setErrors((prev) => ({ ...prev, tags: '' }));
+        }
+      }
     }
   };
 
@@ -110,6 +123,9 @@ const PostForm: React.FC<PostFormProps> = ({
         <label className="block text-sm font-medium text-gray-700 mb-1">
           {t('posts.form.tags')}
         </label>
+        {errors.tags && (
+          <p className="text-red-500 text-sm mb-2">{errors.tags}</p>
+        )}
         <div className="flex gap-2 mb-2">
           <input
             type="text"
@@ -157,21 +173,6 @@ const PostForm: React.FC<PostFormProps> = ({
         </div>
       </div>
       
-      <div className="mb-4">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            name="published"
-            checked={formData.published}
-            onChange={handleChange}
-            disabled={isLoading}
-            className="mr-2"
-          />
-          <span className="text-sm font-medium text-gray-700">
-            {t('posts.form.publishImmediately')}
-          </span>
-        </label>
-      </div>
       
       <button
         type="submit"

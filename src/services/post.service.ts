@@ -56,7 +56,7 @@ class PostService {
   }
 
   async updatePost(id: string, data: UpdatePostData): Promise<Post> {
-    const response = await api.patch<Post>(`/posts/${id}`, data);
+    const response = await api.put<Post>(`/posts/${id}`, data);
     return response.data;
   }
 
@@ -74,13 +74,17 @@ class PostService {
     return response.data;
   }
 
-  async addComment(postId: string, content: string): Promise<Post> {
-    const response = await api.post<Post>(`/posts/${postId}/comments`, { content });
+  async addComment(postId: string, content: string): Promise<any> {
+    // Use the comments API endpoint directly
+    const response = await api.post(`/comments`, { 
+      post_id: postId,
+      content: content 
+    });
     return response.data;
   }
 
-  async deleteComment(postId: string, commentId: string): Promise<Post> {
-    const response = await api.delete<Post>(`/posts/${postId}/comments/${commentId}`);
+  async deleteComment(commentId: string): Promise<any> {
+    const response = await api.delete(`/comments/${commentId}`);
     return response.data;
   }
 

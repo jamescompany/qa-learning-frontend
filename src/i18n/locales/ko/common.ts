@@ -33,7 +33,7 @@ export const common = {
     guest: '게스트',
   },
   footer: {
-    copyright: '© 2025 QA Learning Web. All rights reserved.',
+    copyright: '© 2025 QA Learning 101. All rights reserved.',
     quickLinks: '빠른 링크',
     resources: '리소스',
     company: '회사',
@@ -104,7 +104,7 @@ export const common = {
     offline: '오프라인',
   },
   messages: {
-    welcome: 'QA Learning Web에 오신 것을 환영합니다',
+    welcome: 'QA Learning 101에 오신 것을 환영합니다',
     confirmDelete: '이 항목을 삭제하시겠습니까?',
     saveSuccess: '성공적으로 저장되었습니다',
     saveError: '저장에 실패했습니다',

@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">QA</span>
-            <span className="text-xl font-semibold text-gray-700 dark:text-gray-300">Learning</span>
+            <span className="text-xl font-semibold text-gray-700 dark:text-gray-300">Learning 101</span>
           </Link>
           
           {/* User Menu */}

@@ -13,39 +13,20 @@ const PostListPage: React.FC = () => {
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // Clear and reset localStorage if there's corrupted data
-    const checkAndResetPosts = () => {
-      const stored = localStorage.getItem('localPosts');
-      if (stored) {
-        try {
-          const parsed = JSON.parse(stored);
-          // Check if data is corrupted
-          const isValid = Array.isArray(parsed) && parsed.every((post: any) => 
-            post && typeof post === 'object' && post.id && post.title && post.content
-          );
-          if (!isValid) {
-            console.log('Resetting corrupted posts data');
-            localStorage.removeItem('localPosts');
-          }
-        } catch {
-          console.log('Invalid JSON in localPosts, resetting');
-          localStorage.removeItem('localPosts');
-        }
-      }
-    };
-    
-    checkAndResetPosts();
     fetchPosts();
   }, [fetchPosts]);
 
   const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           post.content.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTag = !selectedTag || post.tags.includes(selectedTag);
+    const postTags = post.tags?.map((tag: any) => typeof tag === 'string' ? tag : tag.name) || [];
+    const matchesTag = !selectedTag || postTags.includes(selectedTag);
     return matchesSearch && matchesTag;
   });
 
-  const allTags = Array.from(new Set(posts.flatMap(post => post.tags)));
+  const allTags = Array.from(new Set(posts.flatMap(post => 
+    post.tags?.map((tag: any) => typeof tag === 'string' ? tag : tag.name) || []
+  )));
 
   if (isLoading) {
     return (
@@ -128,7 +109,7 @@ const PostListPage: React.FC = () => {
                       {post.title}
                     </Link>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(post.createdAt).toLocaleDateString()}
+                      {new Date((post as any).created_at || post.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   
@@ -139,15 +120,15 @@ const PostListPage: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {t('posts.list.by')} {post.author?.name || t('posts.list.unknown')}
+                        {t('posts.list.by')} {(post as any).author?.full_name || (post as any).author?.username || post.author?.name || t('posts.list.unknown')}
                       </span>
                       <div className="flex gap-2">
-                        {post.tags.map(tag => (
+                        {post.tags?.map((tag: any) => (
                           <span
-                            key={tag}
+                            key={typeof tag === 'string' ? tag : tag.id || tag.name}
                             className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
                           >
-                            {tag}
+                            {typeof tag === 'string' ? tag : tag.name}
                           </span>
                         ))}
                       </div>
@@ -167,7 +148,7 @@ const PostListPage: React.FC = () => {
                         }`}
                         title="Like this post"
                       >
-                        ❤️ {post.likes || 0}
+                        ❤️ {(post as any).likes_count || post.likes || 0}
                       </button>
                       <span className="flex items-center">
                         💬 {post.comments?.length || 0}

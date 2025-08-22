@@ -1,5 +1,5 @@
 export const footer = {
-  brand: 'QA Learning Web',
+  brand: 'QA Learning 101',
   description: 'A comprehensive platform for learning and practicing software testing. Master QA skills through hands-on practice with real-world scenarios.',
   quickLinks: 'Quick Links',
   about: 'About',

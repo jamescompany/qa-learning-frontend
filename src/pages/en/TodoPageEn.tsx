@@ -14,13 +14,18 @@ interface TodoFormData {
 
 const TodoPageEn: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { getUserTodos, addTodo, toggleTodo, deleteTodo, updateTodo } = useTodoStore();
+  const { getUserTodos, addTodo, toggleTodo, deleteTodo, updateTodo, fetchTodos, isLoading } = useTodoStore();
   const todos = getUserTodos(); // Get only current user's todos
-  const [isLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'incomplete' | 'completed'>('all');
   const [deletingTodoId, setDeletingTodoId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [todoToDelete, setTodoToDelete] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
   useEffect(() => {
     if (searchParams.get('add') === 'true') {
@@ -37,9 +42,9 @@ const TodoPageEn: React.FC = () => {
       updateTodo(editingTodoId, {
         title: data.title,
         description: data.description,
-        priority: data.priority,
+        priority: (data.priority as any),
         dueDate: data.dueDate,
-      });
+      } as any);
     } else {
       addTodo(data.title, data.description, data.priority, data.dueDate);
     }
@@ -52,11 +57,25 @@ const TodoPageEn: React.FC = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    setDeletingTodoId(id);
-    await new Promise(resolve => setTimeout(resolve, 300));
-    deleteTodo(id);
-    setDeletingTodoId(null);
+  const handleDeleteClick = (id: string) => {
+    setTodoToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (todoToDelete) {
+      setDeletingTodoId(todoToDelete);
+      setShowDeleteModal(false);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      deleteTodo(todoToDelete);
+      setDeletingTodoId(null);
+      setTodoToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setTodoToDelete(null);
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -170,7 +189,7 @@ const TodoPageEn: React.FC = () => {
                 initialData={editingTodo ? {
                   title: editingTodo.title,
                   description: editingTodo.description || '',
-                  priority: editingTodo.priority,
+                  priority: (editingTodo.priority as any) as 'low' | 'medium' | 'high',
                   dueDate: editingTodo.dueDate,
                 } : undefined}
                 onSubmit={handleSubmit}
@@ -201,7 +220,11 @@ const TodoPageEn: React.FC = () => {
                   deletingTodoId === todo.id ? 'opacity-50 scale-95' : ''
                 } ${
                   isOverdue(todo.dueDate) && !todo.completed
-                    ? 'bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700'
+                    ? 'bg-red-50 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 animate-pulse-slow'
+                    : getDaysRemaining(todo.dueDate) === 0 && !todo.completed
+                    ? 'bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-300 dark:border-orange-700'
+                    : getDaysRemaining(todo.dueDate) !== null && getDaysRemaining(todo.dueDate)! <= 3 && !todo.completed
+                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700'
                     : 'bg-white dark:bg-gray-800'
                 }`}
                 data-testid={`todo-item-${todo.id}`}
@@ -220,23 +243,32 @@ const TodoPageEn: React.FC = () => {
                         {todo.description}
                       </p>
                     )}
-                    <div className="mt-2 flex items-center space-x-4 text-sm">
+                    <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                       <span className={`px-2 py-1 rounded-full ${getPriorityColor(todo.priority)}`}>
                         {todo.priority}
                       </span>
-                      {todo.dueDate && (
-                        <span className={`${
-                          isOverdue(todo.dueDate) && !todo.completed
-                            ? 'text-red-600 dark:text-red-400 font-semibold'
+                      {todo.dueDate && !todo.completed && (
+                        <span className={`font-bold ${
+                          isOverdue(todo.dueDate)
+                            ? 'text-red-600 dark:text-red-400'
                             : getDaysRemaining(todo.dueDate) === 0
-                            ? 'text-orange-600 dark:text-orange-400 font-semibold'
+                            ? 'text-orange-600 dark:text-orange-400'
                             : getDaysRemaining(todo.dueDate)! <= 3
                             ? 'text-yellow-600 dark:text-yellow-400'
-                            : 'text-gray-500 dark:text-gray-400'
+                            : 'text-blue-600 dark:text-blue-400'
                         }`}>
-                          Due: {new Date(todo.dueDate).toLocaleDateString()}
-                          {!todo.completed && getDayLabel(todo.dueDate)}
+                          {getDayLabel(todo.dueDate).trim()}
                         </span>
+                      )}
+                      {todo.dueDate && (
+                        <div className="flex items-center gap-1">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {new Date(todo.dueDate).toLocaleDateString()}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -256,7 +288,7 @@ const TodoPageEn: React.FC = () => {
                         className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
                         data-testid={`todo-uncomplete-${todo.id}`}
                       >
-                        Undo
+                        Reopen
                       </button>
                     )}
                     <button
@@ -267,7 +299,7 @@ const TodoPageEn: React.FC = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(todo.id)}
+                      onClick={() => handleDeleteClick(todo.id)}
                       className="text-red-600 hover:text-red-800"
                       data-testid={`todo-delete-${todo.id}`}
                     >
@@ -279,6 +311,36 @@ const TodoPageEn: React.FC = () => {
             ))
           )}
         </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                Confirm Delete
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Are you sure you want to delete this todo? This action cannot be undone.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  data-testid="confirm-delete-button"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={handleDeleteCancel}
+                  className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500"
+                  data-testid="cancel-delete-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

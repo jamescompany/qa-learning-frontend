@@ -1,8 +1,8 @@
 export const auth = {
-  brand: 'QA Learning Web',
+  brand: 'QA Learning 101',
   welcome: '학습 플랫폼에 오신 것을 환영합니다',
   login: {
-    title: '계정에 로그인',
+    title: '로그인',
     email: '이메일',
     emailPlaceholder: '이메일을 입력하세요',
     password: '비밀번호',
@@ -13,7 +13,7 @@ export const auth = {
     forgotPassword: '비밀번호를 잊으셨나요?',
   },
   signup: {
-    title: '계정 만들기',
+    title: '회원 가입',
     fullName: '이름',
     fullNamePlaceholder: '전체 이름을 입력하세요',
     email: '이메일',
@@ -23,6 +23,7 @@ export const auth = {
     confirmPassword: '비밀번호 확인',
     confirmPasswordPlaceholder: '비밀번호를 다시 입력하세요',
     button: '회원가입',
+    creating: '계정 생성 중...',
     hasAccount: '이미 계정이 있으신가요?',
     signIn: '로그인',
     securityNotice: {

@@ -3,7 +3,7 @@ export const terms = {
   lastUpdated: '최종 업데이트: 2025년 8월',
   section1: {
     title: '1. 약관 동의',
-    description: 'QA Learning Web에 접속하거나 사용함으로써, 귀하는 이러한 이용약관에 구속되는 것에 동의합니다.',
+    description: 'QA Learning 101에 접속하거나 사용함으로써, 귀하는 이러한 이용약관에 구속되는 것에 동의합니다.',
   },
   section2: {
     title: '2. 서비스 사용',
@@ -32,7 +32,7 @@ export const terms = {
   },
   section5: {
     title: '5. 지적 재산권',
-    description: '서비스와 그 원본 콘텐츠, 기능 및 기능성은 QA Learning Web의 소유이며 국제 저작권, 상표 및 기타 지적 재산권 법률의 보호를 받습니다.',
+    description: '서비스와 그 원본 콘텐츠, 기능 및 기능성은 QA Learning 101의 소유이며 국제 저작권, 상표 및 기타 지적 재산권 법률의 보호를 받습니다.',
   },
   section6: {
     title: '6. 면책 조항',
@@ -40,7 +40,7 @@ export const terms = {
   },
   section7: {
     title: '7. 책임 제한',
-    description: 'QA Learning Web는 어떠한 경우에도 간접적, 우발적, 특별, 결과적 또는 징벌적 손해에 대해 책임지지 않습니다.',
+    description: 'QA Learning 101는 어떠한 경우에도 간접적, 우발적, 특별, 결과적 또는 징벌적 손해에 대해 책임지지 않습니다.',
   },
   section8: {
     title: '8. 계정 종료',

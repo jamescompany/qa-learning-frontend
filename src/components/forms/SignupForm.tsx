@@ -126,7 +126,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
             : 'bg-blue-600 text-white hover:bg-blue-700'
         }`}
       >
-        {isLoading ? 'Creating account...' : t('auth.signup.button')}
+        {isLoading ? t('auth.signup.creating') : t('auth.signup.button')}
       </button>
     </form>
   );
