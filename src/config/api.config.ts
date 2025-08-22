@@ -5,7 +5,11 @@ const getApiUrl = () => {
   
   // In production, ensure HTTPS is used
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return baseUrl?.replace(/^http:/, 'https:') || 'https://api.qalearningweb.com/api/v1';
+    // Force HTTPS for any configured URL when page is served over HTTPS
+    if (baseUrl) {
+      return baseUrl.replace(/^http:/, 'https:');
+    }
+    return 'https://api.qalearningweb.com/api/v1';
   }
   
   return baseUrl || 'http://localhost:8000/api/v1';
@@ -16,7 +20,11 @@ const getWsUrl = () => {
   
   // In production, ensure WSS is used
   if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return wsUrl?.replace(/^ws:/, 'wss:') || 'wss://api.qalearningweb.com/ws';
+    // Force WSS for any configured URL when page is served over HTTPS
+    if (wsUrl) {
+      return wsUrl.replace(/^ws:/, 'wss:');
+    }
+    return 'wss://api.qalearningweb.com/ws';
   }
   
   return wsUrl || 'ws://localhost:8000/ws';
