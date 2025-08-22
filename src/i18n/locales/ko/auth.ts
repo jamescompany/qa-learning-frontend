@@ -13,7 +13,7 @@ export const auth = {
     forgotPassword: '비밀번호를 잊으셨나요?',
   },
   signup: {
-    title: '계정 만들기',
+    title: '회원 가입',
     fullName: '이름',
     fullNamePlaceholder: '전체 이름을 입력하세요',
     email: '이메일',
@@ -23,6 +23,7 @@ export const auth = {
     confirmPassword: '비밀번호 확인',
     confirmPasswordPlaceholder: '비밀번호를 다시 입력하세요',
     button: '회원가입',
+    creating: '계정 생성 중...',
     hasAccount: '이미 계정이 있으신가요?',
     signIn: '로그인',
     securityNotice: {

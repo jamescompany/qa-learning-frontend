@@ -23,6 +23,7 @@ export const auth = {
     confirmPassword: 'Confirm Password',
     confirmPasswordPlaceholder: 'Confirm your password',
     button: 'Sign Up',
+    creating: 'Creating account...',
     hasAccount: 'Already have an account?',
     signIn: 'Sign in',
     securityNotice: {

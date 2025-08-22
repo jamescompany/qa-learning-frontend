@@ -68,7 +68,7 @@ const LoginPageKo: React.FC = () => {
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             또는{' '}
             <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-              무료로 계정 만들기
+              회원 가입
             </Link>
           </p>
         </div>
