@@ -22,6 +22,7 @@ import { terms } from './terms';
 // Combine all translations
 const ko = {
   ...common,
+  common,
   ...home,
   auth,
   about,
@@ -81,6 +82,15 @@ const ko = {
       confirmButton: '삭제',
       cancelButton: '취소',
     },
+    more: '개 더보기',
+    showAllEvents: '모든 이벤트 보기',
+    allEventsForDay: '{{date}} 이벤트',
+    noEventsForDay: '이 날짜에 예정된 이벤트가 없습니다',
+    view: '보기',
+    edit: '수정',
+    time: '시간',
+    addEventForDay: '이 날짜에 이벤트 추가',
+    events: '이벤트',
   },
   // QAHub mapping for compatibility
   qaHub: qaTranslations.qaHub,

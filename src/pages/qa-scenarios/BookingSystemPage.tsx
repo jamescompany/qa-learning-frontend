@@ -40,6 +40,26 @@ const BookingSystemPage = () => {
   const [guestCount, setGuestCount] = useState(1);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showMyBookings, setShowMyBookings] = useState(false);
+  const [myBookings, setMyBookings] = useState<any[]>([]);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [promoCode, setPromoCode] = useState('');
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+  const [rescheduleBookingId, setRescheduleBookingId] = useState('');
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelBookingId, setCancelBookingId] = useState('');
+  const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [currentReceipt, setCurrentReceipt] = useState<any>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [viewMode, setViewMode] = useState<'month' | 'week'>('week');
+  const [selectedDuration, setSelectedDuration] = useState<number>(0);
+  const [showWaitlistModal, setShowWaitlistModal] = useState(false);
+  const [waitlistEmail, setWaitlistEmail] = useState('');
+  const [filterStaff, setFilterStaff] = useState('all');
+  const [sortPrice, setSortPrice] = useState<'asc' | 'desc' | null>(null);
 
   // Convert prices based on locale
   const convertPrice = (usdPrice: number) => {
@@ -128,13 +148,51 @@ const BookingSystemPage = () => {
 
   const getDaysInMonth = () => {
     const days = [];
-    const today = new Date();
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
+    const startDate = viewMode === 'month' 
+      ? new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
+      : new Date();
+    const daysCount = viewMode === 'month' ? 30 : 14;
+    
+    for (let i = 0; i < daysCount; i++) {
+      const date = new Date(startDate);
+      if (viewMode === 'month') {
+        date.setDate(i + 1);
+      } else {
+        date.setDate(startDate.getDate() + i);
+      }
       days.push(date);
     }
     return days;
+  };
+
+  const handleMonthChange = (direction: 'prev' | 'next') => {
+    const newMonth = new Date(currentMonth);
+    if (direction === 'prev') {
+      newMonth.setMonth(newMonth.getMonth() - 1);
+    } else {
+      newMonth.setMonth(newMonth.getMonth() + 1);
+    }
+    setCurrentMonth(newMonth);
+  };
+
+  const handleJoinWaitlist = () => {
+    if (!waitlistEmail || !validateEmail(waitlistEmail)) {
+      toast.error('Please enter a valid email');
+      return;
+    }
+    toast.success('You\'ve been added to the waitlist. We\'ll notify you when a slot opens up!');
+    setShowWaitlistModal(false);
+    setWaitlistEmail('');
+  };
+
+  const getFilteredTimeSlots = () => {
+    let slots = [...timeSlots];
+    if (sortPrice === 'asc') {
+      slots.sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (sortPrice === 'desc') {
+      slots.sort((a, b) => (b.price || 0) - (a.price || 0));
+    }
+    return slots;
   };
 
   const formatDate = (date: Date) => {
@@ -202,6 +260,26 @@ const BookingSystemPage = () => {
   };
 
   const handleConfirmBooking = () => {
+    // Save booking to localStorage
+    const newBooking = {
+      id: bookingReference,
+      service: services.find(s => s.id === selectedService)?.name,
+      date: selectedDate,
+      time: selectedTime,
+      staff: staff.find(s => s.id === selectedStaff)?.name,
+      customerName,
+      customerEmail,
+      customerPhone,
+      total: calculateTotal(),
+      status: 'confirmed',
+      addons: selectedAddons.map(id => addons.find(a => a.id === id)?.name).filter(Boolean),
+      notes,
+      createdAt: new Date().toISOString()
+    };
+    
+    const existingBookings = JSON.parse(localStorage.getItem('qa-bookings') || '[]');
+    localStorage.setItem('qa-bookings', JSON.stringify([...existingBookings, newBooking]));
+    
     toast.success(t('bookingSystem.messages.bookingConfirmed', { reference: bookingReference }));
     setShowConfirmModal(false);
     // Reset form
@@ -215,6 +293,9 @@ const BookingSystemPage = () => {
     setCustomerPhone('');
     setNotes('');
     setSelectedAddons([]);
+    setTermsAccepted(false);
+    setPromoCode('');
+    setPromoDiscount(0);
   };
 
   const calculateTotal = () => {
@@ -224,7 +305,75 @@ const BookingSystemPage = () => {
       const addon = addons.find(a => a.id === addonId);
       return sum + (addon?.price || 0);
     }, 0);
-    return basePrice + addonPrice;
+    const subtotal = basePrice + addonPrice;
+    const discount = subtotal * (promoDiscount / 100);
+    return subtotal - discount;
+  };
+
+  const handleApplyPromoCode = () => {
+    // Simulated promo codes
+    const promoCodes: Record<string, number> = {
+      'SAVE10': 10,
+      'SAVE20': 20,
+      'FIRSTTIME': 15,
+      'WELCOME': 25
+    };
+    
+    const discount = promoCodes[promoCode.toUpperCase()];
+    if (discount) {
+      setPromoDiscount(discount);
+      toast.success(`Promo code applied! ${discount}% off`);
+    } else {
+      toast.error('Invalid promo code');
+      setPromoDiscount(0);
+    }
+  };
+
+  const handleReschedule = (bookingId: string) => {
+    setRescheduleBookingId(bookingId);
+    setShowRescheduleModal(true);
+  };
+
+  const confirmReschedule = () => {
+    const bookings = JSON.parse(localStorage.getItem('qa-bookings') || '[]');
+    const updatedBookings = bookings.map((b: any) => 
+      b.id === rescheduleBookingId ? { ...b, status: 'rescheduled', date: selectedDate, time: selectedTime } : b
+    );
+    localStorage.setItem('qa-bookings', JSON.stringify(updatedBookings));
+    setMyBookings(updatedBookings);
+    toast.success('Appointment rescheduled successfully');
+    setShowRescheduleModal(false);
+    setRescheduleBookingId('');
+  };
+
+  const handleCancelBooking = (bookingId: string) => {
+    setCancelBookingId(bookingId);
+    setShowCancelModal(true);
+  };
+
+  const confirmCancellation = () => {
+    const bookings = JSON.parse(localStorage.getItem('qa-bookings') || '[]');
+    const updatedBookings = bookings.map((b: any) => 
+      b.id === cancelBookingId ? { ...b, status: 'cancelled' } : b
+    );
+    localStorage.setItem('qa-bookings', JSON.stringify(updatedBookings));
+    setMyBookings(updatedBookings);
+    toast.success('Booking cancelled successfully');
+    setShowCancelModal(false);
+    setCancelBookingId('');
+  };
+
+  const handleShowReceipt = (booking: any) => {
+    setCurrentReceipt(booking);
+    setShowReceiptModal(true);
+  };
+
+  const handlePrintReceipt = () => {
+    window.print();
+  };
+
+  const handleEmailReceipt = () => {
+    toast.success('Receipt has been emailed to ' + (currentReceipt?.customerEmail || customerEmail));
   };
 
   const toggleAddon = (addonId: string) => {
@@ -253,10 +402,23 @@ const BookingSystemPage = () => {
               <p className="text-sm text-gray-500 dark:text-gray-400">{t('bookingSystem.header.subtitle')}</p>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="text-blue-600 dark:text-blue-400 hover:underline" data-testid="view-bookings-btn">
+              <button 
+                onClick={() => {
+                  // Load saved bookings from localStorage
+                  const savedBookings = JSON.parse(localStorage.getItem('qa-bookings') || '[]');
+                  setMyBookings(savedBookings);
+                  setShowMyBookings(true);
+                }}
+                className="text-blue-600 dark:text-blue-400 hover:underline" 
+                data-testid="view-bookings-btn"
+              >
                 {t('bookingSystem.header.myBookings')}
               </button>
-              <button className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" data-testid="help-btn">
+              <button 
+                onClick={() => setShowHelpModal(true)}
+                className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" 
+                data-testid="help-btn"
+              >
                 {t('bookingSystem.header.help')}
               </button>
             </div>
@@ -444,9 +606,54 @@ const BookingSystemPage = () => {
                   
                   {/* Calendar */}
                   <div className="mb-6">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('bookingSystem.dateTimeSelection.chooseDate')}</h3>
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100">{t('bookingSystem.dateTimeSelection.chooseDate')}</h3>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}
+                          className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                          data-testid="view-mode-toggle"
+                        >
+                          {viewMode === 'week' ? 'Month View' : 'Week View'}
+                        </button>
+                        {viewMode === 'month' && (
+                          <>
+                            <button
+                              onClick={() => handleMonthChange('prev')}
+                              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                              data-testid="prev-month"
+                            >
+                              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                            </button>
+                            <span className="px-3 py-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                            </span>
+                            <button
+                              onClick={() => handleMonthChange('next')}
+                              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+                              data-testid="next-month"
+                            >
+                              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
                     <div className="grid grid-cols-7 gap-2">
-                      {getDaysInMonth().slice(0, 14).map((date, index) => {
+                      {viewMode === 'week' && (
+                        <>
+                          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                            <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-1">
+                              {day}
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      {getDaysInMonth().map((date, index) => {
                         const dateStr = date.toISOString().split('T')[0];
                         const isSelected = selectedDate === dateStr;
                         const isSunday = date.getDay() === 0;
@@ -485,13 +692,36 @@ const BookingSystemPage = () => {
                   {/* Time Slots */}
                   {selectedDate && (
                     <div>
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{t('bookingSystem.dateTimeSelection.availableTimeSlots')}</h3>
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">{t('bookingSystem.dateTimeSelection.availableTimeSlots')}</h3>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setSortPrice(sortPrice === 'asc' ? 'desc' : sortPrice === 'desc' ? null : 'asc')}
+                            className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                            data-testid="sort-price"
+                          >
+                            Price {sortPrice === 'asc' ? '↑' : sortPrice === 'desc' ? '↓' : '↕'}
+                          </button>
+                        </div>
+                      </div>
                       <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                        {timeSlots.map((slot) => (
+                        {getFilteredTimeSlots().map((slot) => (
                           <button
                             key={slot.time}
-                            onClick={() => slot.available && setSelectedTime(slot.time)}
-                            disabled={!slot.available}
+                            onClick={() => {
+                              if (slot.available) {
+                                setSelectedTime(slot.time);
+                                // Calculate duration based on selected service
+                                const service = services.find(s => s.id === selectedService);
+                                if (service) {
+                                  const duration = parseInt(service.duration) || 30;
+                                  setSelectedDuration(duration);
+                                }
+                              } else {
+                                setShowWaitlistModal(true);
+                              }
+                            }}
+                            disabled={false}
                             className={`p-2 rounded-lg text-sm transition-all ${
                               selectedTime === slot.time
                                 ? 'bg-blue-600 dark:bg-blue-500 text-white'
@@ -524,8 +754,30 @@ const BookingSystemPage = () => {
               {currentStep === 3 && (
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">{t('bookingSystem.staffSelection.title')}</h2>
+                  <div className="mb-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Filter by specialty:</label>
+                    <select
+                      value={filterStaff}
+                      onChange={(e) => setFilterStaff(e.target.value)}
+                      className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      data-testid="filter-staff"
+                    >
+                      <option value="all">All Specialists</option>
+                      <option value="color">Color Specialist</option>
+                      <option value="senior">Senior Stylist</option>
+                      <option value="designer">Hair Designer</option>
+                    </select>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {staff.map((member) => (
+                    {staff
+                      .filter(member => {
+                        if (filterStaff === 'all') return true;
+                        if (filterStaff === 'color') return member.specialty.includes('Color');
+                        if (filterStaff === 'senior') return member.specialty.includes('Senior');
+                        if (filterStaff === 'designer') return member.specialty.includes('Designer');
+                        return true;
+                      })
+                      .map((member) => (
                       <div
                         key={member.id}
                         onClick={() => setSelectedStaff(member.id)}
@@ -658,6 +910,62 @@ const BookingSystemPage = () => {
                         data-testid="special-requests"
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {t('bookingSystem.customerDetails.paymentMethod') || 'Payment Method'}
+                      </label>
+                      <select
+                        value={paymentMethod}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        data-testid="payment-method"
+                      >
+                        <option value="credit">Credit Card</option>
+                        <option value="debit">Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="cash">Pay at Venue</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Promo Code
+                      </label>
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={promoCode}
+                          onChange={(e) => setPromoCode(e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                          placeholder="Enter promo code"
+                          data-testid="promo-code"
+                        />
+                        <button
+                          onClick={handleApplyPromoCode}
+                          className="px-4 py-2 bg-gray-600 dark:bg-gray-500 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600"
+                          data-testid="apply-promo-btn"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                      {promoDiscount > 0 && (
+                        <p className="text-sm text-green-600 dark:text-green-400 mt-1">
+                          {promoDiscount}% discount applied!
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-start">
+                      <input
+                        type="checkbox"
+                        id="reminder"
+                        checked={reminderEnabled}
+                        onChange={(e) => setReminderEnabled(e.target.checked)}
+                        className="mt-1 mr-2 w-4 h-4 text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2"
+                        data-testid="reminder-checkbox"
+                      />
+                      <label htmlFor="reminder" className="text-sm text-gray-600 dark:text-gray-400">
+                        Send me appointment reminders via email and SMS
+                      </label>
+                    </div>
                     <div className="flex items-start">
                       <input
                         type="checkbox"
@@ -759,6 +1067,22 @@ const BookingSystemPage = () => {
                   )}
                   
                   <div className="border-t dark:border-gray-600 pt-3">
+                    {promoDiscount > 0 && (
+                      <>
+                        <div className="flex justify-between text-sm mb-2">
+                          <p className="text-gray-500 dark:text-gray-400">Subtotal</p>
+                          <p className="text-gray-900 dark:text-gray-100">
+                            {formatCurrency((services.find(s => s.id === selectedService)?.price || 0) + selectedAddons.reduce((sum, id) => sum + (addons.find(a => a.id === id)?.price || 0), 0), i18n.language)}
+                          </p>
+                        </div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <p className="text-green-600 dark:text-green-400">Discount ({promoDiscount}%)</p>
+                          <p className="text-green-600 dark:text-green-400">
+                            -{formatCurrency(((services.find(s => s.id === selectedService)?.price || 0) + selectedAddons.reduce((sum, id) => sum + (addons.find(a => a.id === id)?.price || 0), 0)) * (promoDiscount / 100), i18n.language)}
+                          </p>
+                        </div>
+                      </>
+                    )}
                     <div className="flex justify-between">
                       <p className="text-gray-500 dark:text-gray-400">{t('bookingSystem.summary.total')}</p>
                       <p className="text-xl font-bold text-blue-600 dark:text-blue-400">
@@ -785,6 +1109,297 @@ const BookingSystemPage = () => {
           </div>
         </div>
       </div>
+
+      {/* My Bookings Modal */}
+      {showMyBookings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto" data-testid="my-bookings-modal">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">My Bookings</h3>
+              <button
+                onClick={() => setShowMyBookings(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {myBookings.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-8">No bookings found</p>
+            ) : (
+              <div className="space-y-4">
+                {myBookings.map((booking) => (
+                  <div key={booking.id} className="border dark:border-gray-700 rounded-lg p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-gray-900 dark:text-gray-100">
+                          {booking.service}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {new Date(booking.date).toLocaleDateString()} at {booking.time}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          with {booking.staff}
+                        </p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mt-1">
+                          Total: {formatCurrency(booking.total, i18n.language)}
+                        </p>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        <span className={`px-2 py-1 text-xs rounded ${booking.status === 'confirmed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'}`}>
+                          {booking.status}
+                        </span>
+                        {booking.status === 'confirmed' && (
+                          <>
+                            <button
+                              onClick={() => handleReschedule(booking.id)}
+                              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                              data-testid={`reschedule-${booking.id}`}
+                            >
+                              Reschedule
+                            </button>
+                            <button
+                              onClick={() => handleCancelBooking(booking.id)}
+                              className="text-sm text-red-600 dark:text-red-400 hover:underline"
+                              data-testid={`cancel-${booking.id}`}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        )}
+                        <button
+                          onClick={() => handleShowReceipt(booking)}
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:underline"
+                          data-testid={`receipt-${booking.id}`}
+                        >
+                          View Receipt
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowMyBookings(false)}
+                className="px-4 py-2 bg-gray-600 dark:bg-gray-500 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="help-modal">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Help & Support</h3>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Frequently Asked Questions</h4>
+                <div className="space-y-2 text-sm">
+                  <details className="cursor-pointer">
+                    <summary className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">How do I cancel my booking?</summary>
+                    <p className="mt-2 text-gray-600 dark:text-gray-400 pl-4">You can cancel your booking up to 24 hours before your appointment through the "My Bookings" section.</p>
+                  </details>
+                  <details className="cursor-pointer">
+                    <summary className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">Can I reschedule my appointment?</summary>
+                    <p className="mt-2 text-gray-600 dark:text-gray-400 pl-4">Yes, you can reschedule your appointment anytime through the "My Bookings" section.</p>
+                  </details>
+                  <details className="cursor-pointer">
+                    <summary className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">What payment methods are accepted?</summary>
+                    <p className="mt-2 text-gray-600 dark:text-gray-400 pl-4">We accept credit cards, debit cards, PayPal, and cash payments at the venue.</p>
+                  </details>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Contact Us</h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Phone: 1-800-BOOKING<br />
+                  Email: support@bookingsystem.com<br />
+                  Live Chat: Available 24/7
+                </p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  toast.success('Live chat opened');
+                  setShowHelpModal(false);
+                }}
+                className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
+                data-testid="live-chat-btn"
+              >
+                Start Live Chat
+              </button>
+              <button
+                onClick={() => setShowHelpModal(false)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Modal */}
+      {showRescheduleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="reschedule-modal">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Reschedule Appointment</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Please select a new date and time for your appointment.
+            </p>
+            <div className="space-y-4">
+              <input
+                type="date"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                min={new Date().toISOString().split('T')[0]}
+              />
+              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <option>Select time</option>
+                {timeSlots.filter(s => s.available).map(slot => (
+                  <option key={slot.time} value={slot.time}>{slot.time}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowRescheduleModal(false)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmReschedule}
+                className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
+                data-testid="confirm-reschedule"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Booking Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="cancel-modal">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Cancel Booking</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Are you sure you want to cancel this booking? This action cannot be undone.
+            </p>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-4">
+              <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                ⚠️ Cancellation Policy: Free cancellation up to 24 hours before appointment. Late cancellations may incur a fee.
+              </p>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+              >
+                Keep Booking
+              </button>
+              <button
+                onClick={confirmCancellation}
+                className="px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg hover:bg-red-700 dark:hover:bg-red-600"
+                data-testid="confirm-cancel"
+              >
+                Yes, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Receipt Modal */}
+      {showReceiptModal && currentReceipt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="receipt-modal">
+            <div className="text-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Booking Receipt</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Reference: {currentReceipt.id}</p>
+            </div>
+            
+            <div className="border-t border-b dark:border-gray-700 py-4 space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Service:</span>
+                <span className="text-gray-900 dark:text-gray-100">{currentReceipt.service}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Date:</span>
+                <span className="text-gray-900 dark:text-gray-100">{new Date(currentReceipt.date).toLocaleDateString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Time:</span>
+                <span className="text-gray-900 dark:text-gray-100">{currentReceipt.time}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Specialist:</span>
+                <span className="text-gray-900 dark:text-gray-100">{currentReceipt.staff}</span>
+              </div>
+              {currentReceipt.addons && currentReceipt.addons.length > 0 && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Add-ons:</span>
+                  <span className="text-gray-900 dark:text-gray-100">{currentReceipt.addons.join(', ')}</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="py-4">
+              <div className="flex justify-between font-bold">
+                <span className="text-gray-900 dark:text-gray-100">Total Paid:</span>
+                <span className="text-blue-600 dark:text-blue-400">{formatCurrency(currentReceipt.total, i18n.language)}</span>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleEmailReceipt}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+                data-testid="email-receipt"
+              >
+                Email Receipt
+              </button>
+              <button
+                onClick={handlePrintReceipt}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+                data-testid="print-receipt"
+              >
+                Print
+              </button>
+              <button
+                onClick={() => setShowReceiptModal(false)}
+                className="px-4 py-2 bg-gray-600 dark:bg-gray-500 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Modal */}
       {showConfirmModal && (
@@ -825,6 +1440,44 @@ const BookingSystemPage = () => {
                   {t('bookingSystem.confirmationModal.print')}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Waitlist Modal */}
+      {showWaitlistModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full" data-testid="waitlist-modal">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Join Waitlist</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              This time slot is currently unavailable. Join our waitlist and we'll notify you if it becomes available.
+            </p>
+            <input
+              type="email"
+              value={waitlistEmail}
+              onChange={(e) => setWaitlistEmail(e.target.value)}
+              placeholder="Enter your email"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-4"
+              data-testid="waitlist-email"
+            />
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowWaitlistModal(false);
+                  setWaitlistEmail('');
+                }}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleJoinWaitlist}
+                className="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
+                data-testid="join-waitlist"
+              >
+                Join Waitlist
+              </button>
             </div>
           </div>
         </div>

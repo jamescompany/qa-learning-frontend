@@ -22,6 +22,7 @@ import { terms } from './terms';
 // Combine all translations
 const en = {
   ...common,
+  common,
   ...home,
   auth,
   about,
@@ -81,6 +82,15 @@ const en = {
       confirmButton: 'Delete',
       cancelButton: 'Cancel',
     },
+    more: 'more',
+    showAllEvents: 'Show all events',
+    allEventsForDay: 'Events for {{date}}',
+    noEventsForDay: 'No events scheduled for this day',
+    view: 'View',
+    edit: 'Edit',
+    time: 'Time',
+    addEventForDay: 'Add Event for This Day',
+    events: 'Events',
   },
   // QAHub mapping for compatibility
   qaHub: qaTranslations.qaHub,

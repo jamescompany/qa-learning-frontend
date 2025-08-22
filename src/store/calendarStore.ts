@@ -1,88 +1,130 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { useAuthStore } from './authStore';
-
-export interface CalendarEvent {
-  id: string;
-  userId: string; // 사용자별 구분을 위한 필드 추가
-  title: string;
-  date: string;
-  type: 'todo' | 'meeting' | 'deadline';
-  time?: string;
-  description?: string;
-}
+import calendarService, { CalendarEvent } from '../services/calendar.service';
 
 interface CalendarStore {
   events: CalendarEvent[];
-  addEvent: (event: Omit<CalendarEvent, 'id' | 'userId'>) => void;
-  updateEvent: (id: string, updates: Partial<CalendarEvent>) => void;
-  deleteEvent: (id: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  fetchEvents: (startDate?: Date, endDate?: Date) => Promise<void>;
+  addEvent: (event: Omit<CalendarEvent, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+  updateEvent: (id: string, updates: Partial<CalendarEvent>) => Promise<void>;
+  deleteEvent: (id: string) => Promise<void>;
   getEventsByDate: (date: string) => CalendarEvent[];
-  getUserEvents: () => CalendarEvent[]; // 현재 사용자의 이벤트만 반환
+  getEventsForMonth: (year: number, month: number) => Promise<void>;
+  getUserEvents: () => CalendarEvent[];
 }
 
 export const useCalendarStore = create<CalendarStore>()(
-  persist(
-    (set, get) => ({
+  (set, get) => ({
       events: [],
+      isLoading: false,
+      error: null,
       
-      addEvent: (event) => {
+      fetchEvents: async (startDate?: Date, endDate?: Date) => {
         const user = useAuthStore.getState().user;
         if (!user) return;
         
-        const newEvent: CalendarEvent = {
-          ...event,
-          id: Date.now().toString(),
-          userId: user.id,
-        };
-        
-        set((state) => ({
-          events: [...state.events, newEvent],
-        }));
+        set({ isLoading: true, error: null });
+        try {
+          const response = await calendarService.getEvents(startDate, endDate);
+          set({ events: response.events, isLoading: false });
+        } catch (error: any) {
+          console.error('Failed to fetch events:', error);
+          set({ error: error.message || 'Failed to fetch events', isLoading: false });
+        }
       },
       
-      updateEvent: (id, updates) => {
+      addEvent: async (event) => {
         const user = useAuthStore.getState().user;
         if (!user) return;
         
-        set((state) => ({
-          events: state.events.map((event) =>
-            event.id === id && event.userId === user.id 
-              ? { ...event, ...updates } 
-              : event
-          ),
-        }));
+        set({ error: null });
+        try {
+          const newEvent = await calendarService.createEvent({
+            title: event.title,
+            description: event.description,
+            start: event.start,
+            end: event.end,
+            allDay: event.allDay,
+            color: event.color,
+            location: event.location,
+            reminder: event.reminder,
+          });
+          
+          set((state) => ({
+            events: [...state.events, newEvent],
+          }));
+        } catch (error: any) {
+          console.error('Failed to create event:', error);
+          set({ error: error.message || 'Failed to create event' });
+          throw error;
+        }
       },
       
-      deleteEvent: (id) => {
+      updateEvent: async (id, updates) => {
         const user = useAuthStore.getState().user;
         if (!user) return;
         
-        set((state) => ({
-          events: state.events.filter((event) => 
-            !(event.id === id && event.userId === user.id)
-          ),
-        }));
+        set({ error: null });
+        try {
+          const updatedEvent = await calendarService.updateEvent(id, updates);
+          
+          set((state) => ({
+            events: state.events.map((event) =>
+              event.id === id ? updatedEvent : event
+            ),
+          }));
+        } catch (error: any) {
+          console.error('Failed to update event:', error);
+          set({ error: error.message || 'Failed to update event' });
+          throw error;
+        }
+      },
+      
+      deleteEvent: async (id) => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
+        set({ error: null });
+        try {
+          await calendarService.deleteEvent(id);
+          
+          set((state) => ({
+            events: state.events.filter((event) => event.id !== id),
+          }));
+        } catch (error: any) {
+          console.error('Failed to delete event:', error);
+          set({ error: error.message || 'Failed to delete event' });
+          throw error;
+        }
       },
       
       getEventsByDate: (date) => {
-        const user = useAuthStore.getState().user;
-        if (!user) return [];
-        
         return get().events.filter(
-          (event) => event.date === date && event.userId === user.id
+          (event) => {
+            const eventDate = new Date(event.start).toISOString().split('T')[0];
+            return eventDate === date;
+          }
         );
       },
       
-      getUserEvents: () => {
+      getEventsForMonth: async (year, month) => {
         const user = useAuthStore.getState().user;
-        if (!user) return [];
+        if (!user) return;
         
-        return get().events.filter(event => event.userId === user.id);
+        set({ isLoading: true, error: null });
+        try {
+          const events = await calendarService.getEventsForMonth(year, month);
+          set({ events, isLoading: false });
+        } catch (error: any) {
+          console.error('Failed to fetch month events:', error);
+          set({ error: error.message || 'Failed to fetch month events', isLoading: false });
+        }
       },
-    }),
-    {
-      name: 'calendar-storage',
-    }
-  )
+      
+      getUserEvents: () => {
+        return get().events;
+      },
+    })
 );

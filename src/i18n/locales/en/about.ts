@@ -1,8 +1,8 @@
 export const about = {
-  title: 'About QA Learning Web',
+  title: 'About QA Learning 101',
   mission: {
     title: 'Our Mission',
-    description: 'QA Learning Web is dedicated to empowering quality assurance professionals to enhance their skills, share knowledge, and collaborate on testing best practices. We believe in the power of continuous learning and community-driven education.',
+    description: 'QA Learning 101 is dedicated to empowering quality assurance professionals to enhance their skills, share knowledge, and collaborate on testing best practices. We believe in the power of continuous learning and community-driven education.',
   },
   features: {
     learning: {

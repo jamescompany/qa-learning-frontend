@@ -17,7 +17,8 @@ interface DashboardStats {
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuthStore();
-  const todoStats = useTodoStore((state) => state.getTodoStats());
+  const { getTodoStats, fetchTodos, isLoading: todosLoading } = useTodoStore();
+  const todoStats = getTodoStats();
   const { posts, fetchPosts, isLoading: postsLoading } = usePostStore();
   const [stats, setStats] = useState<DashboardStats>({
     totalPosts: 0,
@@ -33,9 +34,12 @@ const DashboardPage: React.FC = () => {
   }
 
   useEffect(() => {
-    // Always fetch posts on mount to ensure we have the latest data
+    // Always fetch posts and todos on mount to ensure we have the latest data
     const loadData = async () => {
-      await fetchPosts();
+      await Promise.all([
+        fetchPosts(),
+        fetchTodos()
+      ]);
       setIsInitialized(true);
     };
     loadData();
@@ -51,7 +55,7 @@ const DashboardPage: React.FC = () => {
     });
   }, [posts.length, todoStats.total, todoStats.completed]);
 
-  if (!isInitialized || postsLoading) {
+  if (!isInitialized || postsLoading || todosLoading) {
     return (
       <DashboardLayout>
         <div className="flex justify-center items-center min-h-[60vh]">
@@ -76,84 +80,84 @@ const DashboardPage: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.totalPosts')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.totalPosts}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 h-5">{t('dashboard.stats.totalPosts')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100 h-9">{stats.totalPosts}</p>
               </div>
-              <div className="text-blue-500">
+              <div className="text-blue-500 flex-shrink-0 ml-4">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 h-8 flex items-center">
               <Link to="/posts" className="text-sm text-blue-600 hover:text-blue-500">
                 {t('dashboard.stats.viewAllPosts')}
               </Link>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.totalTodos')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.totalTodos}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 h-5">{t('dashboard.stats.totalTodos')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100 h-9">{stats.totalTodos}</p>
               </div>
-              <div className="text-green-500">
+              <div className="text-green-500 flex-shrink-0 ml-4">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 h-8 flex items-center">
               <Link to="/todos" className="text-sm text-blue-600 hover:text-blue-500">
                 {t('dashboard.stats.manageTodos')}
               </Link>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.completed')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.completedTodos}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 h-5">{t('dashboard.stats.completed')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100 h-9">{stats.completedTodos}</p>
               </div>
-              <div className="text-purple-500">
+              <div className="text-purple-500 flex-shrink-0 ml-4">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
-            <div className="mt-4">
-              <div className="flex items-center">
-                <div className="flex-1 bg-gray-200 rounded-full h-2">
+            <div className="mt-4 h-8">
+              <div className="flex items-center h-full">
+                <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <div 
-                    className="bg-purple-500 h-2 rounded-full" 
+                    className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
                     style={{ width: stats.totalTodos > 0 ? `${(stats.completedTodos / stats.totalTodos) * 100}%` : '0%' }}
                   />
                 </div>
-                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 w-10 text-right">
                   {stats.totalTodos > 0 ? Math.round((stats.completedTodos / stats.totalTodos) * 100) : 0}%
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{t('dashboard.stats.recentActivity')}</p>
-                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">{stats.recentActivity}</p>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 h-full flex flex-col">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 h-5">{t('dashboard.stats.recentActivity')}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100 h-9">{stats.recentActivity}</p>
               </div>
-              <div className="text-orange-500">
+              <div className="text-orange-500 flex-shrink-0 ml-4">
                 <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 h-8 flex items-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.stats.lastDays', { days: 30 })}</p>
             </div>
           </div>

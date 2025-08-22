@@ -321,10 +321,53 @@ class AuthService {
     }
   }
 
+  async getAllUsers(): Promise<User[]> {
+    // Mock implementation - in production, this would call the API
+    const mockUsers: User[] = [
+      { 
+        id: 'user1', 
+        email: 'user@example.com', 
+        username: 'John Doe',
+        name: 'John Doe',
+        role: UserRole.USER 
+      },
+      { 
+        id: 'user2', 
+        email: 'admin@example.com', 
+        username: 'Jane Admin',
+        name: 'Jane Admin',
+        role: UserRole.ADMIN 
+      },
+      { 
+        id: 'user3', 
+        email: 'test@test.com', 
+        username: 'Test User',
+        name: 'Test User',
+        role: UserRole.USER 
+      },
+      { 
+        id: 'user4', 
+        email: 'james@example.com', 
+        username: 'James Kang',
+        name: 'James Kang',
+        role: UserRole.USER 
+      },
+      { 
+        id: 'user5', 
+        email: 'sarah@example.com', 
+        username: 'Sarah Lee',
+        name: 'Sarah Lee',
+        role: UserRole.USER 
+      }
+    ];
+    
+    return mockUsers;
+  }
+
   async requestPasswordReset(email: string): Promise<{ success: boolean; tempPassword?: string; message?: string }> {
     try {
       // Try API first with additional error handling for Fortinet issues
-      await api.post('/auth/password-reset/request', { email }).catch((err) => {
+      const response = await api.post('/auth/password-reset', { email }).catch((err) => {
         // Handle network errors specifically
         if (err.code === 'ERR_NETWORK' || err.code === 'ERR_CERT_AUTHORITY_INVALID' || err.message?.includes('Fortinet')) {
           console.warn('Network/Certificate error detected, likely Fortinet interference');
@@ -332,6 +375,16 @@ class AuthService {
         }
         throw err;
       });
+      
+      // Check if API returned a temporary password (for learning purposes)
+      if (response.data?.tempPassword) {
+        return { 
+          success: true, 
+          tempPassword: response.data.tempPassword,
+          message: 'Temporary password generated for learning purposes'
+        };
+      }
+      
       return { success: true, message: 'Password reset email sent successfully' };
     } catch (error: any) {
       // Check if this is a Fortinet-specific error

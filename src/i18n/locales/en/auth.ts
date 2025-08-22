@@ -1,5 +1,5 @@
 export const auth = {
-  brand: 'QA Learning Web',
+  brand: 'QA Learning 101',
   welcome: 'Welcome to your learning platform',
   login: {
     title: 'Sign in to your account',

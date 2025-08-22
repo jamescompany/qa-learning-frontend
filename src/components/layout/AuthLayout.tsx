@@ -15,7 +15,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           <Link to="/" className="inline-block">
             <h1 className="text-3xl font-bold transition-colors">
               <span className="text-blue-600 dark:text-blue-400">QA</span>
-              <span className="text-gray-900 dark:text-gray-100"> Learning Web</span>
+              <span className="text-gray-900 dark:text-gray-100"> Learning 101</span>
             </h1>
           </Link>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">

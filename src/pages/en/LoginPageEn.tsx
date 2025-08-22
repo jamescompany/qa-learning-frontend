@@ -59,7 +59,7 @@ const LoginPageEn: React.FC = () => {
           <Link to="/" className="block text-center">
             <h1 className="text-3xl font-bold transition-colors">
               <span className="text-blue-600 dark:text-blue-400">QA</span>
-              <span className="text-gray-900 dark:text-gray-100"> Learning Web</span>
+              <span className="text-gray-900 dark:text-gray-100"> Learning 101</span>
             </h1>
           </Link>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">

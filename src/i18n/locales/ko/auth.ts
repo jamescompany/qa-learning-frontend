@@ -1,8 +1,8 @@
 export const auth = {
-  brand: 'QA Learning Web',
+  brand: 'QA Learning 101',
   welcome: '학습 플랫폼에 오신 것을 환영합니다',
   login: {
-    title: '계정에 로그인',
+    title: '로그인',
     email: '이메일',
     emailPlaceholder: '이메일을 입력하세요',
     password: '비밀번호',

@@ -21,6 +21,7 @@ import DashboardPage from './pages/DashboardPage'
 import PostListPage from './pages/PostListPage'
 import PostDetailPage from './pages/PostDetailPage'
 import PostCreatePage from './pages/PostCreatePage'
+import PostEditPage from './pages/PostEditPage'
 import TodoPageKo from './pages/ko/TodoPageKo'
 import TodoPageEn from './pages/en/TodoPageEn'
 import ChatPage from './pages/ChatPage'
@@ -89,8 +90,9 @@ function AppContent() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/posts" element={<PostListPage />} />
-            <Route path="/posts/:id" element={<PostDetailPage />} />
             <Route path="/posts/create" element={<PostCreatePage />} />
+            <Route path="/posts/:id" element={<PostDetailPage />} />
+            <Route path="/posts/:id/edit" element={<PostEditPage />} />
             <Route path="/todos" element={<LanguageRouter ko={TodoPageKo} en={TodoPageEn} />} />
             <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/kanban" element={<KanbanPage />} />

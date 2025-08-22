@@ -1,5 +1,5 @@
 export const footer = {
-  brand: 'QA Learning Web',
+  brand: 'QA Learning 101',
   description: '소프트웨어 테스팅을 배우고 연습할 수 있는 종합 플랫폼입니다. 실제 시나리오를 통한 실습으로 QA 기술을 마스터하세요.',
   quickLinks: '빠른 링크',
   about: '소개',

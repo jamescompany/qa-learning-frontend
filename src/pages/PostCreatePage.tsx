@@ -15,12 +15,42 @@ const PostCreatePage: React.FC = () => {
   const handleSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-      await createPost(data);
+      const postData = {
+        ...data,
+        status: data.published ? 'published' : 'draft'
+      };
+      delete postData.published;
+      
+      console.log('Sending post data:', postData);
+      
+      await createPost(postData);
       toast.success(t('posts.create.success'));
       navigate('/posts');
     } catch (error: any) {
       console.error('Failed to create post:', error);
-      toast.error(error.message || t('posts.create.error'));
+      console.error('Error response:', error.response?.data);
+      
+      // Handle validation errors from backend
+      let errorMessage = t('posts.create.error');
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail;
+        if (Array.isArray(detail) && detail.length > 0) {
+          // Extract error messages from validation errors
+          errorMessage = detail.map((err: any) => {
+            if (typeof err === 'string') return err;
+            if (err.msg) return err.msg;
+            if (err.message) return err.message;
+            return JSON.stringify(err);
+          }).join(', ');
+          console.error('Validation errors:', detail);
+        } else if (typeof detail === 'string') {
+          errorMessage = detail;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

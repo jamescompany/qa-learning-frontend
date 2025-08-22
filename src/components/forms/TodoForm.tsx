@@ -22,11 +22,24 @@ const TodoForm: React.FC<TodoFormProps> = ({
   isLoading = false 
 }) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<TodoData>(initialData || {
-    title: '',
-    description: '',
-    priority: 'medium',
-    dueDate: '',
+  
+  // Convert date to YYYY-MM-DD format for input field
+  const formatDateForInput = (dateString?: string) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '';
+      return date.toISOString().split('T')[0];
+    } catch {
+      return '';
+    }
+  };
+  
+  const [formData, setFormData] = useState<TodoData>({
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    priority: initialData?.priority || 'medium',
+    dueDate: formatDateForInput(initialData?.dueDate),
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
@@ -61,6 +74,7 @@ const TodoForm: React.FC<TodoFormProps> = ({
       return;
     }
 
+    console.log('TodoForm submitting:', formData);
     onSubmit(formData);
   };
 
