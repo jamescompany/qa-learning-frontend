@@ -50,7 +50,8 @@ export const about = {
       submit: 'Send Message',
       submitting: 'Sending...',
       fillAllFields: 'Please fill in all fields',
-      successMessage: 'Your message has been sent successfully! We\'ll get back to you soon.'
+      successMessage: 'Your message has been sent successfully! We\'ll get back to you soon.',
+      errorMessage: 'Failed to send message. Please try again later.'
     },
     info: {
       title: 'Contact Information',

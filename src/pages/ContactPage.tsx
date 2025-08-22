@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import FormInput from '../components/forms/FormInput';
 import toast from 'react-hot-toast';
+import { contactService } from '../services/contact.service';
 
 const ContactPage: React.FC = () => {
   const { t } = useTranslation();
@@ -29,17 +30,30 @@ const ContactPage: React.FC = () => {
 
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      toast.success(t('about.contact.form.successMessage'));
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: '',
-      });
+    try {
+      const response = await contactService.sendMessage(formData);
+      
+      if (response.success) {
+        toast.success(response.message || t('about.contact.form.successMessage'));
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+      } else {
+        toast.error(response.message || t('about.contact.form.errorMessage'));
+      }
+    } catch (error: any) {
+      console.error('Error sending contact message:', error);
+      toast.error(
+        error.response?.data?.detail || 
+        error.message || 
+        t('about.contact.form.errorMessage')
+      );
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (

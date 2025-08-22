@@ -50,7 +50,8 @@ export const about = {
       submit: '메시지 보내기',
       submitting: '전송 중...',
       fillAllFields: '모든 필드를 입력해주세요',
-      successMessage: '메시지가 성공적으로 전송되었습니다! 곧 답변드리겠습니다.'
+      successMessage: '메시지가 성공적으로 전송되었습니다! 곧 답변드리겠습니다.',
+      errorMessage: '메시지 전송에 실패했습니다. 나중에 다시 시도해주세요.'
     },
     info: {
       title: '연락처 정보',
