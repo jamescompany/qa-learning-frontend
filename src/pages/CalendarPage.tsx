@@ -54,7 +54,7 @@ const CalendarPage: React.FC = () => {
       console.error('Error converting event:', e, error);
       return null;
     }
-  }).filter((e): e is LocalEvent => e !== null);
+  }).filter((e): e is NonNullable<typeof e> => e !== null) as LocalEvent[];
   
   const [showEventForm, setShowEventForm] = useState(false);
   const [showEventDetail, setShowEventDetail] = useState(false);

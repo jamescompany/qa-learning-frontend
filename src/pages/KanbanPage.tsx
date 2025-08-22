@@ -138,7 +138,7 @@ const KanbanPage: React.FC = () => {
         title: taskData.title,
         description: taskData.description,
         priority: taskData.priority,
-        assigneeId: taskData.assigneeId || undefined
+        assignee: taskData.assigneeId || undefined
       });
     }
   };
