@@ -13,6 +13,8 @@ interface SignupData {
   email: string;
   password: string;
   confirmPassword: string;
+  termsAccepted: boolean;
+  privacyAccepted: boolean;
 }
 
 const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) => {
@@ -22,6 +24,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
     email: '',
     password: '',
     confirmPassword: '',
+    termsAccepted: false,
+    privacyAccepted: false,
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -30,11 +34,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
     formData.email.trim().length > 0 &&
     formData.password.length >= 8 &&
     formData.confirmPassword.length > 0 &&
-    formData.password === formData.confirmPassword;
+    formData.password === formData.confirmPassword &&
+    formData.termsAccepted &&
+    formData.privacyAccepted;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    const inputElement = e.target as HTMLInputElement;
+    
+    setFormData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? inputElement.checked : value 
+    }));
     
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
@@ -53,6 +64,22 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
         custom: (value: string) => {
           if (value !== formData.password) {
             return 'Passwords do not match';
+          }
+          return null;
+        },
+      },
+      termsAccepted: {
+        custom: (value: boolean) => {
+          if (!value) {
+            return t('auth.signup.termsRequired');
+          }
+          return null;
+        },
+      },
+      privacyAccepted: {
+        custom: (value: boolean) => {
+          if (!value) {
+            return t('auth.signup.privacyRequired');
           }
           return null;
         },
@@ -116,6 +143,58 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit, isLoading = false }) 
         required
         disabled={isLoading}
       />
+      
+      <div className="space-y-3">
+        <label className="flex items-start">
+          <input
+            type="checkbox"
+            name="termsAccepted"
+            checked={formData.termsAccepted}
+            onChange={handleChange}
+            disabled={isLoading}
+            className="mt-1 mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            <a 
+              href="/terms" 
+              target="_blank" 
+              className="text-blue-600 hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {t('auth.signup.termsOfService')}
+            </a>
+            {t('auth.signup.agreeToTerms')}
+          </span>
+        </label>
+        {errors.termsAccepted && (
+          <p className="text-red-500 text-sm ml-6">{errors.termsAccepted}</p>
+        )}
+
+        <label className="flex items-start">
+          <input
+            type="checkbox"
+            name="privacyAccepted"
+            checked={formData.privacyAccepted}
+            onChange={handleChange}
+            disabled={isLoading}
+            className="mt-1 mr-2 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            <a 
+              href="/privacy" 
+              target="_blank" 
+              className="text-blue-600 hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {t('auth.signup.privacyPolicy')}
+            </a>
+            {t('auth.signup.agreeToPrivacy')}
+          </span>
+        </label>
+        {errors.privacyAccepted && (
+          <p className="text-red-500 text-sm ml-6">{errors.privacyAccepted}</p>
+        )}
+      </div>
       
       <button
         type="submit"

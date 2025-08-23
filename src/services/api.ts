@@ -4,17 +4,14 @@ class ApiService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    // Always use a function to determine the base URL dynamically
+    // Use environment variable for API URL
     const getBaseURL = () => {
-      const isProduction = typeof window !== 'undefined' && 
-                          window.location.hostname !== 'localhost' && 
-                          window.location.hostname !== '127.0.0.1';
-      
-      // Force HTTPS in production
-      if (isProduction) {
-        return 'https://api.qalearningweb.com/api/v1';
+      // Always prefer environment variable if available
+      if (import.meta.env.VITE_API_URL) {
+        return import.meta.env.VITE_API_URL;
       }
       
+      // Fallback to localhost for local development
       return 'http://localhost:8000/api/v1';
     };
     

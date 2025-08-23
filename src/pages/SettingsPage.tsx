@@ -35,19 +35,36 @@ const SettingsPage: React.FC = () => {
   // Load saved settings on mount
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');
+    // i18n uses 'i18nextLng' key in localStorage, might store 'ko-KR' instead of 'ko'
+    let currentLanguage = localStorage.getItem('i18nextLng') || i18n.language;
+    // Normalize language code (ko-KR -> ko, en-US -> en)
+    if (currentLanguage.includes('-')) {
+      currentLanguage = currentLanguage.split('-')[0];
+    }
+    const currentTheme = localStorage.getItem('theme') || theme;
+    
     if (savedSettings) {
       try {
         const parsed = JSON.parse(savedSettings);
         const loadedSettings = {
           ...parsed,
-          theme: localStorage.getItem('theme') || theme,
-          language: localStorage.getItem('language') || i18n.language,
+          theme: currentTheme as 'light' | 'dark',
+          language: currentLanguage,
         };
         setSettings(loadedSettings);
         setOriginalSettings(loadedSettings);
       } catch (error) {
         console.error('Failed to load settings:', error);
       }
+    } else {
+      // If no saved settings, use current values
+      const currentSettings = {
+        ...initialSettings,
+        theme: currentTheme as 'light' | 'dark',
+        language: currentLanguage,
+      };
+      setSettings(currentSettings);
+      setOriginalSettings(currentSettings);
     }
   }, []);
 
@@ -67,6 +84,8 @@ const SettingsPage: React.FC = () => {
       // Save settings to localStorage (for theme and language)
       localStorage.setItem('theme', settings.theme);
       localStorage.setItem('language', settings.language);
+      // Also update i18n's localStorage key
+      localStorage.setItem('i18nextLng', settings.language);
       
       // Apply theme immediately if changed
       if (settings.theme !== originalSettings.theme) {
@@ -295,10 +314,15 @@ const SettingsPage: React.FC = () => {
                 {t('settings.general.language')}
               </label>
               <select
-                value={i18n.language}
+                value={settings.language}
                 onChange={(e) => {
-                  i18n.changeLanguage(e.target.value);
-                  setSettings(prev => ({ ...prev, language: e.target.value }));
+                  const newLanguage = e.target.value;
+                  setSettings(prev => ({ ...prev, language: newLanguage }));
+                  // Apply language immediately
+                  i18n.changeLanguage(newLanguage);
+                  // Update both localStorage keys for consistency
+                  localStorage.setItem('i18nextLng', newLanguage);
+                  localStorage.setItem('language', newLanguage);
                 }}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >

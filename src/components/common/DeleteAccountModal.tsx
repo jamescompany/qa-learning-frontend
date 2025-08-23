@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface DeleteAccountModalProps {
@@ -23,6 +23,22 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
     setConfirmText(value);
     setIsConfirmed(value === 'DELETE');
   };
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEsc);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [isOpen]);
 
   const handleClose = () => {
     setConfirmText('');

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import { useCalendarStore } from '../store/calendarStore';
@@ -65,6 +65,33 @@ const CalendarPage: React.FC = () => {
   const [eventFormData, setEventFormData] = useState({ title: '', type: 'meeting' });
 
   const monthNames = t('calendar.months', { returnObjects: true }) as string[];
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (showDeleteConfirm) {
+          setShowDeleteConfirm(false);
+        } else if (isEditing) {
+          setIsEditing(false);
+        } else if (showEventDetail) {
+          setShowEventDetail(false);
+          setSelectedEvent(null);
+        } else if (showEventForm) {
+          setShowEventForm(false);
+          setEventFormData({ title: '', type: 'meeting' });
+        } else if (showDayEvents) {
+          setShowDayEvents(false);
+        } else if (selectedDateStr) {
+          setSelectedDateStr('');
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [showDeleteConfirm, isEditing, showEventDetail, showEventForm, showDayEvents, selectedDateStr]);
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();

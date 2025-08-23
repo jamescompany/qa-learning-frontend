@@ -26,12 +26,21 @@ export const auth = {
     creating: '계정 생성 중...',
     hasAccount: '이미 계정이 있으신가요?',
     signIn: '로그인',
+    agreeToTerms: '에 동의합니다',
+    termsOfService: '이용약관',
+    agreeToPrivacy: '에 동의합니다',
+    privacyPolicy: '개인정보처리방침',
+    termsRequired: '이용약관에 동의해주세요',
+    privacyRequired: '개인정보처리방침에 동의해주세요',
     securityNotice: {
       title: '테스트 환경 안내',
       message: '이 사이트는 학습 및 테스트 목적으로 제공됩니다.',
       warning: '실제 이메일을 사용할 수 있지만, 비밀번호 찾기 기능에서 임시 비밀번호가 화면에 표시되므로 보안에 취약합니다.',
       recommendation: '테스트용 이메일 주소를 사용하시기를 권장합니다.',
       icon: '⚠️',
+    },
+    errors: {
+      emailAlreadyExists: '이미 등록된 이메일입니다. 다른 이메일을 사용하거나 로그인해 주세요.',
     },
   },
   forgotPassword: {
@@ -41,6 +50,17 @@ export const auth = {
     emailPlaceholder: '이메일을 입력하세요',
     button: '임시 비밀번호 받기',
     backToLogin: '로그인으로 돌아가기',
+  },
+  termsAcceptance: {
+    title: '약관 및 개인정보 처리방침 동의 필요',
+    message: '서비스를 계속 이용하려면 업데이트된 이용약관과 개인정보 처리방침에 동의해야 합니다.',
+    accept: '동의하고 계속하기',
+    deleteAccount: '계정 삭제',
+    deleteConfirmMessage: '정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+    confirmDelete: '계정 삭제',
+    acceptError: '약관 동의에 실패했습니다. 다시 시도해주세요.',
+    deleteError: '계정 삭제에 실패했습니다. 다시 시도해주세요.',
+    pleaseAcceptBoth: '서비스를 계속 이용하려면 이용약관과 개인정보 처리방침에 모두 동의해주세요.'
   },
   tempPassword: {
     title: '임시 비밀번호 발급 (학습용)',

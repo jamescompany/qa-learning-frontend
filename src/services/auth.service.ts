@@ -10,12 +10,16 @@ interface SignupData {
   name: string;
   email: string;
   password: string;
+  termsAccepted: boolean;
+  privacyAccepted: boolean;
 }
 
 interface AuthResponse {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  requiresTermsAcceptance?: boolean;
+  userId?: string;
 }
 
 class AuthService {
@@ -29,7 +33,21 @@ class AuthService {
       }
       
       const response = await api.post('/auth/login', credentials);
-      const { access_token, refresh_token } = response.data;
+      const { access_token, refresh_token, requires_terms_acceptance, user_id } = response.data;
+      
+      // Check if terms acceptance is required
+      if (requires_terms_acceptance) {
+        if (isDevelopment) {
+          console.log('⚠️ AuthService: Terms acceptance required for user');
+        }
+        return {
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          requiresTermsAcceptance: true,
+          userId: user_id
+        };
+      }
       
       if (isDevelopment) {
         console.log('✅ AuthService: API login successful');
@@ -48,7 +66,8 @@ class AuthService {
       return {
         user: userResponse.data,
         accessToken: access_token,
-        refreshToken: refresh_token
+        refreshToken: refresh_token,
+        requiresTermsAcceptance: false
       };
     } catch (error: any) {
       // Fallback for development: Check temporary passwords
@@ -173,7 +192,9 @@ class AuthService {
       email: data.email,
       username: data.email.split('@')[0], // Generate username from email
       password: data.password,
-      full_name: data.name
+      full_name: data.name,
+      terms_accepted: data.termsAccepted,
+      privacy_accepted: data.privacyAccepted
     };
     const response = await api.post('/auth/register', registerData);
     

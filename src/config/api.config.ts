@@ -1,32 +1,38 @@
-// API Configuration - COMPLETELY IGNORE ALL ENVIRONMENT VARIABLES
+// API Configuration
 
 const getApiUrl = () => {
-  // NEVER use environment variables - they are compromised
+  // Use environment variable if available
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Fallback for local development
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    
-    // For localhost development only
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return 'http://localhost:8000/api/v1';
     }
   }
   
-  // ALWAYS return HTTPS for any non-localhost environment
+  // Default production URL
   return 'https://api.qalearningweb.com/api/v1';
 };
 
 const getWsUrl = () => {
-  // NEVER use environment variables - they are compromised
+  // Use environment variable if available
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
+  
+  // Fallback for local development
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    
-    // For localhost development only
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return 'ws://localhost:8000/ws';
     }
   }
   
-  // ALWAYS return WSS for any non-localhost environment
+  // Default production URL
   return 'wss://api.qalearningweb.com/ws';
 };
 

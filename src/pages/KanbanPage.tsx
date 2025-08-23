@@ -4,7 +4,7 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import { useKanbanStore } from '../store/kanbanStore';
 import authService from '../services/auth.service';
 import { User } from '../types/user.types';
-import { KanbanCard } from '../services/kanban.service';
+import { KanbanCard, KanbanBoard } from '../services/kanban.service';
 
 const KanbanPage: React.FC = () => {
   const { t } = useTranslation();
@@ -27,6 +27,26 @@ const KanbanPage: React.FC = () => {
   const [formData, setFormData] = useState({ title: '', description: '', priority: 'medium', assigneeId: '' });
   const [editingTask, setEditingTask] = useState<KanbanCard | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [movingCardId, setMovingCardId] = useState<string | null>(null);
+  const [optimisticBoard, setOptimisticBoard] = useState<KanbanBoard | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showAddForm) {
+        setShowAddForm(false);
+        setEditingTask(null);
+        setFormData({ title: '', description: '', priority: 'medium', assigneeId: '' });
+      }
+    };
+
+    if (showAddForm) {
+      document.addEventListener('keydown', handleEsc);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [showAddForm]);
 
   useEffect(() => {
     const initializeBoard = async () => {
@@ -37,36 +57,66 @@ const KanbanPage: React.FC = () => {
         if (boards && boards.length > 0) {
           await fetchBoard(boards[0].id);
           
-          // Update column titles to use translations if they're in English
+          // Check if all columns exist
           const board = useKanbanStore.getState().currentBoard;
           if (board) {
-            const englishToKorean = {
-              'todo': t('kanban.columns.todo'),
-              'To Do': t('kanban.columns.todo'),
-              'inProgress': t('kanban.columns.inProgress'),
-              'In Progress': t('kanban.columns.inProgress'),
-              'review': t('kanban.columns.review'),
-              'Review': t('kanban.columns.review'),
-              'done': t('kanban.columns.done'),
-              'Done': t('kanban.columns.done')
+            const requiredColumns = ['todo', 'inProgress', 'review', 'done'];
+            const existingColumnKeys = new Set();
+            
+            // Map existing columns to their keys
+            const titleToKey = {
+              'todo': 'todo',
+              'To Do': 'todo',
+              'inProgress': 'inProgress',
+              'In Progress': 'inProgress',
+              'review': 'review',
+              'Review': 'review',
+              'done': 'done',
+              'Done': 'done',
+              [t('kanban.columns.todo')]: 'todo',
+              [t('kanban.columns.inProgress')]: 'inProgress',
+              [t('kanban.columns.review')]: 'review',
+              [t('kanban.columns.done')]: 'done'
             };
             
-            // Check if columns need translation updates
-            for (const column of board.columns) {
-              const translatedTitle = englishToKorean[column.title];
-              if (translatedTitle && translatedTitle !== column.title) {
-                // Note: In a real app, you'd update via API
-                column.title = translatedTitle;
+            board.columns.forEach(col => {
+              const key = titleToKey[col.title];
+              if (key) existingColumnKeys.add(key);
+            });
+            
+            // Collect missing columns
+            const missingColumns = [];
+            let position = board.columns.length;
+            for (const key of requiredColumns) {
+              if (!existingColumnKeys.has(key)) {
+                missingColumns.push({ key, position: position++ });
               }
+            }
+            
+            // Create all missing columns in parallel
+            if (missingColumns.length > 0) {
+              await Promise.all(
+                missingColumns.map(({ key, position }) => 
+                  createColumn(board.id, t(`kanban.columns.${key}`), position)
+                )
+              );
+              // Refresh board once after all columns are created
+              await fetchBoard(board.id);
             }
           }
         } else {
-          // Create new board with translated column names
+          // Create new board with all columns at once
           const newBoard = await createBoard('My Kanban Board', 'Personal task management board');
-          await createColumn(newBoard.id, t('kanban.columns.todo'), 0);
-          await createColumn(newBoard.id, t('kanban.columns.inProgress'), 1);
-          await createColumn(newBoard.id, t('kanban.columns.review'), 2);
-          await createColumn(newBoard.id, t('kanban.columns.done'), 3);
+          
+          // Create all columns in parallel
+          await Promise.all([
+            createColumn(newBoard.id, t('kanban.columns.todo'), 0),
+            createColumn(newBoard.id, t('kanban.columns.inProgress'), 1),
+            createColumn(newBoard.id, t('kanban.columns.review'), 2),
+            createColumn(newBoard.id, t('kanban.columns.done'), 3)
+          ]);
+          
+          // Fetch board once after all columns are created
           await fetchBoard(newBoard.id);
         }
       } catch (error) {
@@ -108,11 +158,52 @@ const KanbanPage: React.FC = () => {
   const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
     if (draggedTaskId && currentBoard) {
+      const sourceColumn = currentBoard.columns.find(col => 
+        col.cards.some(card => card.id === draggedTaskId)
+      );
       const targetColumn = currentBoard.columns.find(col => col.id === targetColumnId);
-      if (targetColumn) {
+      
+      if (targetColumn && sourceColumn && sourceColumn.id !== targetColumn.id) {
+        // Set moving state to show loading indicator
+        setMovingCardId(draggedTaskId);
+        
+        // Create optimistic update
+        const movingCard = sourceColumn.cards.find(card => card.id === draggedTaskId);
+        if (movingCard) {
+          const newBoard = {
+            ...currentBoard,
+            columns: currentBoard.columns.map(col => {
+              if (col.id === sourceColumn.id) {
+                return {
+                  ...col,
+                  cards: col.cards.filter(card => card.id !== draggedTaskId)
+                };
+              }
+              if (col.id === targetColumn.id) {
+                return {
+                  ...col,
+                  cards: [...col.cards, movingCard]
+                };
+              }
+              return col;
+            })
+          };
+          setOptimisticBoard(newBoard);
+        }
+        
         // Calculate the position as the number of cards in the target column
         const position = targetColumn.cards.length;
-        await moveCardStore(draggedTaskId, targetColumn.id, position);
+        
+        try {
+          await moveCardStore(draggedTaskId, targetColumn.id, position);
+        } catch (error) {
+          console.error('Failed to move card:', error);
+          // Reset optimistic update on error
+          setOptimisticBoard(null);
+        } finally {
+          setMovingCardId(null);
+          setOptimisticBoard(null);
+        }
       }
       setDraggedTaskId(null);
     }
@@ -175,6 +266,9 @@ const KanbanPage: React.FC = () => {
     }
   };
 
+  // Use optimistic board if available, otherwise use current board
+  const displayBoard = optimisticBoard || currentBoard;
+
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto">
@@ -183,16 +277,34 @@ const KanbanPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('kanban.title')}</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">{t('kanban.subtitle')}</p>
           </div>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {t('kanban.addTask')}
-          </button>
+          <div className="flex items-center gap-3">
+            {movingCardId && (
+              <div className="flex items-center gap-2 text-blue-600">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span className="text-sm">{t('kanban.movingCard', { defaultValue: 'Moving...' })}</span>
+              </div>
+            )}
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {t('kanban.addTask')}
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {currentBoard?.columns.map(column => {
+        {isLoading && !displayBoard ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-8">
+            {error}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {displayBoard?.columns && displayBoard.columns.length > 0 ? (
+            displayBoard.columns.map(column => {
             const columnTasks = column.cards || [];
             
             // Map English column titles to translation keys
@@ -245,17 +357,24 @@ const KanbanPage: React.FC = () => {
                     </svg>
                   </button>
                   <div className="space-y-3">
-                    {columnTasks.map(task => (
+                    {columnTasks.map(task => {
+                      const isMoving = task.id === movingCardId;
+                      return (
                       <div
                         key={task.id}
-                        draggable
-                        onDragStart={() => handleDragStart(task.id)}
-                        className={`rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group ${
+                        draggable={!isMoving}
+                        onDragStart={() => !isMoving && handleDragStart(task.id)}
+                        className={`rounded-lg shadow p-4 cursor-move hover:shadow-md transition-all group relative ${
                           columnKey === 'todo' ? 'bg-white dark:bg-gray-800 border-l-4 border-gray-500' :
                           columnKey === 'inProgress' || columnKey === 'review' ? 'bg-blue-50 dark:bg-blue-950 border-l-4 border-blue-500' :
                           'bg-green-50 dark:bg-green-950 border-l-4 border-green-500'
-                        }`}
+                        } ${isMoving ? 'opacity-50 scale-95' : ''}`}
                       >
+                        {isMoving && (
+                          <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 rounded-lg flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                          </div>
+                        )}
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="font-medium text-gray-900 dark:text-gray-100">{task.title}</h3>
                           <div className="flex items-center space-x-2">
@@ -309,13 +428,36 @@ const KanbanPage: React.FC = () => {
                           )}
                         </div>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 </div>
               </div>
             );
-          })}
+          })
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {columns.map(col => (
+                <div key={col.id} className="flex flex-col">
+                  <div className="mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {col.title}
+                    </h2>
+                    <div className="text-sm text-gray-500 mt-1">
+                      {t('kanban.tasks', { count: 0 })}
+                    </div>
+                  </div>
+                  <div className={`flex-1 ${col.color} rounded-lg p-4 min-h-[400px]`}>
+                    <div className="text-gray-500 text-center mt-8">
+                      {t('kanban.noTasks', { defaultValue: 'No tasks yet' })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        )}
       
       {/* Add Task Modal */}
       {showAddForm && (
@@ -371,7 +513,6 @@ const KanbanPage: React.FC = () => {
                     name="description"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    required
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />

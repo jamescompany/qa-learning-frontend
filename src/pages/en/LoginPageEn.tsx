@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import toast from 'react-hot-toast';
+import TermsAcceptanceModal from '../../components/common/TermsAcceptanceModal';
 
 const LoginPageEn: React.FC = () => {
   const [email, setEmail] = useState(() => {
@@ -17,6 +18,8 @@ const LoginPageEn: React.FC = () => {
     return localStorage.getItem('rememberMe') === 'true';
   });
   const [capsLockOn, setCapsLockOn] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsUserId, setTermsUserId] = useState<string>('');
   const navigate = useNavigate();
   const { login, isAuthenticated } = useAuthStore();
 
@@ -42,7 +45,15 @@ const LoginPageEn: React.FC = () => {
       }
       
       // Login attempt (rememberMe is only for email remember purpose)
-      await login(email, password);
+      const response = await login(email, password);
+      
+      // Check if terms acceptance is required
+      if (response?.requiresTermsAcceptance) {
+        setTermsUserId(response.userId);
+        setShowTermsModal(true);
+        return;
+      }
+      
       toast.success('Login successful!');
       navigate('/dashboard');
     } catch (error) {
@@ -53,7 +64,8 @@ const LoginPageEn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <Link to="/" className="block text-center">
@@ -207,6 +219,13 @@ const LoginPageEn: React.FC = () => {
         </form>
       </div>
     </div>
+    
+    <TermsAcceptanceModal
+      isOpen={showTermsModal}
+      onClose={() => setShowTermsModal(false)}
+      userId={termsUserId}
+    />
+    </>
   );
 };
 
