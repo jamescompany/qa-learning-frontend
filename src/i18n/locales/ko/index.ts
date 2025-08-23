@@ -18,6 +18,7 @@ import { settings } from './settings';
 import { profile } from './profile';
 import { privacy } from './privacy';
 import { terms } from './terms';
+import { activity } from './activity';
 
 // Combine all translations
 const ko = {
@@ -41,6 +42,7 @@ const ko = {
   profile,
   privacyPolicy: privacy,
   termsOfService: terms,
+  activity,
   // Expose bookingSystem at root level
   bookingSystem: qaTranslations.hub.bookingSystem,
   calendar: {

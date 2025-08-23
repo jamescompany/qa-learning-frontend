@@ -239,9 +239,9 @@ export const qa = {
         tags: ['실시간', '소셜', '미디어', '상호작용'],
       },
       booking: {
-        title: '여행 예약 시스템',
+        title: '예약 시스템',
         description: '복잡한 폼, 날짜 검증, 예약 워크플로우 테스트',
-        tags: ['폼', '날짜', '예약', '여행'],
+        tags: ['폼', '날짜', '예약'],
       },
     },
     getStarted: {

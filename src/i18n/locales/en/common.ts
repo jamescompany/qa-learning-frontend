@@ -27,6 +27,8 @@ export const common = {
     qaTestingHub: 'QA Testing Playground',
     playground: 'Component Playground',
     search: 'Search',
+    userGuide: 'User Guide',
+    loginRequired: 'Login required',
   },
   header: {
     welcome: 'Welcome',

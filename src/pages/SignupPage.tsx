@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import SignupForm from '../components/forms/SignupForm';
 import { useAuthStore } from '../store/authStore';
 import AuthLayout from '../components/layout/AuthLayout';
+import SignupConfirmationModal from '../components/common/SignupConfirmationModal';
 
 const SignupPage: React.FC = () => {
   const { t } = useTranslation();
@@ -11,6 +12,8 @@ const SignupPage: React.FC = () => {
   const { register, isAuthenticated } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingSignupData, setPendingSignupData] = useState<any>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -18,12 +21,20 @@ const SignupPage: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSignup = async (data: any) => {
+  const handleSignup = (data: any) => {
+    setPendingSignupData(data);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSignup = async () => {
+    if (!pendingSignupData) return;
+    
+    setShowConfirmModal(false);
     setIsLoading(true);
     setError(null);
     
     try {
-      await register(data);
+      await register(pendingSignupData);
       navigate('/dashboard');
     } catch (err: any) {
       let errorMessage = '';
@@ -55,7 +66,13 @@ const SignupPage: React.FC = () => {
       setError(errorMessage);
     } finally {
       setIsLoading(false);
+      setPendingSignupData(null);
     }
+  };
+
+  const handleCancelSignup = () => {
+    setShowConfirmModal(false);
+    setPendingSignupData(null);
   };
 
   return (
@@ -104,6 +121,16 @@ const SignupPage: React.FC = () => {
           </p>
         </div>
       </div>
+      
+      <SignupConfirmationModal
+        isOpen={showConfirmModal}
+        onConfirm={handleConfirmSignup}
+        onCancel={handleCancelSignup}
+        userData={{
+          email: pendingSignupData?.email || '',
+          name: pendingSignupData?.name || '',
+        }}
+      />
     </AuthLayout>
   );
 };

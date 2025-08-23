@@ -239,9 +239,9 @@ export const qa = {
         tags: ['Real-time', 'Social', 'Media', 'Interactions'],
       },
       booking: {
-        title: 'Travel Booking System',
+        title: 'Booking System',
         description: 'Test complex forms, date validations, and booking workflows',
-        tags: ['Forms', 'Dates', 'Booking', 'Travel'],
+        tags: ['Forms', 'Dates', 'Booking'],
       },
     },
     getStarted: {
