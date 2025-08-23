@@ -122,7 +122,7 @@ class TodoService {
     console.log('CreateTodo request data:', requestData);
     
     try {
-      const response = await api.post<any>('/todos', requestData);
+      const response = await api.post<any>('/todos/', requestData);
       const todo = response.data;
       const { due_date, completed_at, created_at, updated_at, created_by, user_id, is_archived, ...cleanTodo } = todo;
       

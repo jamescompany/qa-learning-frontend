@@ -110,7 +110,9 @@ const KanbanPage: React.FC = () => {
     if (draggedTaskId && currentBoard) {
       const targetColumn = currentBoard.columns.find(col => col.id === targetColumnId);
       if (targetColumn) {
-        await moveCardStore(draggedTaskId, targetColumn.id);
+        // Calculate the position as the number of cards in the target column
+        const position = targetColumn.cards.length;
+        await moveCardStore(draggedTaskId, targetColumn.id, position);
       }
       setDraggedTaskId(null);
     }

@@ -4,17 +4,22 @@ class ApiService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    // Determine base URL at initialization
-    const isProduction = typeof window !== 'undefined' && 
-                        window.location.hostname !== 'localhost' && 
-                        window.location.hostname !== '127.0.0.1';
-    
-    const baseURL = isProduction 
-      ? 'https://api.qalearningweb.com/api/v1'
-      : 'http://localhost:8000/api/v1';
+    // Always use a function to determine the base URL dynamically
+    const getBaseURL = () => {
+      const isProduction = typeof window !== 'undefined' && 
+                          window.location.hostname !== 'localhost' && 
+                          window.location.hostname !== '127.0.0.1';
+      
+      // Force HTTPS in production
+      if (isProduction) {
+        return 'https://api.qalearningweb.com/api/v1';
+      }
+      
+      return 'http://localhost:8000/api/v1';
+    };
     
     this.axiosInstance = axios.create({
-      baseURL: baseURL,
+      baseURL: getBaseURL(),
       timeout: 30000, // Increased to 30 seconds for email operations
       headers: {
         'Content-Type': 'application/json',
@@ -28,15 +33,29 @@ class ApiService {
     this.axiosInstance.interceptors.request.use(
       (config) => {
         // Double-check HTTPS in production
-        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+        const isProduction = typeof window !== 'undefined' && 
+                           window.location.hostname !== 'localhost' && 
+                           window.location.hostname !== '127.0.0.1';
         
         if (isProduction) {
-          // Force HTTPS for any HTTP URLs
-          if (config.url && config.url.startsWith('http://')) {
-            config.url = config.url.replace('http://', 'https://');
+          // Force HTTPS for ALL URLs in production
+          if (config.url) {
+            // Handle absolute URLs
+            if (config.url.includes('://')) {
+              config.url = config.url.replace(/^http:\/\//i, 'https://');
+            }
           }
-          if (config.baseURL && config.baseURL.startsWith('http://')) {
-            config.baseURL = config.baseURL.replace('http://', 'https://');
+          
+          // Always ensure baseURL is HTTPS in production
+          if (config.baseURL) {
+            config.baseURL = config.baseURL.replace(/^http:\/\//i, 'https://');
+          }
+          
+          // Build the full URL and force HTTPS
+          const fullUrl = axios.getUri(config);
+          if (fullUrl && fullUrl.startsWith('http://')) {
+            // If the full URL is still HTTP, override everything
+            config.baseURL = 'https://api.qalearningweb.com/api/v1';
           }
         }
         
