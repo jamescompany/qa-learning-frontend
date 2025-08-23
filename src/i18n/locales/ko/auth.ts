@@ -41,6 +41,21 @@ export const auth = {
     },
     errors: {
       emailAlreadyExists: '이미 등록된 이메일입니다. 다른 이메일을 사용하거나 로그인해 주세요.',
+      emailPreviouslyUsed: '이전에 사용된 이메일로 재사용할 수 없습니다',
+      usernamePreviouslyUsed: '이전에 사용된 사용자명으로 재사용할 수 없습니다',
+      signupFailed: '계정 생성에 실패했습니다. 다시 시도해주세요.',
+    },
+    confirmModal: {
+      title: '중요 보안 안내',
+      warning: '실제 이메일이나 비밀번호를 사용하지 마세요!',
+      testPurpose: '이것은 학습 목적의 테스트 애플리케이션입니다.',
+      yourEmail: '입력한 이메일',
+      yourName: '입력한 이름',
+      dataHandling: '모든 데이터는 테스트 목적으로 저장되며 다른 사람에게 노출될 수 있습니다.',
+      recommendation: '권장사항',
+      useTestData: '가상의 이메일 주소와 간단한 테스트 비밀번호를 사용하세요.',
+      understand: '확인, 계속 진행',
+      cancel: '취소',
     },
   },
   forgotPassword: {

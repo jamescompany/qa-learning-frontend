@@ -41,6 +41,21 @@ export const auth = {
     },
     errors: {
       emailAlreadyExists: 'This email is already registered. Please use a different email or sign in.',
+      emailPreviouslyUsed: 'This email was previously used and cannot be reused',
+      usernamePreviouslyUsed: 'This username was previously used and cannot be reused',
+      signupFailed: 'Failed to create account. Please try again.',
+    },
+    confirmModal: {
+      title: 'Important Security Notice',
+      warning: 'DO NOT use your real email or password!',
+      testPurpose: 'This is a test application for learning purposes only.',
+      yourEmail: 'Your Email',
+      yourName: 'Your Name',
+      dataHandling: 'All data is stored for testing purposes and may be visible to others.',
+      recommendation: 'Recommendation',
+      useTestData: 'Use fictional email addresses and simple test passwords.',
+      understand: 'I Understand, Proceed',
+      cancel: 'Cancel',
     },
   },
   forgotPassword: {

@@ -41,6 +41,7 @@ import BankingDashboardPage from './pages/qa-scenarios/BankingDashboardPage'
 import SocialFeedPage from './pages/qa-scenarios/SocialFeedPage'
 import BookingSystemPage from './pages/qa-scenarios/BookingSystemPage'
 import QAHubPage from './pages/qa-scenarios/QAHubPage'
+import UserGuidePage from './pages/UserGuidePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,6 +80,7 @@ function AppContent() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfServicePage />} />
+            <Route path="/guide" element={<UserGuidePage />} />
           </Route>
           
           {/* Public auth routes */}

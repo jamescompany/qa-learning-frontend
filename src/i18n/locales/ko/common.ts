@@ -27,6 +27,8 @@ export const common = {
     qaTestingHub: 'QA 테스팅 플레이그라운드',
     playground: '컴포넌트 플레이그라운드',
     search: '검색',
+    userGuide: '사용 가이드',
+    loginRequired: '로그인이 필요합니다',
   },
   header: {
     welcome: '환영합니다',
