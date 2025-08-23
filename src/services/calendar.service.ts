@@ -53,11 +53,22 @@ class CalendarService {
   }
 
   async createEvent(data: CreateEventData): Promise<CalendarEvent> {
+    // Convert to local time string without timezone offset
+    const formatLocalDateTime = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    };
+    
     const response = await api.post<CalendarEvent>('/calendar/events', {
       title: data.title,
       description: data.description,
-      start_time: data.start.toISOString(),
-      end_time: data.end.toISOString(),
+      start_time: formatLocalDateTime(data.start),
+      end_time: formatLocalDateTime(data.end),
       all_day: data.allDay,
       color: data.color,
       location: data.location,
@@ -67,12 +78,23 @@ class CalendarService {
   }
 
   async updateEvent(id: string, data: UpdateEventData): Promise<CalendarEvent> {
+    // Convert to local time string without timezone offset
+    const formatLocalDateTime = (date: Date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    };
+    
     const payload: any = {};
     
     if (data.title !== undefined) payload.title = data.title;
     if (data.description !== undefined) payload.description = data.description;
-    if (data.start !== undefined) payload.start_time = data.start.toISOString();
-    if (data.end !== undefined) payload.end_time = data.end.toISOString();
+    if (data.start !== undefined) payload.start_time = formatLocalDateTime(data.start);
+    if (data.end !== undefined) payload.end_time = formatLocalDateTime(data.end);
     if (data.allDay !== undefined) payload.all_day = data.allDay;
     if (data.color !== undefined) payload.color = data.color;
     if (data.location !== undefined) payload.location = data.location;

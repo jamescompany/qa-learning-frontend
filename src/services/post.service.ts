@@ -51,7 +51,7 @@ class PostService {
   }
 
   async createPost(data: CreatePostData): Promise<Post> {
-    const response = await api.post<Post>('/posts', data);
+    const response = await api.post<Post>('/posts/', data);
     return response.data;
   }
 
