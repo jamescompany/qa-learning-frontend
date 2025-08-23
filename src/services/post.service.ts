@@ -76,7 +76,7 @@ class PostService {
 
   async addComment(postId: string, content: string): Promise<any> {
     // Use the comments API endpoint directly
-    const response = await api.post(`/comments`, { 
+    const response = await api.post(`/comments/`, { 
       post_id: postId,
       content: content 
     });
