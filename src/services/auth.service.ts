@@ -221,7 +221,31 @@ class AuthService {
   }
 
   async updateProfile(data: Partial<User>): Promise<User> {
-    // Transform to backend field names
+    // Check if we have a mock user first
+    const mockUser = localStorage.getItem('mockUser');
+    if (mockUser) {
+      const user = JSON.parse(mockUser);
+      // Update mock user data
+      if (data.name || data.full_name) {
+        user.name = data.name || data.full_name;
+        user.full_name = data.name || data.full_name;
+      }
+      if (data.bio !== undefined) user.bio = data.bio;
+      if (data.location !== undefined) user.location = data.location;
+      if (data.website !== undefined) user.website = data.website;
+      if (data.avatar || data.avatar_url) {
+        user.avatar = data.avatar || data.avatar_url;
+        user.avatar_url = data.avatar || data.avatar_url;
+      }
+      user.updatedAt = new Date().toISOString();
+      
+      // Save updated mock user
+      localStorage.setItem('mockUser', JSON.stringify(user));
+      console.log('Mock profile updated:', user);
+      return user;
+    }
+    
+    // Transform to backend field names for real API
     const updateData: any = {};
     if (data.name || data.full_name) {
       updateData.full_name = data.name || data.full_name;
@@ -233,7 +257,9 @@ class AuthService {
       updateData.avatar_url = data.avatar || data.avatar_url;
     }
     
+    console.log('Sending profile update:', updateData);
     const response = await api.patch<User>('/auth/profile', updateData);
+    console.log('Profile update response:', response.data);
     return response.data;
   }
 
