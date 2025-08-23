@@ -1,23 +1,17 @@
 import { API_CONFIG } from '../config/api.config';
 
-// API Configuration - Force HTTPS in production
+// API Configuration - Use environment variables
 export const getApiBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'https://api.qalearningweb.com/api/v1';
-  }
   return API_CONFIG.API_URL;
 };
 
 export const getWsBaseUrl = () => {
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'wss://api.qalearningweb.com/ws';
-  }
   return API_CONFIG.WS_URL;
 };
 
-// DEPRECATED - DO NOT USE
-export const API_BASE_URL = 'https://api.qalearningweb.com/api/v1'; // Force HTTPS
-export const WS_BASE_URL = 'wss://api.qalearningweb.com/ws'; // Force WSS
+// DEPRECATED - DO NOT USE - Use getApiBaseUrl() and getWsBaseUrl() instead
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.qalearningweb.com/api/v1';
+export const WS_BASE_URL = import.meta.env.VITE_WS_URL || 'wss://api.qalearningweb.com/ws';
 
 export const API_TIMEOUT = 30000; // 30 seconds
 export const API_RETRY_ATTEMPTS = 3;
