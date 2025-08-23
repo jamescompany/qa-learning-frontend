@@ -34,23 +34,24 @@ export const generateUserActivities = (
   
   const today = new Date();
   
-  // Add simulated signup event (always show as a few days ago for logical order)
+  // Add simulated signup event (use actual created_at)
   if (user?.created_at) {
-    // Show signup as 7 days ago regardless of actual date for better UX
+    const signupDate = new Date(user.created_at);
     activities.push({
       type: 'signup',
       title: t('activity.events.accountCreated'),
-      timestamp: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      timestamp: signupDate,
       details: t('activity.events.welcomeMessage')
     });
   }
   
-  // Add profile update event (show as 3 days ago)
-  if (user?.updated_at) {
+  // Add profile update event (use actual updated_at if different from created_at)
+  if (user?.updated_at && user.updated_at !== user.created_at) {
+    const updateDate = new Date(user.updated_at);
     activities.push({
       type: 'profile',
       title: t('activity.events.updatedProfile'),
-      timestamp: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      timestamp: updateDate,
       details: t('activity.events.profileUpdateDetails')
     });
   }
