@@ -41,7 +41,7 @@ class PostService {
     if (filters.sortBy) params.append('sortBy', filters.sortBy);
     if (filters.order) params.append('order', filters.order);
     
-    const response = await api.get<PostsResponse>(`/posts?${params}`);
+    const response = await api.get<PostsResponse>(`/posts/?${params}`);
     return response.data;
   }
 

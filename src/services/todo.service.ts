@@ -44,7 +44,7 @@ class TodoService {
     if (filters.sortBy) params.append('sortBy', filters.sortBy);
     if (filters.order) params.append('order', filters.order);
     
-    const response = await api.get<any>(`/todos?${params}`);
+    const response = await api.get<any>(`/todos/?${params}`);
     console.log('TodoService getTodos raw response:', response.data.todos);
     // Map backend response to frontend Todo type
     const todos = (response.data.todos || []).map((todo: any) => {
