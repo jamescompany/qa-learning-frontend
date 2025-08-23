@@ -1,12 +1,23 @@
 import { API_CONFIG } from '../config/api.config';
 
-// API Configuration - Use getters for dynamic evaluation
-export const getApiBaseUrl = () => API_CONFIG.API_URL;
-export const getWsBaseUrl = () => API_CONFIG.WS_URL;
+// API Configuration - Force HTTPS in production
+export const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'https://api.qalearningweb.com/api/v1';
+  }
+  return API_CONFIG.API_URL;
+};
 
-// For backwards compatibility (deprecated - will be removed)
-export const API_BASE_URL = getApiBaseUrl();
-export const WS_BASE_URL = getWsBaseUrl();
+export const getWsBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'wss://api.qalearningweb.com/ws';
+  }
+  return API_CONFIG.WS_URL;
+};
+
+// DEPRECATED - DO NOT USE
+export const API_BASE_URL = 'https://api.qalearningweb.com/api/v1'; // Force HTTPS
+export const WS_BASE_URL = 'wss://api.qalearningweb.com/ws'; // Force WSS
 
 export const API_TIMEOUT = 30000; // 30 seconds
 export const API_RETRY_ATTEMPTS = 3;
