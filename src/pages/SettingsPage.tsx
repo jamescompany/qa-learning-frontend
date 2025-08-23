@@ -48,7 +48,7 @@ const SettingsPage: React.FC = () => {
         const parsed = JSON.parse(savedSettings);
         const loadedSettings = {
           ...parsed,
-          theme: currentTheme,
+          theme: currentTheme as 'light' | 'dark',
           language: currentLanguage,
         };
         setSettings(loadedSettings);
@@ -60,7 +60,7 @@ const SettingsPage: React.FC = () => {
       // If no saved settings, use current values
       const currentSettings = {
         ...initialSettings,
-        theme: currentTheme,
+        theme: currentTheme as 'light' | 'dark',
         language: currentLanguage,
       };
       setSettings(currentSettings);
