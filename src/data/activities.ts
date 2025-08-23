@@ -56,21 +56,39 @@ export const generateUserActivities = (
     });
   }
   
-  // Add login from yesterday
-  activities.push({
-    type: 'login',
-    title: t('activity.events.loggedIn'),
-    timestamp: new Date(today.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
-    details: t('activity.events.loginFromDevice', { device: 'Safari on iPhone' })
-  });
-  
-  // Add most recent login
-  activities.push({
-    type: 'login',
-    title: t('activity.events.loggedIn'),
-    timestamp: new Date(today.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
-    details: t('activity.events.loginFromDevice', { device: 'Chrome on Windows' })
-  });
+  // Add login events only if account is old enough
+  if (user?.created_at) {
+    const signupDate = new Date(user.created_at);
+    const hoursSinceSignup = Math.floor((today.getTime() - signupDate.getTime()) / (1000 * 60 * 60));
+    
+    // Only show login from yesterday if account is at least 1 day old
+    if (hoursSinceSignup >= 24) {
+      activities.push({
+        type: 'login',
+        title: t('activity.events.loggedIn'),
+        timestamp: new Date(today.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
+        details: t('activity.events.loginFromDevice', { device: 'Safari on iPhone' })
+      });
+    }
+    
+    // Only show recent login if account is at least 2 hours old
+    if (hoursSinceSignup >= 2) {
+      activities.push({
+        type: 'login',
+        title: t('activity.events.loggedIn'),
+        timestamp: new Date(today.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+        details: t('activity.events.loginFromDevice', { device: 'Chrome on Windows' })
+      });
+    } else if (hoursSinceSignup >= 0.5) {
+      // If account is between 30 min and 2 hours old, show login 30 min after signup
+      activities.push({
+        type: 'login',
+        title: t('activity.events.loggedIn'),
+        timestamp: new Date(signupDate.getTime() + 30 * 60 * 1000), // 30 min after signup
+        details: t('activity.events.loginFromDevice', { device: 'Chrome on Windows' })
+      });
+    }
+  }
   
   // Sort by timestamp (most recent first)
   activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
