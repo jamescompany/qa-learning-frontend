@@ -19,12 +19,25 @@ class ApiService {
     // Request interceptor
     this.axiosInstance.interceptors.request.use(
       (config) => {
-        // Dynamically set baseURL for each request
-        const apiUrl = API_CONFIG.API_URL;
+        // FORCE HTTPS IN PRODUCTION
+        const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         
-        // If URL is relative, prepend the base URL
-        if (config.url && !config.url.startsWith('http')) {
-          config.url = apiUrl + (config.url.startsWith('/') ? config.url : '/' + config.url);
+        if (isProduction) {
+          // Always use HTTPS in production, regardless of any configuration
+          const httpsUrl = 'https://api.qalearningweb.com/api/v1';
+          
+          if (config.url && !config.url.startsWith('http')) {
+            config.url = httpsUrl + (config.url.startsWith('/') ? config.url : '/' + config.url);
+          } else if (config.url && config.url.startsWith('http://')) {
+            // Force replace HTTP with HTTPS
+            config.url = config.url.replace('http://', 'https://');
+          }
+        } else {
+          // Development mode
+          const apiUrl = API_CONFIG.API_URL;
+          if (config.url && !config.url.startsWith('http')) {
+            config.url = apiUrl + (config.url.startsWith('/') ? config.url : '/' + config.url);
+          }
         }
         
         const token = localStorage.getItem('accessToken');
