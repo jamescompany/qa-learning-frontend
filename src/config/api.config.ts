@@ -1,54 +1,40 @@
-// API Configuration with automatic protocol detection
+// API Configuration - FORCE HTTPS IN PRODUCTION
 
 const getApiUrl = () => {
-  // CRITICAL: Force HTTPS for production domain, ignore environment variables
+  // DO NOT USE ENVIRONMENT VARIABLES IN PRODUCTION
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     
-    // ALWAYS use HTTPS for production domains - IGNORE environment variables
-    if (hostname === 'qalearningweb.com' || hostname === 'www.qalearningweb.com') {
-      console.warn('Forcing HTTPS for production domain');
-      return 'https://api.qalearningweb.com/api/v1';
-    }
-    
     // For localhost development only
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+      return 'http://localhost:8000/api/v1';
     }
     
-    // Any other domain - force HTTPS
+    // PRODUCTION - ALWAYS HTTPS (ignore all environment variables)
+    console.warn('Production mode: Using HTTPS (ignoring env vars)');
     return 'https://api.qalearningweb.com/api/v1';
   }
   
-  // Fallback - always HTTPS
+  // Server-side/build time - always HTTPS for production
   return 'https://api.qalearningweb.com/api/v1';
 };
 
 const getWsUrl = () => {
-  // Force WSS for production domain
+  // DO NOT USE ENVIRONMENT VARIABLES IN PRODUCTION
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     
-    // Always use WSS for production domains
-    if (hostname === 'qalearningweb.com' || hostname === 'www.qalearningweb.com') {
-      return 'wss://api.qalearningweb.com/ws';
+    // For localhost development only
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'ws://localhost:8000/ws';
     }
     
-    // For localhost development
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
-    }
+    // PRODUCTION - ALWAYS WSS (ignore all environment variables)
+    return 'wss://api.qalearningweb.com/ws';
   }
   
-  // Default to WSS in production
-  const wsUrl = import.meta.env.VITE_WS_URL || 'wss://api.qalearningweb.com/ws';
-  
-  // Always replace ws with wss if page is served over HTTPS
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return wsUrl.replace(/^ws:/, 'wss:');
-  }
-  
-  return wsUrl;
+  // Server-side/build time - always WSS for production
+  return 'wss://api.qalearningweb.com/ws';
 };
 
 // Export as getter functions to ensure dynamic evaluation
