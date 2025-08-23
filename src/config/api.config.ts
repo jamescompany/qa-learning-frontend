@@ -1,30 +1,27 @@
 // API Configuration with automatic protocol detection
 
 const getApiUrl = () => {
-  // Force HTTPS for production domain
+  // CRITICAL: Force HTTPS for production domain, ignore environment variables
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     
-    // Always use HTTPS for production domains
+    // ALWAYS use HTTPS for production domains - IGNORE environment variables
     if (hostname === 'qalearningweb.com' || hostname === 'www.qalearningweb.com') {
+      console.warn('Forcing HTTPS for production domain');
       return 'https://api.qalearningweb.com/api/v1';
     }
     
-    // For localhost development
+    // For localhost development only
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
     }
+    
+    // Any other domain - force HTTPS
+    return 'https://api.qalearningweb.com/api/v1';
   }
   
-  // Default to HTTPS in production
-  const baseUrl = import.meta.env.VITE_API_URL || 'https://api.qalearningweb.com/api/v1';
-  
-  // Always replace http with https if page is served over HTTPS
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return baseUrl.replace(/^http:/, 'https:');
-  }
-  
-  return baseUrl;
+  // Fallback - always HTTPS
+  return 'https://api.qalearningweb.com/api/v1';
 };
 
 const getWsUrl = () => {
