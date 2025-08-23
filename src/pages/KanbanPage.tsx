@@ -4,7 +4,7 @@ import DashboardLayout from '../components/layout/DashboardLayout';
 import { useKanbanStore } from '../store/kanbanStore';
 import authService from '../services/auth.service';
 import { User } from '../types/user.types';
-import { KanbanCard } from '../services/kanban.service';
+import { KanbanCard, KanbanBoard } from '../services/kanban.service';
 
 const KanbanPage: React.FC = () => {
   const { t } = useTranslation();
@@ -27,6 +27,8 @@ const KanbanPage: React.FC = () => {
   const [formData, setFormData] = useState({ title: '', description: '', priority: 'medium', assigneeId: '' });
   const [editingTask, setEditingTask] = useState<KanbanCard | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [movingCardId, setMovingCardId] = useState<string | null>(null);
+  const [optimisticBoard, setOptimisticBoard] = useState<KanbanBoard | null>(null);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -156,11 +158,52 @@ const KanbanPage: React.FC = () => {
   const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
     if (draggedTaskId && currentBoard) {
+      const sourceColumn = currentBoard.columns.find(col => 
+        col.cards.some(card => card.id === draggedTaskId)
+      );
       const targetColumn = currentBoard.columns.find(col => col.id === targetColumnId);
-      if (targetColumn) {
+      
+      if (targetColumn && sourceColumn && sourceColumn.id !== targetColumn.id) {
+        // Set moving state to show loading indicator
+        setMovingCardId(draggedTaskId);
+        
+        // Create optimistic update
+        const movingCard = sourceColumn.cards.find(card => card.id === draggedTaskId);
+        if (movingCard) {
+          const newBoard = {
+            ...currentBoard,
+            columns: currentBoard.columns.map(col => {
+              if (col.id === sourceColumn.id) {
+                return {
+                  ...col,
+                  cards: col.cards.filter(card => card.id !== draggedTaskId)
+                };
+              }
+              if (col.id === targetColumn.id) {
+                return {
+                  ...col,
+                  cards: [...col.cards, movingCard]
+                };
+              }
+              return col;
+            })
+          };
+          setOptimisticBoard(newBoard);
+        }
+        
         // Calculate the position as the number of cards in the target column
         const position = targetColumn.cards.length;
-        await moveCardStore(draggedTaskId, targetColumn.id, position);
+        
+        try {
+          await moveCardStore(draggedTaskId, targetColumn.id, position);
+        } catch (error) {
+          console.error('Failed to move card:', error);
+          // Reset optimistic update on error
+          setOptimisticBoard(null);
+        } finally {
+          setMovingCardId(null);
+          setOptimisticBoard(null);
+        }
       }
       setDraggedTaskId(null);
     }
@@ -223,6 +266,9 @@ const KanbanPage: React.FC = () => {
     }
   };
 
+  // Use optimistic board if available, otherwise use current board
+  const displayBoard = optimisticBoard || currentBoard;
+
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto">
@@ -231,15 +277,23 @@ const KanbanPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{t('kanban.title')}</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">{t('kanban.subtitle')}</p>
           </div>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {t('kanban.addTask')}
-          </button>
+          <div className="flex items-center gap-3">
+            {movingCardId && (
+              <div className="flex items-center gap-2 text-blue-600">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                <span className="text-sm">{t('kanban.movingCard', { defaultValue: 'Moving...' })}</span>
+              </div>
+            )}
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {t('kanban.addTask')}
+            </button>
+          </div>
         </div>
 
-        {isLoading ? (
+        {isLoading && !displayBoard ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
@@ -249,8 +303,8 @@ const KanbanPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {currentBoard?.columns && currentBoard.columns.length > 0 ? (
-            currentBoard.columns.map(column => {
+          {displayBoard?.columns && displayBoard.columns.length > 0 ? (
+            displayBoard.columns.map(column => {
             const columnTasks = column.cards || [];
             
             // Map English column titles to translation keys
@@ -303,17 +357,24 @@ const KanbanPage: React.FC = () => {
                     </svg>
                   </button>
                   <div className="space-y-3">
-                    {columnTasks.map(task => (
+                    {columnTasks.map(task => {
+                      const isMoving = task.id === movingCardId;
+                      return (
                       <div
                         key={task.id}
-                        draggable
-                        onDragStart={() => handleDragStart(task.id)}
-                        className={`rounded-lg shadow p-4 cursor-move hover:shadow-md transition-shadow group ${
+                        draggable={!isMoving}
+                        onDragStart={() => !isMoving && handleDragStart(task.id)}
+                        className={`rounded-lg shadow p-4 cursor-move hover:shadow-md transition-all group relative ${
                           columnKey === 'todo' ? 'bg-white dark:bg-gray-800 border-l-4 border-gray-500' :
                           columnKey === 'inProgress' || columnKey === 'review' ? 'bg-blue-50 dark:bg-blue-950 border-l-4 border-blue-500' :
                           'bg-green-50 dark:bg-green-950 border-l-4 border-green-500'
-                        }`}
+                        } ${isMoving ? 'opacity-50 scale-95' : ''}`}
                       >
+                        {isMoving && (
+                          <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 rounded-lg flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                          </div>
+                        )}
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="font-medium text-gray-900 dark:text-gray-100">{task.title}</h3>
                           <div className="flex items-center space-x-2">
@@ -367,7 +428,8 @@ const KanbanPage: React.FC = () => {
                           )}
                         </div>
                       </div>
-                    ))}
+                    );
+                    })}
                   </div>
                 </div>
               </div>
