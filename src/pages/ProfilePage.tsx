@@ -42,6 +42,7 @@ const ProfilePage: React.FC = () => {
 
   useEffect(() => {
     if (user) {
+      console.log('User data received:', user); // Debug log
       const userData = {
         name: user.full_name || user.name || user.username || '',
         email: user.email || '',
@@ -49,6 +50,7 @@ const ProfilePage: React.FC = () => {
         location: user.location || '',
         website: user.website || '',
       };
+      console.log('Formatted user data:', userData); // Debug log
       setFormData(userData);
       setOriginalData(userData);
     }
@@ -78,7 +80,11 @@ const ProfilePage: React.FC = () => {
         location: formData.location,
         website: formData.website
       });
+      
+      // Update originalData to reflect the saved changes
+      setOriginalData(formData);
       setIsEditing(false);
+      
       // Show success modal
       setModalMessage({
         title: t('profile.success'),
