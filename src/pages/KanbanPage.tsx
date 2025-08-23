@@ -55,31 +55,48 @@ const KanbanPage: React.FC = () => {
         if (boards && boards.length > 0) {
           await fetchBoard(boards[0].id);
           
-          // Update column titles to use translations if they're in English
+          // Check if all columns exist
           const board = useKanbanStore.getState().currentBoard;
           if (board) {
-            const englishToKorean = {
-              'todo': t('kanban.columns.todo'),
-              'To Do': t('kanban.columns.todo'),
-              'inProgress': t('kanban.columns.inProgress'),
-              'In Progress': t('kanban.columns.inProgress'),
-              'review': t('kanban.columns.review'),
-              'Review': t('kanban.columns.review'),
-              'done': t('kanban.columns.done'),
-              'Done': t('kanban.columns.done')
+            const requiredColumns = ['todo', 'inProgress', 'review', 'done'];
+            const existingColumnKeys = new Set();
+            
+            // Map existing columns to their keys
+            const titleToKey = {
+              'todo': 'todo',
+              'To Do': 'todo',
+              'inProgress': 'inProgress',
+              'In Progress': 'inProgress',
+              'review': 'review',
+              'Review': 'review',
+              'done': 'done',
+              'Done': 'done',
+              [t('kanban.columns.todo')]: 'todo',
+              [t('kanban.columns.inProgress')]: 'inProgress',
+              [t('kanban.columns.review')]: 'review',
+              [t('kanban.columns.done')]: 'done'
             };
             
-            // Check if columns need translation updates
-            for (const column of board.columns) {
-              const translatedTitle = englishToKorean[column.title];
-              if (translatedTitle && translatedTitle !== column.title) {
-                // Note: In a real app, you'd update via API
-                column.title = translatedTitle;
+            board.columns.forEach(col => {
+              const key = titleToKey[col.title];
+              if (key) existingColumnKeys.add(key);
+            });
+            
+            // Create missing columns
+            let position = board.columns.length;
+            for (const key of requiredColumns) {
+              if (!existingColumnKeys.has(key)) {
+                await createColumn(board.id, t(`kanban.columns.${key}`), position++);
               }
+            }
+            
+            // Refresh board if columns were added
+            if (position > board.columns.length) {
+              await fetchBoard(board.id);
             }
           }
         } else {
-          // Create new board with translated column names
+          // Create new board with all columns
           const newBoard = await createBoard('My Kanban Board', 'Personal task management board');
           await createColumn(newBoard.id, t('kanban.columns.todo'), 0);
           await createColumn(newBoard.id, t('kanban.columns.inProgress'), 1);
@@ -209,8 +226,18 @@ const KanbanPage: React.FC = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {currentBoard?.columns.map(column => {
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500 py-8">
+            {error}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {currentBoard?.columns && currentBoard.columns.length > 0 ? (
+            currentBoard.columns.map(column => {
             const columnTasks = column.cards || [];
             
             // Map English column titles to translation keys
@@ -332,8 +359,30 @@ const KanbanPage: React.FC = () => {
                 </div>
               </div>
             );
-          })}
+          })
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {columns.map(col => (
+                <div key={col.id} className="flex flex-col">
+                  <div className="mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {col.title}
+                    </h2>
+                    <div className="text-sm text-gray-500 mt-1">
+                      {t('kanban.tasks', { count: 0 })}
+                    </div>
+                  </div>
+                  <div className={`flex-1 ${col.color} rounded-lg p-4 min-h-[400px]`}>
+                    <div className="text-gray-500 text-center mt-8">
+                      {t('kanban.noTasks', { defaultValue: 'No tasks yet' })}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+        )}
       
       {/* Add Task Modal */}
       {showAddForm && (
