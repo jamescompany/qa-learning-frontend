@@ -1,32 +1,54 @@
 // API Configuration with automatic protocol detection
 
 const getApiUrl = () => {
-  const baseUrl = import.meta.env.VITE_API_URL || 'https://api.qalearningweb.com/api/v1';
-  
-  // Always use HTTPS in production when page is served over HTTPS
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return baseUrl.replace(/^http:/, 'https:');
+  // Force HTTPS for production domain
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // Always use HTTPS for production domains
+    if (hostname === 'qalearningweb.com' || hostname === 'www.qalearningweb.com') {
+      return 'https://api.qalearningweb.com/api/v1';
+    }
+    
+    // For localhost development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    }
   }
   
-  // For local development
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+  // Default to HTTPS in production
+  const baseUrl = import.meta.env.VITE_API_URL || 'https://api.qalearningweb.com/api/v1';
+  
+  // Always replace http with https if page is served over HTTPS
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return baseUrl.replace(/^http:/, 'https:');
   }
   
   return baseUrl;
 };
 
 const getWsUrl = () => {
-  const wsUrl = import.meta.env.VITE_WS_URL || 'wss://api.qalearningweb.com/ws';
-  
-  // Always use WSS in production when page is served over HTTPS
-  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-    return wsUrl.replace(/^ws:/, 'wss:');
+  // Force WSS for production domain
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    
+    // Always use WSS for production domains
+    if (hostname === 'qalearningweb.com' || hostname === 'www.qalearningweb.com') {
+      return 'wss://api.qalearningweb.com/ws';
+    }
+    
+    // For localhost development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
+    }
   }
   
-  // For local development
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
+  // Default to WSS in production
+  const wsUrl = import.meta.env.VITE_WS_URL || 'wss://api.qalearningweb.com/ws';
+  
+  // Always replace ws with wss if page is served over HTTPS
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return wsUrl.replace(/^ws:/, 'wss:');
   }
   
   return wsUrl;
