@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './i18n/config'
 import './styles/globals.css'
+import { enforceHttpsInProduction } from './utils/forceHttps'
+
+// Force HTTPS for all API requests in production
+enforceHttpsInProduction();
 
 // Suppress React DevTools message in development
 if (import.meta.env.DEV) {
