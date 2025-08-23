@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface ConfirmModalProps {
@@ -25,6 +25,22 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   variant = 'danger',
 }) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEsc);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

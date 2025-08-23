@@ -29,6 +29,24 @@ const KanbanPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showAddForm) {
+        setShowAddForm(false);
+        setEditingTask(null);
+        setFormData({ title: '', description: '', priority: 'medium', assigneeId: '' });
+      }
+    };
+
+    if (showAddForm) {
+      document.addEventListener('keydown', handleEsc);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [showAddForm]);
+
+  useEffect(() => {
     const initializeBoard = async () => {
       try {
         await fetchBoards();
@@ -371,7 +389,6 @@ const KanbanPage: React.FC = () => {
                     name="description"
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    required
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />

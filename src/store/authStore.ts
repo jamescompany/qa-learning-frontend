@@ -10,10 +10,10 @@ interface AuthState {
   error: string | null;
   
   // Actions
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-  signup: (data: { name: string; email: string; password: string }) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<any>;
+  signup: (data: { name: string; email: string; password: string; termsAccepted?: boolean; privacyAccepted?: boolean }) => Promise<void>;
   logout: () => void;
-  register: (data: { name: string; email: string; password: string }) => Promise<void>;
+  register: (data: { name: string; email: string; password: string; termsAccepted?: boolean; privacyAccepted?: boolean }) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
@@ -40,6 +40,20 @@ export const useAuthStore = create<AuthState>()(
           try {
             const response = await authService.login({ email, password });
             
+            // Check if terms acceptance is required
+            if (response.requiresTermsAcceptance) {
+              if (isDevelopment) {
+                console.log('⚠️ AuthStore: Terms acceptance required');
+              }
+              set({
+                user: null,
+                isAuthenticated: false,
+                isLoading: false,
+                error: null,
+              });
+              return response; // Return the response with requiresTermsAcceptance flag
+            }
+            
             if (isDevelopment) {
               console.log('✅ AuthStore: Login successful', response.user);
             }
@@ -53,6 +67,7 @@ export const useAuthStore = create<AuthState>()(
               isLoading: false,
               error: null,
             });
+            return response;
           } catch (error: any) {
             if (isDevelopment) {
               console.error('❌ AuthStore: Login failed', error);
@@ -71,7 +86,11 @@ export const useAuthStore = create<AuthState>()(
         signup: async (data) => {
           set({ isLoading: true, error: null });
           try {
-            const response = await authService.signup(data);
+            const response = await authService.signup({
+              ...data,
+              termsAccepted: data.termsAccepted ?? false,
+              privacyAccepted: data.privacyAccepted ?? false
+            });
             set({
               user: response.user,
               isAuthenticated: true,

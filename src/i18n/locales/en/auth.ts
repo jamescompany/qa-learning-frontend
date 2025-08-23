@@ -26,12 +26,21 @@ export const auth = {
     creating: 'Creating account...',
     hasAccount: 'Already have an account?',
     signIn: 'Sign in',
+    agreeToTerms: 'I agree to the',
+    termsOfService: 'Terms of Service',
+    agreeToPrivacy: 'I agree to the',
+    privacyPolicy: 'Privacy Policy',
+    termsRequired: 'You must accept the terms of service',
+    privacyRequired: 'You must accept the privacy policy',
     securityNotice: {
       title: 'Test Environment Notice',
       message: 'This site is provided for learning and testing purposes.',
       warning: 'While you can use real email addresses, temporary passwords are displayed on screen during password recovery, making accounts vulnerable to unauthorized access.',
       recommendation: 'We recommend using test email addresses only.',
       icon: '⚠️',
+    },
+    errors: {
+      emailAlreadyExists: 'This email is already registered. Please use a different email or sign in.',
     },
   },
   forgotPassword: {
@@ -41,6 +50,17 @@ export const auth = {
     emailPlaceholder: 'Enter your email',
     button: 'Get temporary password',
     backToLogin: 'Back to login',
+  },
+  termsAcceptance: {
+    title: 'Terms and Privacy Agreement Required',
+    message: 'To continue using our service, you must agree to the updated terms of service and privacy policy.',
+    accept: 'Agree and Continue',
+    deleteAccount: 'Delete Account',
+    deleteConfirmMessage: 'Are you sure you want to delete your account? This action cannot be undone.',
+    confirmDelete: 'Delete Account',
+    acceptError: 'Failed to accept terms. Please try again.',
+    deleteError: 'Failed to delete account. Please try again.',
+    pleaseAcceptBoth: 'Please accept both the terms of service and privacy policy to continue.'
   },
   tempPassword: {
     title: 'Temporary Password (For Learning)',

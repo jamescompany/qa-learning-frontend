@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,22 @@ const TempPasswordModal: React.FC<TempPasswordModalProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
+  
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEsc);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [isOpen, onClose]);
   
   if (!isOpen) return null;
 
