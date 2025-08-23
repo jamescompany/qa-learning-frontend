@@ -32,30 +32,30 @@ export const generateUserActivities = (
     });
   });
   
-  // Add simulated signup event (if user was created recently)
+  const today = new Date();
+  
+  // Add simulated signup event (always show as a few days ago for logical order)
   if (user?.created_at) {
-    const signupDate = new Date(user.created_at);
-    const daysSinceSignup = Math.floor((new Date().getTime() - signupDate.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysSinceSignup <= 30) {
-      activities.push({
-        type: 'signup',
-        title: t('activity.events.accountCreated'),
-        timestamp: signupDate,
-        details: t('activity.events.welcomeMessage')
-      });
-    }
+    // Show signup as 7 days ago regardless of actual date for better UX
+    activities.push({
+      type: 'signup',
+      title: t('activity.events.accountCreated'),
+      timestamp: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
+      details: t('activity.events.welcomeMessage')
+    });
   }
   
-  // Add simulated login events (recent logins)
-  const today = new Date();
-  activities.push({
-    type: 'login',
-    title: t('activity.events.loggedIn'),
-    timestamp: new Date(today.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
-    details: t('activity.events.loginFromDevice', { device: 'Chrome on Windows' })
-  });
+  // Add profile update event (show as 3 days ago)
+  if (user?.updated_at) {
+    activities.push({
+      type: 'profile',
+      title: t('activity.events.updatedProfile'),
+      timestamp: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      details: t('activity.events.profileUpdateDetails')
+    });
+  }
   
-  // Add another login from different device
+  // Add login from yesterday
   activities.push({
     type: 'login',
     title: t('activity.events.loggedIn'),
@@ -63,19 +63,13 @@ export const generateUserActivities = (
     details: t('activity.events.loginFromDevice', { device: 'Safari on iPhone' })
   });
   
-  // Add profile update event if applicable
-  if (user?.updated_at && user.updated_at !== user.created_at) {
-    const updateDate = new Date(user.updated_at);
-    const daysSinceUpdate = Math.floor((new Date().getTime() - updateDate.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysSinceUpdate <= 7) {
-      activities.push({
-        type: 'profile',
-        title: t('activity.events.updatedProfile'),
-        timestamp: updateDate,
-        details: t('activity.events.profileUpdateDetails')
-      });
-    }
-  }
+  // Add most recent login
+  activities.push({
+    type: 'login',
+    title: t('activity.events.loggedIn'),
+    timestamp: new Date(today.getTime() - 2 * 60 * 60 * 1000), // 2 hours ago
+    details: t('activity.events.loginFromDevice', { device: 'Chrome on Windows' })
+  });
   
   // Sort by timestamp (most recent first)
   activities.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
@@ -121,12 +115,14 @@ export const getActivityIcon = (type: ActivityItem['type']) => {
 export const formatTimeDifference = (date: Date, t: TFunction): string => {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
+  const minutes = Math.floor(diff / (1000 * 60));
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const days = Math.floor(hours / 24);
   
   if (days > 1) return `${days} ${t('activity.time.daysAgo')}`;
   if (days === 1) return t('activity.time.yesterday');
-  if (hours > 1) return t('activity.time.hoursAgo', { hours });
+  if (hours >= 2) return t('activity.time.hoursAgo', { hours });
   if (hours === 1) return t('activity.time.oneHourAgo');
+  if (minutes < 60) return t('activity.time.today');
   return t('activity.time.today');
 };

@@ -21,7 +21,7 @@ interface DashboardStats {
 const DashboardPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user, isAuthenticated } = useAuthStore();
-  const { getTodoStats, fetchTodos, isLoading: todosLoading, todos } = useTodoStore();
+  const { getTodoStats, fetchTodos, isLoading: todosLoading } = useTodoStore();
   const todoStats = getTodoStats();
   const { posts, fetchPosts, isLoading: postsLoading } = usePostStore();
   const [stats, setStats] = useState<DashboardStats>({
@@ -50,29 +50,6 @@ const DashboardPage: React.FC = () => {
         fetchTodos()
       ]);
       setIsInitialized(true);
-      
-      // Check for new announcements and auto-show the latest one
-      const currentLang = i18n.language.startsWith('ko') ? 'ko' : 'en';
-      const newNotices = notices.filter(notice => isNewNotice(notice.date));
-      if (newNotices.length > 0) {
-        // Show the most recent new announcement if not already shown
-        const latestNotice = newNotices[0];
-        const lastShownAnnouncementId = localStorage.getItem('lastShownAnnouncementId');
-        
-        if (lastShownAnnouncementId !== String(latestNotice.id)) {
-          setSelectedAnnouncement({
-            title: latestNotice.title[currentLang],
-            content: latestNotice.content[currentLang],
-            date: latestNotice.date,
-            guide: latestNotice.guide ? {
-              steps: latestNotice.guide.steps[currentLang],
-              note: latestNotice.guide.note ? latestNotice.guide.note[currentLang] : undefined
-            } : undefined
-          });
-          setShowAnnouncementModal(true);
-          localStorage.setItem('lastShownAnnouncementId', String(latestNotice.id));
-        }
-      }
     };
     loadData();
   }, [i18n.language]);
