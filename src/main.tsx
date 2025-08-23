@@ -4,6 +4,15 @@ import App from './App'
 import './i18n/config'
 import './styles/globals.css'
 import { enforceHttpsInProduction } from './utils/forceHttps'
+import { initializeVersionInfo, checkForVersionUpdate } from './utils/versionManager'
+
+// Initialize version management
+initializeVersionInfo();
+
+// Check for version updates (could trigger a reload prompt in production)
+if (checkForVersionUpdate()) {
+  console.log('New version detected. Consider reloading for latest updates.');
+}
 
 // Force HTTPS for all API requests in production
 enforceHttpsInProduction();

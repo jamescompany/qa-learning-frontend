@@ -82,26 +82,39 @@ const KanbanPage: React.FC = () => {
               if (key) existingColumnKeys.add(key);
             });
             
-            // Create missing columns
+            // Collect missing columns
+            const missingColumns = [];
             let position = board.columns.length;
             for (const key of requiredColumns) {
               if (!existingColumnKeys.has(key)) {
-                await createColumn(board.id, t(`kanban.columns.${key}`), position++);
+                missingColumns.push({ key, position: position++ });
               }
             }
             
-            // Refresh board if columns were added
-            if (position > board.columns.length) {
+            // Create all missing columns in parallel
+            if (missingColumns.length > 0) {
+              await Promise.all(
+                missingColumns.map(({ key, position }) => 
+                  createColumn(board.id, t(`kanban.columns.${key}`), position)
+                )
+              );
+              // Refresh board once after all columns are created
               await fetchBoard(board.id);
             }
           }
         } else {
-          // Create new board with all columns
+          // Create new board with all columns at once
           const newBoard = await createBoard('My Kanban Board', 'Personal task management board');
-          await createColumn(newBoard.id, t('kanban.columns.todo'), 0);
-          await createColumn(newBoard.id, t('kanban.columns.inProgress'), 1);
-          await createColumn(newBoard.id, t('kanban.columns.review'), 2);
-          await createColumn(newBoard.id, t('kanban.columns.done'), 3);
+          
+          // Create all columns in parallel
+          await Promise.all([
+            createColumn(newBoard.id, t('kanban.columns.todo'), 0),
+            createColumn(newBoard.id, t('kanban.columns.inProgress'), 1),
+            createColumn(newBoard.id, t('kanban.columns.review'), 2),
+            createColumn(newBoard.id, t('kanban.columns.done'), 3)
+          ]);
+          
+          // Fetch board once after all columns are created
           await fetchBoard(newBoard.id);
         }
       } catch (error) {

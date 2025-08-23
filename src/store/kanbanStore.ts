@@ -16,7 +16,7 @@ interface KanbanStore {
   deleteBoard: (id: string) => Promise<void>;
   
   // Column operations
-  createColumn: (boardId: string, title: string, position?: number) => Promise<void>;
+  createColumn: (boardId: string, title: string, position?: number) => Promise<any>;
   updateColumn: (id: string, updates: { title?: string; position?: number }) => Promise<void>;
   deleteColumn: (id: string) => Promise<void>;
   
@@ -176,10 +176,9 @@ export const useKanbanStore = create<KanbanStore>()(
       try {
         const newColumn = await kanbanService.createColumn(boardId, { title, position });
         
-        // Refresh the current board to get updated columns
-        if (get().currentBoard?.id === boardId) {
-          await get().fetchBoard(boardId);
-        }
+        // Don't auto-refresh - let the caller decide when to refresh
+        // This prevents multiple refreshes when creating multiple columns
+        return newColumn;
       } catch (error: any) {
         console.error('Failed to create column:', error);
         set({ error: error.message || 'Failed to create column' });
