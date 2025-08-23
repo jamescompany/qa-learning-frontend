@@ -1,14 +1,12 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_CONFIG } from '../config/api.config';
 
-const API_BASE_URL = API_CONFIG.API_URL;
-
 class ApiService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
     this.axiosInstance = axios.create({
-      baseURL: API_BASE_URL,
+      // baseURL will be set dynamically in interceptor
       timeout: 30000, // Increased to 30 seconds for email operations
       headers: {
         'Content-Type': 'application/json',
@@ -21,6 +19,14 @@ class ApiService {
     // Request interceptor
     this.axiosInstance.interceptors.request.use(
       (config) => {
+        // Dynamically set baseURL for each request
+        const apiUrl = API_CONFIG.API_URL;
+        
+        // If URL is relative, prepend the base URL
+        if (config.url && !config.url.startsWith('http')) {
+          config.url = apiUrl + (config.url.startsWith('/') ? config.url : '/' + config.url);
+        }
+        
         const token = localStorage.getItem('accessToken');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;

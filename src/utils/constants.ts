@@ -1,13 +1,16 @@
 import { API_CONFIG } from '../config/api.config';
 
-// API Configuration
-export const API_BASE_URL = API_CONFIG.API_URL;
+// API Configuration - Use getters for dynamic evaluation
+export const getApiBaseUrl = () => API_CONFIG.API_URL;
+export const getWsBaseUrl = () => API_CONFIG.WS_URL;
+
+// For backwards compatibility (deprecated - will be removed)
+export const API_BASE_URL = getApiBaseUrl();
+export const WS_BASE_URL = getWsBaseUrl();
+
 export const API_TIMEOUT = 30000; // 30 seconds
 export const API_RETRY_ATTEMPTS = 3;
 export const API_RETRY_DELAY = 1000; // 1 second
-
-// WebSocket Configuration
-export const WS_BASE_URL = API_CONFIG.WS_URL;
 export const WS_RECONNECT_INTERVAL = 5000;
 export const WS_MAX_RECONNECT_ATTEMPTS = 5;
 export const WS_PING_INTERVAL = 30000;
