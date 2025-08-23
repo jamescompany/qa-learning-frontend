@@ -11,7 +11,9 @@ const LanguageSelector = () => {
     { code: 'ko', name: '한국어', flag: '🇰🇷' },
   ];
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  // Handle both 'ko' and 'ko-KR' format
+  const currentLangCode = i18n.language.split('-')[0];
+  const currentLanguage = languages.find(lang => lang.code === currentLangCode) || languages[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,13 +58,13 @@ const LanguageSelector = () => {
               key={lang.code}
               onClick={() => changeLanguage(lang.code)}
               className={`w-full flex items-center space-x-2 px-4 py-2 text-sm text-left hover:bg-gray-100 first:rounded-t-lg last:rounded-b-lg ${
-                lang.code === i18n.language ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                lang.code === currentLangCode ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
               }`}
               data-testid={`language-option-${lang.code}`}
             >
               <span className="text-lg">{lang.flag}</span>
               <span>{lang.name}</span>
-              {lang.code === i18n.language && (
+              {lang.code === currentLangCode && (
                 <svg className="w-4 h-4 ml-auto text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
