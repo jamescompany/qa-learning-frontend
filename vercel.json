@@ -6,7 +6,11 @@
     }
   ],
   "installCommand": "yarn install --network-timeout 300000 --network-concurrency 8",
-  "buildCommand": "yarn build",
+  "buildCommand": "VITE_API_URL=https://api.qalearningweb.com/api/v1 VITE_WS_URL=wss://api.qalearningweb.com/ws yarn build",
   "framework": "vite",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "env": {
+    "VITE_API_URL": "https://api.qalearningweb.com/api/v1",
+    "VITE_WS_URL": "wss://api.qalearningweb.com/ws"
+  }
 }
