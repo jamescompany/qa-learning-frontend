@@ -1,12 +1,20 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_CONFIG } from '../config/api.config';
 
 class ApiService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
+    // Determine base URL at initialization
+    const isProduction = typeof window !== 'undefined' && 
+                        window.location.hostname !== 'localhost' && 
+                        window.location.hostname !== '127.0.0.1';
+    
+    const baseURL = isProduction 
+      ? 'https://api.qalearningweb.com/api/v1'
+      : 'http://localhost:8000/api/v1';
+    
     this.axiosInstance = axios.create({
-      // baseURL will be set dynamically in interceptor
+      baseURL: baseURL,
       timeout: 30000, // Increased to 30 seconds for email operations
       headers: {
         'Content-Type': 'application/json',
@@ -19,24 +27,16 @@ class ApiService {
     // Request interceptor
     this.axiosInstance.interceptors.request.use(
       (config) => {
-        // FORCE HTTPS IN PRODUCTION
+        // Double-check HTTPS in production
         const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
         
         if (isProduction) {
-          // Always use HTTPS in production, regardless of any configuration
-          const httpsUrl = 'https://api.qalearningweb.com/api/v1';
-          
-          if (config.url && !config.url.startsWith('http')) {
-            config.url = httpsUrl + (config.url.startsWith('/') ? config.url : '/' + config.url);
-          } else if (config.url && config.url.startsWith('http://')) {
-            // Force replace HTTP with HTTPS
+          // Force HTTPS for any HTTP URLs
+          if (config.url && config.url.startsWith('http://')) {
             config.url = config.url.replace('http://', 'https://');
           }
-        } else {
-          // Development mode
-          const apiUrl = API_CONFIG.API_URL;
-          if (config.url && !config.url.startsWith('http')) {
-            config.url = apiUrl + (config.url.startsWith('/') ? config.url : '/' + config.url);
+          if (config.baseURL && config.baseURL.startsWith('http://')) {
+            config.baseURL = config.baseURL.replace('http://', 'https://');
           }
         }
         
