@@ -98,15 +98,30 @@ export const useAuthStore = create<AuthState>()(
               error: null,
             });
           } catch (error: any) {
-            let errorMessage = error.response?.data?.detail || 
-                              error.response?.data?.message || 
-                              (error.response?.status === 409 ? 'This email is already registered' : 'Signup failed');
+            let errorMessage = '';
+            
+            // Handle 422 validation errors (FastAPI format)
+            if (error.response?.status === 422 && error.response?.data?.detail) {
+              const detail = error.response.data.detail;
+              if (Array.isArray(detail)) {
+                // Extract error messages from validation errors
+                errorMessage = detail.map((e: any) => e.msg || e.message || 'Validation error').join(', ');
+              } else {
+                errorMessage = detail;
+              }
+            } else {
+              errorMessage = error.response?.data?.detail || 
+                            error.response?.data?.message || 
+                            (error.response?.status === 409 ? 'This email is already registered' : 'Signup failed');
+            }
             
             // Translate specific error messages
-            if (errorMessage === 'This email was previously used and cannot be reused') {
-              errorMessage = '이 이메일은 이전에 사용되었으며 재사용할 수 없습니다 (탈퇴한 계정)';
-            } else if (errorMessage === 'This username was previously used and cannot be reused') {
-              errorMessage = '이 사용자명은 이전에 사용되었으며 재사용할 수 없습니다 (탈퇴한 계정)';
+            if (typeof errorMessage === 'string') {
+              if (errorMessage === 'This email was previously used and cannot be reused') {
+                errorMessage = '이 이메일은 이전에 사용되었으며 재사용할 수 없습니다 (탈퇴한 계정)';
+              } else if (errorMessage === 'This username was previously used and cannot be reused') {
+                errorMessage = '이 사용자명은 이전에 사용되었으며 재사용할 수 없습니다 (탈퇴한 계정)';
+              }
             }
             
             set({

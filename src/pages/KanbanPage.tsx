@@ -304,31 +304,38 @@ const KanbanPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {displayBoard?.columns && displayBoard.columns.length > 0 ? (
-            displayBoard.columns.map(column => {
-            const columnTasks = column.cards || [];
-            
-            // Map English column titles to translation keys
-            const titleToKey = {
-              'todo': 'todo',
-              'To Do': 'todo',
-              'inProgress': 'inProgress',
-              'In Progress': 'inProgress',
-              'review': 'review',
-              'Review': 'review',
-              'done': 'done',
-              'Done': 'done',
-              // Also check for already translated titles
-              [t('kanban.columns.todo')]: 'todo',
-              [t('kanban.columns.inProgress')]: 'inProgress',
-              [t('kanban.columns.review')]: 'review',
-              [t('kanban.columns.done')]: 'done'
-            };
-            
-            const columnKey = titleToKey[column.title] || 'todo';
-            const displayTitle = t(`kanban.columns.${columnKey}`);
-            const columnConfig = columns.find(c => c.id === columnKey) || columns[0];
-            
-            return (
+            // Sort columns according to the predefined order
+            columns.map(columnConfig => {
+              // Map English column titles to translation keys
+              const titleToKey = {
+                'todo': 'todo',
+                'To Do': 'todo',
+                'inProgress': 'inProgress',
+                'In Progress': 'inProgress',
+                'review': 'review',
+                'Review': 'review',
+                'done': 'done',
+                'Done': 'done',
+                // Also check for already translated titles
+                [t('kanban.columns.todo')]: 'todo',
+                [t('kanban.columns.inProgress')]: 'inProgress',
+                [t('kanban.columns.review')]: 'review',
+                [t('kanban.columns.done')]: 'done'
+              };
+              
+              // Find the matching column from displayBoard
+              const column = displayBoard.columns.find(col => {
+                const key = titleToKey[col.title];
+                return key === columnConfig.id;
+              });
+              
+              if (!column) return null;
+              
+              const columnTasks = column.cards || [];
+              const columnKey = columnConfig.id;
+              const displayTitle = columnConfig.title;
+              
+              return (
               <div key={column.id} className="flex flex-col">
                 <div className="mb-4">
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -434,7 +441,7 @@ const KanbanPage: React.FC = () => {
                 </div>
               </div>
             );
-          })
+          }).filter(Boolean)
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {columns.map(col => (

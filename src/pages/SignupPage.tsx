@@ -26,15 +26,30 @@ const SignupPage: React.FC = () => {
       await register(data);
       navigate('/dashboard');
     } catch (err: any) {
-      let errorMessage = err.response?.data?.detail || err.message || t('auth.signup.errors.signupFailed');
+      let errorMessage = '';
+      
+      // Handle 422 validation errors (FastAPI format)
+      if (err.response?.status === 422 && err.response?.data?.detail) {
+        const detail = err.response.data.detail;
+        if (Array.isArray(detail)) {
+          // Extract error messages from validation errors
+          errorMessage = detail.map((e: any) => e.msg || e.message || 'Validation error').join(', ');
+        } else {
+          errorMessage = detail;
+        }
+      } else {
+        errorMessage = err.response?.data?.detail || err.message || t('auth.signup.errors.signupFailed');
+      }
       
       // Translate specific error messages
-      if (errorMessage === 'This email was previously used and cannot be reused') {
-        errorMessage = t('auth.signup.errors.emailPreviouslyUsed');
-      } else if (errorMessage === 'This username was previously used and cannot be reused') {
-        errorMessage = t('auth.signup.errors.usernamePreviouslyUsed');
-      } else if (err.response?.status === 409) {
-        errorMessage = t('auth.signup.errors.emailAlreadyExists');
+      if (typeof errorMessage === 'string') {
+        if (errorMessage === 'This email was previously used and cannot be reused') {
+          errorMessage = t('auth.signup.errors.emailPreviouslyUsed');
+        } else if (errorMessage === 'This username was previously used and cannot be reused') {
+          errorMessage = t('auth.signup.errors.usernamePreviouslyUsed');
+        } else if (err.response?.status === 409) {
+          errorMessage = t('auth.signup.errors.emailAlreadyExists');
+        }
       }
       
       setError(errorMessage);
