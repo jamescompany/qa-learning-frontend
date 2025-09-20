@@ -11,6 +11,9 @@ const PostListPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  const maxTagsToShow = 10;
 
   useEffect(() => {
     fetchPosts();
@@ -64,7 +67,7 @@ const PostListPage: React.FC = () => {
           </div>
           
           {/* Tags Filter */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 items-center">
             <button
               onClick={() => setSelectedTag(null)}
               className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
@@ -75,7 +78,7 @@ const PostListPage: React.FC = () => {
             >
               {t('posts.list.all')}
             </button>
-            {allTags.map(tag => (
+            {(showAllTags ? allTags : allTags.slice(0, maxTagsToShow)).map(tag => (
               <button
                 key={tag}
                 onClick={() => setSelectedTag(tag)}
@@ -88,6 +91,14 @@ const PostListPage: React.FC = () => {
                 {tag}
               </button>
             ))}
+            {allTags.length > maxTagsToShow && (
+              <button
+                onClick={() => setShowAllTags(!showAllTags)}
+                className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 text-sm font-medium transition-colors"
+              >
+                {showAllTags ? '접기' : `+${allTags.length - maxTagsToShow} 더보기`}
+              </button>
+            )}
           </div>
         </div>
 
@@ -122,8 +133,8 @@ const PostListPage: React.FC = () => {
                       <span className="text-sm text-gray-500 dark:text-gray-400">
                         {t('posts.list.by')} {(post as any).author?.full_name || (post as any).author?.username || post.author?.name || t('posts.list.unknown')}
                       </span>
-                      <div className="flex gap-2">
-                        {post.tags?.map((tag: any) => (
+                      <div className="flex flex-wrap gap-2">
+                        {post.tags?.slice(0, 3).map((tag: any) => (
                           <span
                             key={typeof tag === 'string' ? tag : tag.id || tag.name}
                             className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
@@ -131,6 +142,11 @@ const PostListPage: React.FC = () => {
                             {typeof tag === 'string' ? tag : tag.name}
                           </span>
                         ))}
+                        {post.tags && post.tags.length > 3 && (
+                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                            +{post.tags.length - 3}
+                          </span>
+                        )}
                       </div>
                     </div>
                     

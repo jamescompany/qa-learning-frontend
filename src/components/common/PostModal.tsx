@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface PostModalProps {
@@ -17,6 +17,9 @@ interface PostModalProps {
 
 const PostModal: React.FC<PostModalProps> = ({ isOpen, onClose, post }) => {
   const { t } = useTranslation();
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  const maxTagsToShow = 5;
 
   if (!isOpen || !post) return null;
 
@@ -58,12 +61,22 @@ const PostModal: React.FC<PostModalProps> = ({ isOpen, onClose, post }) => {
             </div>
             
             {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {post.tags.map((tag: string, idx: number) => (
-                  <span key={idx} className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full">
-                    {tag}
-                  </span>
-                ))}
+              <div className="mt-4">
+                <div className="flex flex-wrap gap-2">
+                  {(showAllTags ? post.tags : post.tags.slice(0, maxTagsToShow)).map((tag: string, idx: number) => (
+                    <span key={idx} className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                  {post.tags.length > maxTagsToShow && (
+                    <button
+                      onClick={() => setShowAllTags(!showAllTags)}
+                      className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                    >
+                      {showAllTags ? '접기' : `+${post.tags.length - maxTagsToShow} 더보기`}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
