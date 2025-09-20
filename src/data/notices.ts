@@ -23,6 +23,32 @@ export interface Notice {
 
 export const notices: Notice[] = [
   {
+    id: 3,
+    title: {
+      en: 'Tag Display Improvement',
+      ko: '태그 표시 개선'
+    },
+    content: {
+      en: 'Tags are now simplified with show more/less functionality. Only essential tags are displayed initially for cleaner UI.',
+      ko: '태그 표시가 간소화되어 접기/펼치기 기능이 추가되었습니다. 깔끔한 UI를 위해 필수 태그만 우선 표시됩니다.'
+    },
+    date: '2025-09-20',
+    guide: {
+      steps: {
+        en: [
+          'Post cards show up to 3 tags by default',
+          'Click "+N more" to expand all tags',
+          'Click "Show less" to collapse back to default view'
+        ],
+        ko: [
+          '게시물 카드는 기본 3개 태그만 표시',
+          '"+N 더보기" 클릭하여 전체 태그 확인',
+          '"접기" 클릭하여 기본 보기로 돌아가기'
+        ]
+      }
+    }
+  },
+  {
     id: 2,
     title: {
       en: 'Service Restored - Login Issue Resolved',

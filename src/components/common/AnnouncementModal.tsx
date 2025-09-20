@@ -56,17 +56,14 @@ const AnnouncementModal: React.FC<AnnouncementModalProps> = ({
                   
                   {announcement.guide && announcement.guide.steps && (
                     <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-                      <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-3">
-                        {t('dashboard.announcements.guide.title')}
-                      </h4>
-                      <ol className="space-y-2">
+                      <ul className="space-y-2">
                         {announcement.guide.steps.map((step: string, index: number) => (
                           <li key={index} className="flex items-start text-sm text-blue-800 dark:text-blue-400">
-                            <span className="font-semibold mr-2">{index + 1}.</span>
+                            <span className="mr-2">•</span>
                             <span>{step}</span>
                           </li>
                         ))}
-                      </ol>
+                      </ul>
                       {announcement.guide.note && (
                         <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-md">
                           <p className="text-xs text-yellow-800 dark:text-yellow-400">
