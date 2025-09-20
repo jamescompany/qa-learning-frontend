@@ -23,6 +23,18 @@ export interface Notice {
 
 export const notices: Notice[] = [
   {
+    id: 2,
+    title: {
+      en: 'Service Restored - Login Issue Resolved',
+      ko: '서비스 정상화 - 로그인 이슈 해결'
+    },
+    content: {
+      en: 'The temporary login and signup issue has been resolved. We apologize for any inconvenience. This platform is maintained with passion for the QA community.',
+      ko: '일시적으로 발생했던 로그인 및 회원가입 문제가 해결되었습니다. 불편을 드려 죄송합니다. QA 커뮤니티를 위해 열정으로 운영되는 플랫폼입니다.'
+    },
+    date: '2025-09-20'
+  },
+  {
     id: 1,
     title: {
       en: 'Swagger Authorize Authentication Method Changed',
