@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Header from '../../components/common/Header';
@@ -6,6 +7,19 @@ import { useAuthStore } from '../../store/authStore';
 const QAHubPage = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+
+  const maxTagsToShow = 3;
+
+  const toggleCardExpanded = (index: number) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedCards(newExpanded);
+  };
   const scenarios = [
     {
       title: t('qaHub.scenarios.componentPlayground.title'),
@@ -117,8 +131,8 @@ const QAHubPage = () => {
                     </h3>
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">{scenario.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {scenario.tags.map((tag, tagIndex) => (
+                  <div className="flex flex-wrap gap-2 items-center">
+                    {(expandedCards.has(index) ? scenario.tags : scenario.tags.slice(0, maxTagsToShow)).map((tag, tagIndex) => (
                       <span
                         key={tagIndex}
                         className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-full"
@@ -126,6 +140,17 @@ const QAHubPage = () => {
                         {tag}
                       </span>
                     ))}
+                    {scenario.tags.length > maxTagsToShow && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toggleCardExpanded(index);
+                        }}
+                        className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                      >
+                        {expandedCards.has(index) ? '접기' : `+${scenario.tags.length - maxTagsToShow}`}
+                      </button>
+                    )}
                   </div>
                   <div className="mt-4 flex items-center text-blue-600 group-hover:translate-x-2 transition-transform">
                     <span className="text-sm font-medium">{t('qaHub.startTesting')}</span>

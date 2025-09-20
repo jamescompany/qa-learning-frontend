@@ -20,6 +20,9 @@ const PostDetailPage: React.FC = () => {
   const [hasLiked, setHasLiked] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAllTags, setShowAllTags] = useState(false);
+
+  const maxTagsToShow = 3;
 
   useEffect(() => {
     if (id) {
@@ -177,16 +180,26 @@ const PostDetailPage: React.FC = () => {
           </div>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {currentPost.tags?.map((tag: any, index: number) => (
-              <span
-                key={typeof tag === 'string' ? `${tag}-${index}` : `${tag.id || tag.name}-${index}`}
-                className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full"
-              >
-                {typeof tag === 'string' ? tag : tag.name}
-              </span>
-            ))}
-          </div>
+          {currentPost.tags && currentPost.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6 items-center">
+              {(showAllTags ? currentPost.tags : currentPost.tags.slice(0, maxTagsToShow)).map((tag: any, index: number) => (
+                <span
+                  key={typeof tag === 'string' ? `${tag}-${index}` : `${tag.id || tag.name}-${index}`}
+                  className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
+                >
+                  {typeof tag === 'string' ? tag : tag.name}
+                </span>
+              ))}
+              {currentPost.tags.length > maxTagsToShow && (
+                <button
+                  onClick={() => setShowAllTags(!showAllTags)}
+                  className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full hover:bg-blue-200 transition-colors"
+                >
+                  {showAllTags ? '접기' : `+${currentPost.tags.length - maxTagsToShow} 더보기`}
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Post Content */}
           <div className="prose max-w-none mb-8">
